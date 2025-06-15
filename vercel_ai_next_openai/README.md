@@ -2,6 +2,14 @@
 
 This tutorial shows how to set up [KeywordsAI](https://docs.keywordsai.co/integration/development-frameworks/vercel-tracing) tracing with [Next.js](https://nextjs.org/) and the [AI SDK](https://ai-sdk.dev/docs) to monitor and trace your AI-powered applications.
 
+## Deploy your own
+
+Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=ai-sdk-example):
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKeywords-AI%2Fkeywordsai-example-projects%2Ftree%2Fmain%2Fvercel_ai_next_openai&env=OPENAI_API_KEY,KEYWORDSAI_API_KEY&project-name=keywordsai-next-tracing&repository-name=keywordsai-next-tracing)
+
+---
+
 ## Choose Your Setup Method
 
 You have two options to get started:
@@ -31,19 +39,7 @@ Then:
 
 If you want to understand the setup process or add KeywordsAI tracing to an existing project, follow the tutorial below.
 
-## Deploy your own
-
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=ai-sdk-example):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKeywords-AI%2Fkeywordsai-example-projects%2Ftree%2Fmain%2Fvercel_ai_next_openai&env=OPENAI_API_KEY,KEYWORDSAI_API_KEY&project-name=keywordsai-next-tracing&repository-name=keywordsai-next-tracing)
-
----
-
-## Step-by-Step Tutorial
-
-### Base Project Setup
-
-If you're starting from scratch, execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the base example:
+Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the base example:
 
 ```bash
 npx create-next-app --example https://github.com/vercel/ai/tree/main/examples/next-openai next-openai-app
