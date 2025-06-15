@@ -30,6 +30,9 @@ export async function POST(req: Request) {
       // Cache the response text:
       cache.set(key, text);
     },
+    experimental_telemetry: {
+      isEnabled: true,
+    }
   });
 
   // Respond with the stream

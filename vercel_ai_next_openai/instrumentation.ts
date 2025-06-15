@@ -7,6 +7,7 @@ export function register() {
     traceExporter: new KeywordsAIExporter({
       apiKey: process.env.KEYWORDSAI_API_KEY,
       baseUrl: process.env.KEYWORDSAI_BASE_URL,
+      debug: true
     }),
   });
 }

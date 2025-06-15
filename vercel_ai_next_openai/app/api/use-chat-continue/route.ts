@@ -15,6 +15,9 @@ export async function POST(req: Request) {
     experimental_continueSteps: true,
     system: 'Stop when sufficient information was provided.',
     messages,
+    experimental_telemetry: {
+      isEnabled: true,
+    },
   });
 
   return result.toDataStreamResponse();
