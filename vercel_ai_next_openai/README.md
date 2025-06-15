@@ -58,6 +58,13 @@ pnpm add @keywordsai/exporter-vercel
 
 Next.js supports OpenTelemetry instrumentation out of the box. Following the [Next.js OpenTelemetry guide](https://nextjs.org/docs/app/guides/open-telemetry), create an `instrumentation.ts` file in your project root:
 
+Install vercel's opentelemetry instrumentation
+
+```bash
+yarn add @vercel/otel
+```
+
+Create instrumentation.ts in the root (where package.json lives) of your project
 ```typescript
 // instrumentation.ts
 import { registerOTel } from "@vercel/otel";
@@ -126,6 +133,20 @@ export async function POST(req: Request) {
    ```bash
    yarn dev
    ```
+
+**CAVEAT 2025-06-14**: There might be broken dependencies in the @vercel/otel package, simply install them if you see them:
+
+```bash
+yarn add @opentelementry/api-logs
+```
+
+If this fails, make sure you are use the right version of package manager
+```json
+// In package.json, add this line
+"packageManager" : "yarn@4.9.2"
+```
+And try again
+
 
 2. Make some chat requests through your application
 
