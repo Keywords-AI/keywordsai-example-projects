@@ -522,15 +522,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keywordsai/exporter-vercel@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@keywordsai/exporter-vercel@npm:1.0.3"
+"@keywordsai/exporter-vercel@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@keywordsai/exporter-vercel@npm:1.0.4"
   dependencies:
     "@keywordsai/keywordsai-sdk": "npm:^0.0.5"
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/core": "npm:^2.0.1"
     "@opentelemetry/sdk-trace-base": "npm:^2.0.1"
-  checksum: 10c0/3ae06628d5c6747ad41f3dfdd8f8ef0cdba89c8c818f08b62322391e04f9a451d0aa9a0c0a981650d4acde75d45f59e687959288bdba038a07e6404fe2919a22
+  checksum: 10c0/5c7140e3444efce4e9173b472058e22f1bf4fa300b8a6650a6e4760d674681fbffe8a93895f4847682b20c6e1b5041bea4df7cd88b87877c6af8e69174b83e0a
   languageName: node
   linkType: hard
 
@@ -4744,7 +4744,7 @@ __metadata:
     "@ai-sdk/perplexity": "npm:1.1.9"
     "@ai-sdk/react": "npm:1.2.12"
     "@ai-sdk/ui-utils": "npm:1.2.11"
-    "@keywordsai/exporter-vercel": "npm:^1.0.3"
+    "@keywordsai/exporter-vercel": "npm:^1.0.4"
     "@modelcontextprotocol/sdk": "npm:1.10.2"
     "@opentelemetry/api-logs": "npm:^0.202.0"
     "@types/node": "npm:20.17.24"
