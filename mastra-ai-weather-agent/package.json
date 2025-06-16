@@ -1,0 +1,24 @@
+{
+  "name": "examples-weather-agent",
+  "type": "module",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tsx src/mastra/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@ai-sdk/openai": "^1.3.22",
+    "@keywordsai/exporter-vercel": "^1.0.16",
+    "@keywordsai/keywordsai-sdk": "^0.0.8",
+    "@mastra/core": "latest",
+    "dotenv": "^16.5.0",
+    "zod": "^3.25.56"
+  },
+  "version": "0.0.1",
+  "pnpm": {},
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+}
