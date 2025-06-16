@@ -84,7 +84,7 @@ from keywordsai_tracing import KeywordsAITelemetry, workflow, get_client
 # Initialize telemetry
 telemetry = KeywordsAITelemetry()
 
-@workflow(name="stream_text")
+@workflow(name="stream_text") # <------------------------------------------- Add this decorator here!
 async def stream_text(messages: List[ClientMessage], protocol: str = "data"):
     # Automatic tracing of LLM calls and tool usage
     keywordsai_client = get_client()
