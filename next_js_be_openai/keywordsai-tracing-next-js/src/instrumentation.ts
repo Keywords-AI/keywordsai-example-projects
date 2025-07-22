@@ -1,4 +1,6 @@
 import { KeywordsAITelemetry } from "@keywordsai/tracing";
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.local", override: true });
 
 // Declare global type
 declare global {
@@ -6,10 +8,9 @@ declare global {
 }
 
 export function register() {
-  
   global.keywordsai = new KeywordsAITelemetry({
     apiKey: process.env.KEYWORDSAI_API_KEY || "",
-    baseUrl: "https://webhook.site/c40e1756-837a-4829-8994-861b8b485199",
+    baseUrl: process.env.KEYWORDSAI_BASE_URL || "",
     logLevel: "debug",
     disableBatch: true,
   });

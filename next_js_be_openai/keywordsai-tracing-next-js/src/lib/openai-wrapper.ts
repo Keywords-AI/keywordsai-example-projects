@@ -26,6 +26,7 @@ export async function generateChatCompletion(messages: ChatMessage[]) {
   return await keywordsai.withWorkflow(
     {
       name: "generateChatCompletion",
+      
     },
     async () => {
       try {
@@ -46,6 +47,6 @@ export async function generateChatCompletion(messages: ChatMessage[]) {
         console.error("OpenAI API error:", error);
         throw error;
       }
-    }
+    },
   );
 }
