@@ -42,3 +42,5 @@ next-env.d.ts
 
 .env*.local
 .yarn
+
+node_modules

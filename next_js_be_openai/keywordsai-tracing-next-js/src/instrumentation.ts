@@ -1,4 +1,5 @@
 import { KeywordsAITelemetry } from "@keywordsai/tracing";
+import { OpenAI } from "openai";
 import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local", override: true });
 
@@ -13,6 +14,10 @@ export function register() {
     baseUrl: process.env.KEYWORDSAI_BASE_URL || "",
     logLevel: "debug",
     disableBatch: true,
+    instrumentModules: {
+      openAI: OpenAI,
+    },
+    disabledInstrumentations: ["fetch"],
   });
   global.keywordsai.initialize();
 }
