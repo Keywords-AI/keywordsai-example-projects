@@ -37,8 +37,9 @@ import OpenAI from "openai";
 const keywordsai = new KeywordsAITelemetry({
   apiKey: process.env.KEYWORDSAI_API_KEY || "",
   baseURL: process.env.KEYWORDSAI_BASE_URL || "",
+  logLevel: "info", // This shows initialization logs for troubleshooting
   instrumentModules: {
-    openAI: OpenAI, // This enables OpenAI tracing
+    openAI: OpenAI,
   },
 });
 
@@ -96,6 +97,40 @@ Visit the application and make chat requests. Your traces will appear on the Key
 - **Proper instrumentation** - Avoids timing issues with automatic tracing
 
 ## Troubleshooting
+
+### 🔍 Enable Debug Logging
+
+For better troubleshooting, set the `logLevel` to see initialization logs:
+
+```typescript
+const keywordsai = new KeywordsAITelemetry({
+  apiKey: process.env.KEYWORDSAI_API_KEY || "",
+  baseURL: process.env.KEYWORDSAI_BASE_URL || "",
+  logLevel: "info", // This shows initialization logs for troubleshooting
+  instrumentModules: {
+    openAI: OpenAI,
+  },
+});
+```
+
+**Log levels available:**
+- `"debug"` - Most verbose, shows all internal operations
+- `"info"` - Shows initialization status and key events  
+- `"warn"` - Only warnings and errors
+- `"error"` - Only errors
+
+### ⚠️ Missing OpenAI Instrumentation Dependency
+
+If you encounter initialization errors or OpenAI calls are not being traced, ensure you have installed the required instrumentation:
+
+```bash
+yarn add @traceloop/instrumentation-openai
+```
+
+**Why you need this:**
+- KeywordsAI SDK looks for available instrumentations to initialize
+- Without the OpenAI instrumentation package, OpenAI calls won't be traced
+- This is a required peer dependency for OpenAI tracing to work
 
 ### ❌ Avoid Next.js Instrumentation File
 
