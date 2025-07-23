@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@keywordsai/tracing": "^1.0.35",
-    "@traceloop/instrumentation-openai": "^0.14.4"
-  }
-}

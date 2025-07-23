@@ -2,6 +2,7 @@
   "name": "keywordsai-tracing-next-js",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -9,7 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@keywordsai/tracing": "^1.0.35",
+    "@keywordsai/tracing": "^1.0.43",
+    "@traceloop/instrumentation-openai": "^0.14.4",
     "dotenv": "^17.2.0",
     "next": "15.4.2",
     "openai": "^5.10.1",
@@ -23,5 +25,6 @@
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

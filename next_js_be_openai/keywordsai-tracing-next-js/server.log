@@ -1,0 +1,425 @@
+
+> keywordsai-tracing-next-js@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.2 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.0.0.117:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ○ Compiling instrumentation Node.js ...
+ ✓ Compiled instrumentation Node.js in 813ms
+ ○ Compiling instrumentation Edge ...
+ ✓ Compiled instrumentation Edge in 701ms
+[dotenv@17.2.0] injecting env (3) from .env.local (tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit)
+[KeywordsAI Debug] Tracing configuration: {
+  appName: 'default',
+  baseURL: 'http://localhost:8000',
+  logLevel: 'debug',
+  tracingEnabled: true,
+  traceContent: true,
+  hasApiKey: true,
+  apiKeyLength: 41,
+  hasInstrumentModules: true,
+  instrumentModulesKeys: [ 'openAI' ],
+  customHeaders: [],
+  disabledInstrumentations: []
+}
+[KeywordsAI Debug] Using manual instrumentation for modules: [ 'openAI' ]
+[KeywordsAI] Initializing manual instrumentation with provided modules...
+[KeywordsAI Debug] Provided modules: [ 'openAI' ]
+[KeywordsAI Debug] Attempting to manually initialize OpenAI API instrumentation...
+[KeywordsAI Debug] Successfully initialized OpenAI API instrumentation
+[KeywordsAI Debug] No module provided for Anthropic API instrumentation
+[KeywordsAI Debug] No module provided for Azure OpenAI instrumentation
+[KeywordsAI Debug] No module provided for Cohere API instrumentation
+[KeywordsAI Debug] No module provided for Google Vertex AI instrumentation
+[KeywordsAI Debug] No module provided for Google AI Platform instrumentation
+[KeywordsAI Debug] No module provided for AWS Bedrock instrumentation
+[KeywordsAI Debug] No module provided for Pinecone vector database instrumentation
+[KeywordsAI Debug] No module provided for LangChain framework instrumentation
+[KeywordsAI Debug] No module provided for LlamaIndex framework instrumentation
+[KeywordsAI Debug] No module provided for ChromaDB vector database instrumentation
+[KeywordsAI Debug] No module provided for Qdrant vector database instrumentation
+[KeywordsAI Debug] No module provided for Together AI instrumentation
+[KeywordsAI] Manual instrumentation complete: 1 initialized, 0 failed, 0 disabled, 12 not provided
+[KeywordsAI] Successfully initialized: openAI
+[KeywordsAI Debug] Total instrumentations ready for SDK: 1
+[KeywordsAI Debug] Trace content enabled - input/output data will be captured
+[KeywordsAI Debug] Setting OpenTelemetry diagnostic log level to: debug
+[KeywordsAI OpenTelemetry] @opentelemetry/api: Registered a global for diag v1.9.0.
+[KeywordsAI Debug] Created resource with service name: default
+[KeywordsAI Debug] URL used as-is: "http://localhost:8000"
+[KeywordsAI Debug] Exporter configuration: {
+  url: 'http://localhost:8000/api/v1/traces',
+  headersCount: 2,
+  hasAuth: 'Yes',
+  customHeaderKeys: []
+}
+[KeywordsAI Debug] Created OTLP trace exporter
+[KeywordsAI Debug] Created filtering span processor - only spans from @keywordsai/tracing will be exported
+[KeywordsAI Debug] Initializing NodeSDK with 1 successfully loaded instrumentations: [ 'OpenAIInstrumentation' ]
+[KeywordsAI OpenTelemetry] OTEL_LOGS_EXPORTER is empty. Using default otlp exporter.
+[KeywordsAI Debug] Starting OpenTelemetry SDK...
+[KeywordsAI OpenTelemetry] @opentelemetry/api: Registered a global for trace v1.9.0.
+[KeywordsAI OpenTelemetry] @opentelemetry/api: Registered a global for context v1.9.0.
+[KeywordsAI OpenTelemetry] @opentelemetry/api: Registered a global for propagation v1.9.0.
+[KeywordsAI Debug] SDK started successfully
+KeywordsAI tracing initialized successfully
+[KeywordsAI Debug] Traces will be sent to: http://localhost:8000/api/v1/traces
+[KeywordsAI OpenTelemetry] EnvDetector found resource. Resource {
+  _attributes: {},
+  asyncAttributesPending: false,
+  _syncAttributes: {},
+  _asyncAttributesPromise: Promise { {} }
+}
+[KeywordsAI OpenTelemetry] ProcessDetector found resource. Resource {
+  _attributes: {
+    'process.pid': 98907,
+    'process.executable.name': 'next-server (v15.4.2)',
+    'process.executable.path': '/Users/huangyunrui/.nvm/versions/node/v22.5.1/bin/node',
+    'process.command_args': [
+      '/Users/huangyunrui/.nvm/versions/node/v22.5.1/bin/node',
+      '/Users/huangyunrui/platform/keywordsai-example-projects/next_js_be_openai/keywordsai-tracing-next-js/node_modules/next/dist/server/lib/start-server.js'
+    ],
+    'process.runtime.version': '22.5.1',
+    'process.runtime.name': 'nodejs',
+    'process.runtime.description': 'Node.js',
+    'process.command': '/Users/huangyunrui/platform/keywordsai-example-projects/next_js_be_openai/keywordsai-tracing-next-js/node_modules/next/dist/server/lib/start-server.js',
+    'process.owner': 'huangyunrui'
+  },
+  asyncAttributesPending: false,
+  _syncAttributes: {},
+  _asyncAttributesPromise: Promise {
+    {
+      'process.pid': 98907,
+      'process.executable.name': 'next-server (v15.4.2)',
+      'process.executable.path': '/Users/huangyunrui/.nvm/versions/node/v22.5.1/bin/node',
+      'process.command_args': [Array],
+      'process.runtime.version': '22.5.1',
+      'process.runtime.name': 'nodejs',
+      'process.runtime.description': 'Node.js',
+      'process.command': '/Users/huangyunrui/platform/keywordsai-example-projects/next_js_be_openai/keywordsai-tracing-next-js/node_modules/next/dist/server/lib/start-server.js',
+      'process.owner': 'huangyunrui'
+    }
+  }
+}
+ ✓ Ready in 2.7s
+[KeywordsAI OpenTelemetry] HostDetector found resource. Resource {
+  _attributes: {
+    'host.name': 'koumakotoeis-MacBook-Pro.local',
+    'host.arch': 'arm64',
+    'host.id': 'E9F6DE4A-114F-517A-8C5A-27D8171DE47D'
+  },
+  asyncAttributesPending: false,
+  _syncAttributes: {},
+  _asyncAttributesPromise: Promise {
+    {
+      'host.name': 'koumakotoeis-MacBook-Pro.local',
+      'host.arch': 'arm64',
+      'host.id': 'E9F6DE4A-114F-517A-8C5A-27D8171DE47D'
+    }
+  }
+}
+ ○ Compiling /api/chat ...
+ ✓ Compiled /api/chat in 831ms
+🚀 Starting generateChatCompletion with KeywordsAI workflow
+🔧 Inside workflow, getting OpenAI instance...
+🔧 Creating OpenAI instance after instrumentation is ready
+📤 Making OpenAI API call with params: { model: 'gpt-4o-mini', messagesCount: 1, temperature: 0.7 }
+✅ OpenAI API call completed successfully
+ POST /api/chat 200 in 3009ms
+[KeywordsAI OpenTelemetry] OTLPExportDelegate items to be sent [
+  Span {
+    attributes: {
+      'next.span_name': 'resolve page components',
+      'next.span_type': 'NextNodeServer.findPageComponents',
+      'next.route': '/api/chat'
+    },
+    links: [],
+    events: [],
+    _droppedAttributesCount: 0,
+    _droppedEventsCount: 0,
+    _droppedLinksCount: 0,
+    status: { code: 0 },
+    endTime: [ 1753257418, 456043792 ],
+    _ended: true,
+    _duration: [ 0, 91043792 ],
+    name: 'resolve page components',
+    _spanContext: {
+      traceId: '8c122577bc2367e1f16eb182c7f9a515',
+      spanId: '48e48fbd29f92549',
+      traceFlags: 1,
+      traceState: undefined
+    },
+    parentSpanId: 'f73cb5dcc0d7f25c',
+    kind: 0,
+    _performanceStartTime: 7967.876167,
+    _performanceOffset: -0.626220703125,
+    _startTimeProvided: false,
+    startTime: [ 1753257418, 365000000 ],
+    resource: Resource {
+      _attributes: [Object],
+      asyncAttributesPending: false,
+      _syncAttributes: [Object],
+      _asyncAttributesPromise: [Promise]
+    },
+    instrumentationLibrary: { name: 'next.js', version: '0.0.1', schemaUrl: undefined },
+    _spanLimits: {
+      attributeValueLengthLimit: Infinity,
+      attributeCountLimit: 128,
+      linkCountLimit: 128,
+      eventCountLimit: 128,
+      attributePerEventCountLimit: 128,
+      attributePerLinkCountLimit: 128
+    },
+    _attributeValueLengthLimit: Infinity,
+    _spanProcessor: MultiSpanProcessor { _spanProcessors: [Array] }
+  },
+  Span {
+    attributes: {
+      'next.span_name': 'fetch POST https://api.openai.com/v1/chat/completions',
+      'next.span_type': 'AppRender.fetch',
+      'http.url': 'https://api.openai.com/v1/chat/completions',
+      'http.method': 'POST',
+      'net.peer.name': 'api.openai.com'
+    },
+    links: [],
+    events: [],
+    _droppedAttributesCount: 0,
+    _droppedEventsCount: 0,
+    _droppedLinksCount: 0,
+    status: { code: 0 },
+    endTime: [ 1753257420, 515914209 ],
+    _ended: true,
+    _duration: [ 2, 46914209 ],
+    name: 'fetch POST https://api.openai.com/v1/chat/completions',
+    _spanContext: {
+      traceId: '8c122577bc2367e1f16eb182c7f9a515',
+      spanId: '6f7d81aa2a3d36d2',
+      traceFlags: 1,
+      traceState: undefined
+    },
+    parentSpanId: '8927e916965194a3',
+    kind: 2,
+    _performanceStartTime: 8072.01825,
+    _performanceOffset: -0.768310546875,
+    _startTimeProvided: false,
+    startTime: [ 1753257418, 469000000 ],
+    resource: Resource {
+      _attributes: [Object],
+      asyncAttributesPending: false,
+      _syncAttributes: [Object],
+      _asyncAttributesPromise: [Promise]
+    },
+    instrumentationLibrary: { name: 'next.js', version: '0.0.1', schemaUrl: undefined },
+    _spanLimits: {
+      attributeValueLengthLimit: Infinity,
+      attributeCountLimit: 128,
+      linkCountLimit: 128,
+      eventCountLimit: 128,
+      attributePerEventCountLimit: 128,
+      attributePerLinkCountLimit: 128
+    },
+    _attributeValueLengthLimit: Infinity,
+    _spanProcessor: MultiSpanProcessor { _spanProcessors: [Array] }
+  },
+  Span {
+    attributes: {
+      'traceloop.workflow.name': 'generateChatCompletion',
+      'traceloop.entity.name': 'generateChatCompletion',
+      'traceloop.entity.path': '',
+      'traceloop.span.kind': 'workflow',
+      'traceloop.entity.input': '{"args":[],"kwargs":{"messages":[{"role":"user","content":"debug test"}],"model":"gpt-4o-mini","temperature":0.7}}',
+      'traceloop.entity.output': '{"message":"It looks like you might be asking for help with debugging a test, but I need more information to provide assistance. Could you please provide details about the test you are trying to debug? For instance:\\n\\n1. What programming language or framework are you using?\\n2. What specific error or issue are you encountering?\\n3. Can you share the relevant code snippets or test cases?\\n4. What have you tried so far in terms of debugging?\\n\\nWith more context, I’ll be better equipped to help you!","usage":{"prompt_tokens":9,"completion_tokens":101,"total_tokens":110,"prompt_tokens_details":{"cached_tokens":0,"audio_tokens":0},"completion_tokens_details":{"reasoning_tokens":0,"audio_tokens":0,"accepted_prediction_tokens":0,"rejected_prediction_tokens":0}},"model":"gpt-4o-mini-2024-07-18","id":"chatcmpl-BwOdO2SR5klhuhxtEvSfgiIiFOhM4"}'
+    },
+    links: [],
+    events: [],
+    _droppedAttributesCount: 0,
+    _droppedEventsCount: 0,
+    _droppedLinksCount: 0,
+    status: { code: 0 },
+    endTime: [ 1753257420, 523475667 ],
+    _ended: true,
+    _duration: [ 2, 56475667 ],
+    name: 'generateChatCompletion.workflow',
+    _spanContext: {
+      traceId: '8c122577bc2367e1f16eb182c7f9a515',
+      spanId: '8927e916965194a3',
+      traceFlags: 1,
+      traceState: undefined
+    },
+    parentSpanId: '4cd6365b4e86f057',
+    kind: 0,
+    _performanceStartTime: 8069.475,
+    _performanceOffset: -0.22509765625,
+    _startTimeProvided: false,
+    startTime: [ 1753257418, 467000000 ],
+    resource: Resource {
+      _attributes: [Object],
+      asyncAttributesPending: false,
+      _syncAttributes: [Object],
+      _asyncAttributesPromise: [Promise]
+    },
+    instrumentationLibrary: {
+      name: '@keywordsai/tracing',
+      version: undefined,
+      schemaUrl: undefined
+    },
+    _spanLimits: {
+      attributeValueLengthLimit: Infinity,
+      attributeCountLimit: 128,
+      linkCountLimit: 128,
+      eventCountLimit: 128,
+      attributePerEventCountLimit: 128,
+      attributePerLinkCountLimit: 128
+    },
+    _attributeValueLengthLimit: Infinity,
+    _spanProcessor: MultiSpanProcessor { _spanProcessors: [Array] }
+  },
+  Span {
+    attributes: {
+      'next.span_name': 'executing api route (app) /api/chat/route',
+      'next.span_type': 'AppRouteRouteHandlers.runHandler',
+      'next.route': '/api/chat/route'
+    },
+    links: [],
+    events: [],
+    _droppedAttributesCount: 0,
+    _droppedEventsCount: 0,
+    _droppedLinksCount: 0,
+    status: { code: 0 },
+    endTime: [ 1753257420, 525030125 ],
+    _ended: true,
+    _duration: [ 2, 59030125 ],
+    name: 'executing api route (app) /api/chat/route',
+    _spanContext: {
+      traceId: '8c122577bc2367e1f16eb182c7f9a515',
+      spanId: '4cd6365b4e86f057',
+      traceFlags: 1,
+      traceState: undefined
+    },
+    parentSpanId: 'f73cb5dcc0d7f25c',
+    kind: 0,
+    _performanceStartTime: 8068.140417,
+    _performanceOffset: 0.109619140625,
+    _startTimeProvided: false,
+    startTime: [ 1753257418, 466000000 ],
+    resource: Resource {
+      _attributes: [Object],
+      asyncAttributesPending: false,
+      _syncAttributes: [Object],
+      _asyncAttributesPromise: [Promise]
+    },
+    instrumentationLibrary: { name: 'next.js', version: '0.0.1', schemaUrl: undefined },
+    _spanLimits: {
+      attributeValueLengthLimit: Infinity,
+      attributeCountLimit: 128,
+      linkCountLimit: 128,
+      eventCountLimit: 128,
+      attributePerEventCountLimit: 128,
+      attributePerLinkCountLimit: 128
+    },
+    _attributeValueLengthLimit: Infinity,
+    _spanProcessor: MultiSpanProcessor { _spanProcessors: [Array] }
+  },
+  Span {
+    attributes: {
+      'next.span_name': 'start response',
+      'next.span_type': 'NextNodeServer.startResponse'
+    },
+    links: [],
+    events: [],
+    _droppedAttributesCount: 0,
+    _droppedEventsCount: 0,
+    _droppedLinksCount: 0,
+    status: { code: 0 },
+    endTime: [ 1753257420, 528098958 ],
+    _ended: true,
+    _duration: [ 0, 98958 ],
+    name: 'start response',
+    _spanContext: {
+      traceId: '8c122577bc2367e1f16eb182c7f9a515',
+      spanId: 'f9471978670cbf68',
+      traceFlags: 1,
+      traceState: undefined
+    },
+    parentSpanId: 'f73cb5dcc0d7f25c',
+    kind: 0,
+    _performanceStartTime: 10130.471917,
+    _performanceOffset: -0.221923828125,
+    _startTimeProvided: false,
+    startTime: [ 1753257420, 528000000 ],
+    resource: Resource {
+      _attributes: [Object],
+      asyncAttributesPending: false,
+      _syncAttributes: [Object],
+      _asyncAttributesPromise: [Promise]
+    },
+    instrumentationLibrary: { name: 'next.js', version: '0.0.1', schemaUrl: undefined },
+    _spanLimits: {
+      attributeValueLengthLimit: Infinity,
+      attributeCountLimit: 128,
+      linkCountLimit: 128,
+      eventCountLimit: 128,
+      attributePerEventCountLimit: 128,
+      attributePerLinkCountLimit: 128
+    },
+    _attributeValueLengthLimit: Infinity,
+    _spanProcessor: MultiSpanProcessor { _spanProcessors: [Array] }
+  },
+  Span {
+    attributes: {
+      'next.span_name': 'POST /api/chat/route',
+      'next.span_type': 'BaseServer.handleRequest',
+      'http.method': 'POST',
+      'http.target': '/api/chat',
+      'http.status_code': 200,
+      'next.rsc': false,
+      'next.route': '/api/chat/route',
+      'http.route': '/api/chat/route'
+    },
+    links: [],
+    events: [],
+    _droppedAttributesCount: 0,
+    _droppedEventsCount: 0,
+    _droppedLinksCount: 0,
+    status: { code: 0 },
+    endTime: [ 1753257420, 530272625 ],
+    _ended: true,
+    _duration: [ 3, 8272625 ],
+    name: 'POST /api/chat/route',
+    _spanContext: {
+      traceId: '8c122577bc2367e1f16eb182c7f9a515',
+      spanId: 'f73cb5dcc0d7f25c',
+      traceFlags: 1,
+      traceState: undefined
+    },
+    parentSpanId: undefined,
+    kind: 1,
+    _performanceStartTime: 7124.371709,
+    _performanceOffset: -0.121826171875,
+    _startTimeProvided: false,
+    startTime: [ 1753257417, 522000000 ],
+    resource: Resource {
+      _attributes: [Object],
+      asyncAttributesPending: false,
+      _syncAttributes: [Object],
+      _asyncAttributesPromise: [Promise]
+    },
+    instrumentationLibrary: { name: 'next.js', version: '0.0.1', schemaUrl: undefined },
+    _spanLimits: {
+      attributeValueLengthLimit: Infinity,
+      attributeCountLimit: 128,
+      linkCountLimit: 128,
+      eventCountLimit: 128,
+      attributePerEventCountLimit: 128,
+      attributePerLinkCountLimit: 128
+    },
+    _attributeValueLengthLimit: Infinity,
+    _spanProcessor: MultiSpanProcessor { _spanProcessors: [Array] }
+  }
+]
+[KeywordsAI OpenTelemetry] OTLPExportDelegate Export succeeded but could not deserialize response - is the response specification compliant? [Error: invalid wire type 7 at offset 6] <Buffer 6d 65 73 73 61 67 65>
+[?25h
