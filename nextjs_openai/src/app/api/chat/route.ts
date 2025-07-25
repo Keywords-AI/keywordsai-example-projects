@@ -29,20 +29,20 @@ export async function POST(req: NextRequest) {
             let id = '';
             
             for await (const chunk of openaiStream) {
-              const delta = chunk.choices[0]?.delta;
-              if (delta?.content) {
-                fullContent += delta.content;
+              const content = chunk.choices[0]?.delta?.content;
+              if (content) {
+                fullContent += content;
                 
                 // Send the delta content as SSE
                 const sseData = `data: ${JSON.stringify({
                   type: 'content',
-                  content: delta.content,
+                  content: content,
                   fullContent: fullContent
                 })}\n\n`;
                 controller.enqueue(encoder.encode(sseData));
               }
               
-              // Store metadata from the first chunk
+              // Store metadata from the chunk
               if (chunk.model && !model) {
                 model = chunk.model;
               }
