@@ -42,3 +42,30 @@ export async function generateChatCompletion(messages: ChatMessage[]) {
     }
   );
 }
+
+export async function generateChatCompletionStream(messages: ChatMessage[]) {
+  return await keywordsai.withWorkflow(
+    {
+      name: "generateChatCompletionStream",
+    },
+    async (params: {
+      messages: ChatMessage[];
+      model: string;
+      temperature: number;
+    }) => {
+      const stream = await openai.chat.completions.create({
+        model: params.model,
+        messages: params.messages,
+        temperature: params.temperature,
+        stream: true,
+      });
+
+      return stream;
+    },
+    {
+      messages: messages,
+      model: "gpt-4o-mini",
+      temperature: 0.7,
+    }
+  );
+}
