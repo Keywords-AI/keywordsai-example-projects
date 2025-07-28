@@ -53,10 +53,11 @@ export async function generateChatCompletionStream(messages: ChatMessage[]) {
       model: string;
       temperature: number;
     }) => {
-      const stream = openai.chat.completions.stream({
+      const stream = openai.chat.completions.create({
         model: params.model,
         messages: params.messages,
         temperature: params.temperature,
+        stream: true,
       });
 
       return stream;

@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  webpack: (config, { isServer }) => {
+    // Enable symlink resolution for webpack
+    config.resolve.symlinks = true;
+    return config;
+  },
 };
 
 export default nextConfig;
