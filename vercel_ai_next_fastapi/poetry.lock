@@ -660,13 +660,13 @@ typing-extensions = ">=4.12.2,<5.0.0"
 
 [[package]]
 name = "keywordsai-tracing"
-version = "0.0.36"
+version = "0.0.43"
 description = "Keywords AI SDK allows you to interact with the Keywords AI API smoothly"
 optional = false
 python-versions = "<3.13,>3.10"
 files = [
-    {file = "keywordsai_tracing-0.0.36-py3-none-any.whl", hash = "sha256:bb628d46ea0e49fe9961889e667443a36a521fb57bbf382710304da74dbc6a29"},
-    {file = "keywordsai_tracing-0.0.36.tar.gz", hash = "sha256:709ff4a4ecb9db43c7abc11aab420432fa2bfa568f5d5bb8a6d3cedfe1a7d229"},
+    {file = "keywordsai_tracing-0.0.43-py3-none-any.whl", hash = "sha256:3cafdd930273bcfceb601b3ad94f18672e3cdecb5607b5dc58a1b4105eeef1e5"},
+    {file = "keywordsai_tracing-0.0.43.tar.gz", hash = "sha256:542ecf16ba44ec82146b3124156a9dd99b307550d979f608e0ec0870e9f8304c"},
 ]
 
 [package.dependencies]
@@ -2070,4 +2070,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.10,<3.13"
-content-hash = "61dcc2f656ab60afe2d2b3bba573c05536c355bc7af33fe008398cf7c58f641b"
+content-hash = "9b6de63d5a96ef8c0e5ee638197fda451673f639aa889d9ff28981383a9471a3"
