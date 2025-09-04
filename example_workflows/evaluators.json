@@ -1,0 +1,435 @@
+{
+    "results": [
+        {
+            "id": "0e128c3a-2d99-4486-bb8f-2e89c31f3513",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "",
+            "name": "Human bool example",
+            "type": "human_boolean",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "",
+            "created_at": "2025-03-26T19:12:59.820412Z",
+            "updated_at": "2025-03-26T19:12:59.829111Z",
+            "custom_required_fields": [],
+            "human_annotation_choices": [
+                {
+                    "name": "True",
+                    "value": 1
+                },
+                {
+                    "name": "False",
+                    "value": 0
+                }
+            ],
+            "starred": false,
+            "evaluator_slug": "8976055792654b5da9f8599a750405ef",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "29dff465-8f0a-423a-9931-9b628158f490",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "",
+            "name": "Human categorical example",
+            "type": "human_categorical",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "Types of emotion",
+            "created_at": "2025-03-26T19:31:48.880808Z",
+            "updated_at": "2025-04-04T16:29:47.439678Z",
+            "custom_required_fields": [],
+            "human_annotation_choices": [
+                {
+                    "name": "Happy",
+                    "value": "happy"
+                },
+                {
+                    "name": "Sad",
+                    "value": "sad"
+                }
+            ],
+            "starred": false,
+            "evaluator_slug": "9cce8dea296d4849a51c6901a343886e",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "f996d859-12e5-4969-9869-59f7d1ba7e2b",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "",
+            "name": "Human numerical sample",
+            "type": "human_numerical",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "",
+            "created_at": "2025-03-26T19:01:02.413340Z",
+            "updated_at": "2025-03-26T19:01:02.421504Z",
+            "custom_required_fields": [],
+            "human_annotation_choices": [],
+            "starred": false,
+            "evaluator_slug": "",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "f3147fcf-7d81-48b1-9c49-4e81babbcd9b",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "",
+            "name": "Human text example",
+            "type": "human_text",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "",
+            "created_at": "2025-04-04T17:14:10.573478Z",
+            "updated_at": "2025-04-04T17:14:10.573524Z",
+            "custom_required_fields": [],
+            "human_annotation_choices": [],
+            "starred": false,
+            "evaluator_slug": "f7588b42f5494d63ae7b68576092fc2d",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "dbc152fc-8b9a-4db9-aa2c-ecae1f3733a8",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "keywordsai_custom_evaluator",
+            "name": "Info correctness",
+            "type": "llm",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "Is the response correct",
+            "created_at": "2025-03-11T02:07:32.180600Z",
+            "updated_at": "2025-08-28T07:13:03.820760Z",
+            "custom_required_fields": [
+                "llm_input",
+                "llm_output"
+            ],
+            "human_annotation_choices": [],
+            "starred": false,
+            "evaluator_slug": "correctness",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "9b589384-574a-429c-8996-58419f514871",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "keywordsai_custom_evaluator",
+            "name": "Is English",
+            "type": "llm",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "",
+            "created_at": "2025-07-05T22:56:16.264764Z",
+            "updated_at": "2025-08-08T02:02:42.861953Z",
+            "custom_required_fields": [
+                "llm_input",
+                "llm_output"
+            ],
+            "human_annotation_choices": [],
+            "starred": false,
+            "evaluator_slug": "is_english",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "05a79783-41fe-4735-92e0-a3cad23505ac",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "keywordsai_custom_evaluator",
+            "name": "Language",
+            "type": "llm",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "Evaluates the response using a custom evaluator",
+            "created_at": "2025-03-06T05:51:00.093174Z",
+            "updated_at": "2025-04-21T20:54:31.674212Z",
+            "custom_required_fields": [
+                "llm_output"
+            ],
+            "human_annotation_choices": [],
+            "starred": false,
+            "evaluator_slug": "language",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "de1471a2-aaae-4db5-8389-bb7b22c4f22f",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "output_word_count",
+            "name": "Output word count",
+            "type": "function",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "Evaluates the number of words in the output text",
+            "created_at": "2025-06-05T10:31:06.864984Z",
+            "updated_at": "2025-06-09T17:41:45.132956Z",
+            "custom_required_fields": [],
+            "human_annotation_choices": [],
+            "starred": false,
+            "evaluator_slug": "word_count_eval",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "acc92605-25d3-4923-b24f-52502f618bfa",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "keywordsai_custom_evaluator",
+            "name": "RNG test",
+            "type": "llm",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "This is a custom evaluator description",
+            "created_at": "2025-03-04T03:04:37.551437Z",
+            "updated_at": "2025-08-28T07:00:43.385414Z",
+            "custom_required_fields": [
+                "llm_output",
+                "ideal_output"
+            ],
+            "human_annotation_choices": [],
+            "starred": false,
+            "evaluator_slug": "aaa",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        },
+        {
+            "id": "9012325c-54ee-4c7f-a64a-9a708f420a6f",
+            "editor": {
+                "first_name": "Keywords AI",
+                "last_name": "Team",
+                "email": "admin@keywordsai.co"
+            },
+            "eval_class": "custom_code",
+            "name": "Updated evaluator name",
+            "type": "function",
+            "unique_organization_id": "8264a3f4-40c7-476a-97d1-96908127ea21",
+            "description": "Evaluates the output using a custom code snippet",
+            "created_at": "2025-08-08T12:34:10.235321Z",
+            "updated_at": "2025-08-28T06:22:38.362824Z",
+            "custom_required_fields": [],
+            "human_annotation_choices": [],
+            "starred": false,
+            "evaluator_slug": "f51e3931f460489a888ffd941736b24c",
+            "temperature": null,
+            "max_tokens": null,
+            "top_p": null,
+            "frequency_penalty": null,
+            "presence_penalty": null,
+            "code_language": "",
+            "eval_code_snippet": "",
+            "organization": 2,
+            "tags": []
+        }
+    ],
+    "count": 10,
+    "previous": null,
+    "next": "http://localhost:8000/api/evaluators/list?page=2",
+    "current_filters": {},
+    "filters_data": {
+        "name": {
+            "display_name": "Evaluator Name",
+            "metric": "name",
+            "operator_choices": [
+                {
+                    "name": "contains",
+                    "value": "contains"
+                },
+                {
+                    "name": "starts with",
+                    "value": "startswith"
+                }
+            ],
+            "value_choices": [],
+            "value_field_type": "text",
+            "hidden": false
+        },
+        "creator_email": {
+            "display_name": "Created By",
+            "metric": "creator_email",
+            "operator_choices": [
+                {
+                    "name": "is",
+                    "value": ""
+                },
+                {
+                    "name": "is not",
+                    "value": "not"
+                }
+            ],
+            "value_choices": [
+                {
+                    "name": "Raymond Huang",
+                    "value": "raymond@keywordsai.co"
+                },
+                {
+                    "name": "Keywords AI Team",
+                    "value": "admin@keywordsai.co"
+                }
+            ],
+            "value_field_type": "selection",
+            "hidden": false
+        },
+        "type": {
+            "display_name": "Type",
+            "metric": "type",
+            "operator_choices": [
+                {
+                    "name": "is",
+                    "value": ""
+                },
+                {
+                    "name": "is not",
+                    "value": "not"
+                }
+            ],
+            "value_choices": [],
+            "value_field_type": "selection",
+            "hidden": false
+        },
+        "enabled": {
+            "display_name": "Enabled",
+            "metric": "enabled",
+            "operator_choices": [
+                {
+                    "name": "is",
+                    "value": ""
+                }
+            ],
+            "value_choices": [
+                {
+                    "name": "True",
+                    "value": true
+                },
+                {
+                    "name": "False",
+                    "value": false
+                }
+            ],
+            "value_field_type": "selection",
+            "hidden": false
+        },
+        "created_at": {
+            "display_name": "Created at",
+            "metric": "created_at",
+            "operator_choices": [
+                {
+                    "name": "before",
+                    "value": "lte"
+                },
+                {
+                    "name": "after",
+                    "value": "gte"
+                }
+            ],
+            "value_choices": [],
+            "value_field_type": "datetime-local",
+            "hidden": false
+        },
+        "updated_at": {
+            "display_name": "Updated at",
+            "metric": "updated_at",
+            "operator_choices": [
+                {
+                    "name": "before",
+                    "value": "lte"
+                },
+                {
+                    "name": "after",
+                    "value": "gte"
+                }
+            ],
+            "value_choices": [],
+            "value_field_type": "datetime-local",
+            "hidden": false
+        }
+    }
+}

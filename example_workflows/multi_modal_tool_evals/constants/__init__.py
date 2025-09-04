@@ -1,1 +1,0 @@
-EVALUATION_IDENTIFIER = "traveling_agent_eval"
