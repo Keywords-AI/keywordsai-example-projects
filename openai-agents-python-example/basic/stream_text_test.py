@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-load_dotenv("./tests/.env", override=True)
+load_dotenv(override=True)
 
 endpoint = "http://localhost:8000/api/openai/v1/traces/ingest"
 import pytest

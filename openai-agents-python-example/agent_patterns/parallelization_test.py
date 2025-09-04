@@ -1,7 +1,7 @@
 import asyncio
 from dotenv import load_dotenv
 
-load_dotenv("./tests/.env", override=True)
+load_dotenv(override=True)
 import pytest
 from agents import Agent, ItemHelpers, Runner, trace
 from keywordsai_exporter_openai_agents import (

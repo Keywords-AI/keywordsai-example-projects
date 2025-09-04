@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-load_dotenv("./tests/.env", override=True)
+load_dotenv(override=True)
 
 # ==========copy past below==========
 import asyncio

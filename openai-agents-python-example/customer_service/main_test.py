@@ -1,7 +1,7 @@
 from __future__ import annotations as _annotations
 from dotenv import load_dotenv
 
-load_dotenv("./tests/.env", override=True)
+load_dotenv(override=True)
 endpoint = "http://localhost:8000/api/openai/v1/traces/ingest"
 import pytest
 import os
@@ -31,7 +31,7 @@ from keywordsai_exporter_openai_agents import (
 )
 from agents.tracing import set_trace_processors
 from typing import Union
-load_dotenv("./tests/.env", override=True)
+load_dotenv(override=True)
 
 set_trace_processors(
     [KeywordsAITraceProcessor(os.getenv("KEYWORDSAI_API_KEY"), endpoint=os.getenv("KEYWORDSAI_OAIA_TRACING_ENDPOINT"))]

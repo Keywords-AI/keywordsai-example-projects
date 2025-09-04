@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-loaded = load_dotenv("./tests/.env", override=True)
+loaded = load_dotenv(override=True)
 import pytest
 import os
 import asyncio
