@@ -15,7 +15,7 @@ export const mastra = new Mastra({
   legacy_workflows: { legacyWeatherWorkflow },
   workflows: { weatherWorkflow, weatherWorkflow2 },
   telemetry: {
-    serviceName: "keywordai-mastra-example",
+    serviceName: "keywordsai-mastra-example",
     enabled: true,
     export: {
       type: "custom",
