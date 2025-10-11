@@ -1,29 +1,35 @@
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
+from openai import AsyncOpenAI
 import pytest
 # ==========copy paste below==========
 import asyncio
 import os
-from agents import Agent, Runner
+from agents import Agent, Runner, set_default_openai_client
 from agents.tracing import set_trace_processors, trace
 from keywordsai_exporter_openai_agents import KeywordsAITraceProcessor
-
+API_KEY = os.getenv("KEYWORDSAI_API_KEY")
+ENDPOINT = os.getenv("KEYWORDSAI_OAIA_TRACING_ENDPOINT")
+BASE_URL = os.getenv("KEYWORDSAI_BASE_URL")
 set_trace_processors(
     [
         KeywordsAITraceProcessor(
-            api_key=os.getenv("KEYWORDSAI_API_KEY"),
-            endpoint=os.getenv("KEYWORDSAI_OAIA_TRACING_ENDPOINT"),
+            api_key=API_KEY,
+            endpoint=ENDPOINT,
         ),
     ]
 )
+# client = AsyncOpenAI(base_url=BASE_URL, api_key=API_KEY)
+
+# set_default_openai_client(client)
 
 
 @pytest.mark.asyncio
 async def test_main():
     agent = Agent(
         name="Assistant",
-        instructions="You only respond in haikus.",
+        instructions="You only respond in haikus."
     )
 
     with trace("Hello world test"):
