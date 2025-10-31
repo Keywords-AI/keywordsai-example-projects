@@ -20,7 +20,14 @@ export async function POST(req: Request) {
     },
     experimental_telemetry: {
       isEnabled: true,
+      metadata: {
+        customer_identifier: "customer_from_metadata",
+        prompt_unit_price: 10000
+      },
     },
+    headers: {
+      "X-Data-Keywordsai-Params": encoded,
+    }
   });
 
   // Respond with the stream
