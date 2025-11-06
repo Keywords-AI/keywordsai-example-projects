@@ -553,15 +553,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keywordsai/exporter-vercel@npm:^1.0.24":
-  version: 1.0.24
-  resolution: "@keywordsai/exporter-vercel@npm:1.0.24"
+"@keywordsai/exporter-vercel@npm:^1.0.27":
+  version: 1.0.27
+  resolution: "@keywordsai/exporter-vercel@npm:1.0.27"
   dependencies:
-    "@keywordsai/keywordsai-sdk": "npm:^0.0.8"
+    "@keywordsai/keywordsai-sdk": "npm:^0.0.18"
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/core": "npm:^2.0.1"
     "@opentelemetry/sdk-trace-base": "npm:^2.0.1"
-  checksum: 10c0/5ee8ae0cc299e63efe16ef3c0c24c8799b937fa51f0dab2cc3cff56982dbcb47dc88d19e7de9bab0e148efadbfc03656e7fdc714dbafa0ce7deecaca948b0629
+  checksum: 10c0/54aa28d7e116b8a739fa0cd9adaf805944f5ac58fd8aff67b7e4e66ec56074539f8a1a18af18d56108bfe7b666c5fcd897c117c74699420f62dd1dc6029095a0
   languageName: node
   linkType: hard
 
@@ -578,15 +578,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keywordsai/keywordsai-sdk@npm:^0.0.8":
-  version: 0.0.8
-  resolution: "@keywordsai/keywordsai-sdk@npm:0.0.8"
+"@keywordsai/keywordsai-sdk@npm:^0.0.18":
+  version: 0.0.18
+  resolution: "@keywordsai/keywordsai-sdk@npm:0.0.18"
   dependencies:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/core": "npm:^2.0.1"
     "@opentelemetry/sdk-trace-base": "npm:^2.0.1"
-    zod: "npm:^3.25.58"
-  checksum: 10c0/f1f73cd8c7869f173e24c1af9ac9cf0f6239506e00439dc0c4dfda45160a60cfc451d2233332ba1c596b742d17c3f0298f47b3c88756cea12d96ef88267e2396
+    typescript: "npm:^5.8.3"
+    zod: "npm:^4.1.12"
+  checksum: 10c0/cdd7273f5df7fcd7b2f310f4143729ed5ecdde407db24d528c93db32b06077ac7016608948e56468f9e6714a8d5980de30edd688d936a7818f37180649e80fc5
   languageName: node
   linkType: hard
 
@@ -5658,7 +5659,7 @@ __metadata:
     "@ai-sdk/perplexity": "npm:1.1.9"
     "@ai-sdk/react": "npm:1.2.12"
     "@ai-sdk/ui-utils": "npm:1.2.11"
-    "@keywordsai/exporter-vercel": "npm:^1.0.24"
+    "@keywordsai/exporter-vercel": "npm:^1.0.27"
     "@keywordsai/tracing": "npm:^1.0.44"
     "@modelcontextprotocol/sdk": "npm:1.10.2"
     "@opentelemetry/api-logs": "npm:^0.202.0"
@@ -8060,6 +8061,13 @@ __metadata:
   version: 3.25.64
   resolution: "zod@npm:3.25.64"
   checksum: 10c0/00d76093a999e377e4ffd037fa7185e861c35917e8c4272f514115c206a0654995168f57fb71708b11e0a9243206d988b7f63b543404e1796402e50d346a6bd7
+  languageName: node
+  linkType: hard
+
+"zod@npm:^4.1.12":
+  version: 4.1.12
+  resolution: "zod@npm:4.1.12"
+  checksum: 10c0/b64c1feb19e99d77075261eaf613e0b2be4dfcd3551eff65ad8b4f2a079b61e379854d066f7d447491fcf193f45babd8095551a9d47973d30b46b6d8e2c46774
   languageName: node
   linkType: hard
 
