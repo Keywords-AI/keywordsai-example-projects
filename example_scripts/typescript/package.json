@@ -1,0 +1,16 @@
+{
+  "name": "typescript-examples",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "gemini_sdk_example": "tsx gemini_sdk_example.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^1.29.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}
