@@ -3,12 +3,19 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "gemini_sdk_example": "tsx gemini_sdk_example.ts"
+    "gemini": "tsx gemini_sdk_example.ts",
+    "vercel": "tsx vercel_sdk_example.ts"
   },
   "dependencies": {
+    "@ai-sdk/custom": "^1.0.0-beta.57",
+    "@ai-sdk/google": "^2.0.31",
+    "@ai-sdk/openai": "^3.0.0-beta.57",
     "@google/genai": "^1.29.1",
+    "ai": "^6.0.0-beta.99",
+    "dotenv": "^17.2.3",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^24.10.1"
