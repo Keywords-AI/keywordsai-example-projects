@@ -1,14 +1,35 @@
 """
 LangGraph Example with KeywordsAI Tracing
 
-This example demonstrates how to use LangGraph with KeywordsAI for tracing.
+This example demonstrates LangGraph tracing with KeywordsAI using the
+keywordsai_tracing package, which handles all OpenTelemetry setup automatically.
+
+Reference: https://docs.langchain.com/langsmith/trace-with-langgraph
+
+Comparison with LangSmith approach:
+┌─────────────────────┬──────────────────────────────┬────────────────────────────────┐
+│ Aspect              │ LangSmith (from docs)        │ This Example (KeywordsAI)      │
+├─────────────────────┼──────────────────────────────┼────────────────────────────────┤
+│ Tracing Setup       │ LANGSMITH_TRACING=true       │ KeywordsAITelemetry()          │
+│ API Key             │ LANGSMITH_API_KEY=...        │ KEYWORDSAI_API_KEY=...         │
+│ Backend             │ LangSmith                    │ KeywordsAI                     │
+│ LLM Usage           │ ChatOpenAI(model="gpt-4o")   │ ChatOpenAI via KeywordsAI      │
+│ Instrumentation     │ Automatic                    │ Automatic via Instruments      │
+│ Graph Definition    │ StateGraph (same)            │ StateGraph (same)              │
+└─────────────────────┴──────────────────────────────┴────────────────────────────────┘
+
+How it works:
+- KeywordsAITelemetry automatically sets up OpenTelemetry instrumentation
+- Instruments LangChain, OpenAI, and other frameworks automatically
+- All LangGraph operations are traced without any decorators
+- No custom code needed - just initialize and go!
 
 Prerequisites:
 1. Install dependencies: poetry install
 2. Set up environment variables in .env:
-   - KEYWORDSAI_API_KEY=your_api_key
-   - OPENAI_API_KEY=your_openai_key
-   - KEYWORDSAI_BASE_URL=https://api.keywordsai.co/api (optional)
+   - KEYWORDSAI_API_KEY=your_api_key (required for tracing)
+   - OPENAI_API_KEY=your_openai_key (required for LLM calls)
+   - KEYWORDSAI_BASE_URL=https://api.keywordsai.co/api (optional, defaults to this)
 
 Run:
     python langraph.py
@@ -24,15 +45,18 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from keywordsai_tracing import KeywordsAITelemetry, workflow
+from keywordsai_tracing.instruments import Instruments
 
 
-# Initialize KeywordsAI tracing
+# Initialize KeywordsAI tracing - this handles all OpenTelemetry setup
 telemetry = KeywordsAITelemetry(
     app_name="langgraph-example",
     api_key=os.getenv("KEYWORDSAI_API_KEY"),
-    base_url=os.getenv("KEYWORDSAI_OAIA_TRACING_ENDPOINT", "https://api.keywordsai.co/api/openai/v1/traces/ingest"),
-    enabled=True,
+    base_url=os.getenv("KEYWORDSAI_BASE_URL", "https://api.keywordsai.co/api"),
+    instruments={Instruments.LANGCHAIN, Instruments.OPENAI},  # Auto-trace LangChain & OpenAI
 )
+
+print("✓ LangGraph tracing enabled via KeywordsAITelemetry")
 
 
 # Define the state type
@@ -40,7 +64,9 @@ class State(TypedDict):
     messages: Annotated[list, add_messages]
 
 
-# Initialize the LLM with KeywordsAI endpoint
+# Initialize the LLM - automatically traced by OpenTelemetry instrumentation
+# Note: With LangSmith, you'd set LANGSMITH_TRACING=true
+# Here OpenTelemetry automatically captures all calls
 llm = ChatOpenAI(
     model="gpt-4o-mini",
     openai_api_key=os.getenv("OPENAI_API_KEY"),
@@ -66,7 +92,7 @@ graph = graph_builder.compile()
 
 
 def stream_graph_updates(user_input: str):
-    """Stream graph execution updates"""
+    """Stream graph execution updates - automatically traced by OpenTelemetry"""
     for event in graph.stream({"messages": [{"role": "user", "content": user_input}]}):
         for value in event.values():
             print("Assistant:", value["messages"][-1].content)
@@ -74,7 +100,7 @@ def stream_graph_updates(user_input: str):
 
 @workflow(name="chatbot_qa")
 def chatbot_qa():
-    """Main chatbot QA workflow with KeywordsAI tracing"""
+    """Main chatbot QA workflow - traced by KeywordsAI"""
     while True:
         try:
             user_input = input("User: ")
@@ -93,8 +119,8 @@ def chatbot_qa():
 
 @workflow(name="simple_haiku_test")
 def simple_haiku_test():
-    """Simple test workflow that asks for a haiku"""
-    # Create a custom LLM for this test with specific instructions
+    """Simple test workflow that asks for a haiku - traced by KeywordsAI"""
+    # Create a custom LLM for this test
     haiku_llm = ChatOpenAI(
         model="gpt-4o-mini",
         openai_api_key=os.getenv("OPENAI_API_KEY"),
@@ -115,7 +141,7 @@ def simple_haiku_test():
     test_graph.add_edge("haiku", END)
     compiled_graph = test_graph.compile()
     
-    # Run the graph
+    # Run the graph - OpenTelemetry automatically captures everything
     result = compiled_graph.invoke({
         "messages": [
             {"role": "system", "content": "You only respond in haikus."},

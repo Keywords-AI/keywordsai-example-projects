@@ -12,9 +12,10 @@ dependencies = [
     "langgraph",
     "langchain-anthropic",
     "langchain-openai",
-    "keywordsai-tracing",
     "typing-extensions",
-    "python-dotenv"
+    "python-dotenv",
+    # KeywordsAI tracing (handles OpenTelemetry setup automatically)
+    "keywordsai-tracing",
 ]
 
 
