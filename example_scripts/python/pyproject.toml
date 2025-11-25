@@ -1,29 +1,23 @@
-[project]
-name = "python"
+[tool.poetry]
+name = "example-scripts"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Your Name",email = "you@example.com"}
-]
+authors = ["Your Name <you@example.com>"]
 readme = "README.md"
-requires-python = ">=3.13,<3.14"
-dependencies = [
-    "google-genai (>=1.50.0,<2.0.0)",
-    "langgraph",
-    "langchain-anthropic",
-    "langchain-openai",
-    "typing-extensions",
-    "python-dotenv",
-    # KeywordsAI tracing (handles OpenTelemetry setup automatically)
-    "keywordsai-tracing",
-]
 
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+google-genai = ">=1.50.0,<2.0.0"
+langgraph = "*"
+langchain-anthropic = "*"
+langchain-openai = "*"
+typing-extensions = "*"
+python-dotenv = "*"
+keywordsai-tracing = "*"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = ">=7.1.0,<8.0.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[dependency-groups]
-dev = [
-    "ipykernel (>=7.1.0,<8.0.0)"
-]
