@@ -7,7 +7,7 @@
     "vercel": "tsx vercel_sdk_example.ts"
   },
   "dependencies": {
-    "@ai-sdk/custom": "^1.0.0-beta.57",
+    "@ai-sdk/anthropic": "^2.0.53",
     "@ai-sdk/google": "^2.0.31",
     "@ai-sdk/openai": "^3.0.0-beta.57",
     "@google/genai": "^1.29.1",
