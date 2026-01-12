@@ -687,6 +687,7 @@ def main():
     
     # Check for required environment variables
     api_key = os.getenv("KEYWORDSAI_API_KEY")
+    # Default: api.keywordsai.co | Enterprise: endpoint.keywordsai.co (set KEYWORDSAI_BASE_URL)
     base_url = os.getenv("KEYWORDSAI_BASE_URL", "https://api.keywordsai.co/api")
     
     if not api_key:
