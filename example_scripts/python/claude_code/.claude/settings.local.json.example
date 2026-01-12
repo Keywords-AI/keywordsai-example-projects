@@ -1,0 +1,8 @@
+{
+  "env": {
+    "TRACE_TO_KEYWORDSAI": "true",
+    "KEYWORDS_AI_API_KEY": "your-api-key-here",
+    "KEYWORDS_AI_BASE_URL": "https://api.keywordsai.co/api",
+    "CC_KEYWORDSAI_DEBUG": "false"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      { "command": "python ~/.cursor/hooks/keywordsai_hook.py" }
+    ],
+    "afterAgentThought": [
+      { "command": "python ~/.cursor/hooks/keywordsai_hook.py" }
+    ],
+    "afterAgentResponse": [
+      { "command": "python ~/.cursor/hooks/keywordsai_hook.py" }
+    ],
+    "afterShellExecution": [
+      { "command": "python ~/.cursor/hooks/keywordsai_hook.py" }
+    ],
+    "afterFileEdit": [
+      { "command": "python ~/.cursor/hooks/keywordsai_hook.py" }
+    ],
+    "afterMCPExecution": [
+      { "command": "python ~/.cursor/hooks/keywordsai_hook.py" }
+    ],
+    "stop": [
+      { "command": "python ~/.cursor/hooks/keywordsai_hook.py" }
+    ]
+  }
+}
