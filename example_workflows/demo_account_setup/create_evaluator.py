@@ -20,6 +20,14 @@ load_dotenv()
 BASE_URL = os.getenv("KEYWORDSAI_BASE_URL", "https://api.keywordsai.co/api")
 API_KEY = os.getenv("KEYWORDSAI_API_KEY")
 
+# Evaluator configuration from environment variables
+EVALUATOR_LLM_ENGINE = os.getenv("EVALUATOR_LLM_ENGINE", "gpt-4o-mini")
+EVALUATOR_TEMPERATURE = float(os.getenv("EVALUATOR_TEMPERATURE", "0.1"))
+EVALUATOR_MAX_TOKENS = int(os.getenv("EVALUATOR_MAX_TOKENS", "200"))
+DEFAULT_MIN_SCORE = float(os.getenv("DEFAULT_MIN_SCORE", "0.0"))
+DEFAULT_MAX_SCORE = float(os.getenv("DEFAULT_MAX_SCORE", "1.0"))
+DEFAULT_PASSING_SCORE = float(os.getenv("DEFAULT_PASSING_SCORE", "0.7"))
+
 
 def create_evaluator(
     name: str,
@@ -88,10 +96,10 @@ def create_llm_evaluator(
     evaluator_definition: str,
     scoring_rubric: str,
     description: str = "",
-    min_score: float = 0.0,
-    max_score: float = 1.0,
-    passing_score: float = 0.8,
-    llm_engine: str = "gpt-4o-mini",
+    min_score: Optional[float] = None,
+    max_score: Optional[float] = None,
+    passing_score: Optional[float] = None,
+    llm_engine: Optional[str] = None,
     model_options: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
@@ -112,13 +120,19 @@ def create_llm_evaluator(
     Returns:
         Dict containing the created evaluator data
     """
+    # Use environment variables as defaults if not provided
+    final_min_score = min_score if min_score is not None else DEFAULT_MIN_SCORE
+    final_max_score = max_score if max_score is not None else DEFAULT_MAX_SCORE
+    final_passing_score = passing_score if passing_score is not None else DEFAULT_PASSING_SCORE
+    final_llm_engine = llm_engine if llm_engine is not None else EVALUATOR_LLM_ENGINE
+    
     configurations = {
         "evaluator_definition": evaluator_definition,
         "scoring_rubric": scoring_rubric,
-        "min_score": min_score,
-        "max_score": max_score,
-        "passing_score": passing_score,
-        "llm_engine": llm_engine
+        "min_score": final_min_score,
+        "max_score": final_max_score,
+        "passing_score": final_passing_score,
+        "llm_engine": final_llm_engine
     }
     
     if model_options:
@@ -158,12 +172,12 @@ def main():
         ),
         scoring_rubric="0.0=Poor, 0.25=Below Average, 0.5=Average, 0.75=Good, 1.0=Excellent",
         description="Evaluates response quality on a 0-1 scale",
-        min_score=0.0,
-        max_score=1.0,
-        passing_score=0.7,
+        min_score=DEFAULT_MIN_SCORE,
+        max_score=DEFAULT_MAX_SCORE,
+        passing_score=DEFAULT_PASSING_SCORE,
         model_options={
-            "temperature": 0.1,
-            "max_tokens": 200
+            "temperature": EVALUATOR_TEMPERATURE,
+            "max_tokens": EVALUATOR_MAX_TOKENS
         }
     )
     
@@ -184,9 +198,9 @@ def main():
                 "<llm_output>{{output}}</llm_output>"
             ),
             "scoring_rubric": "helpful, neutral, unhelpful",
-            "llm_engine": "gpt-4o-mini",
+            "llm_engine": EVALUATOR_LLM_ENGINE,
             "model_options": {
-                "temperature": 0.1,
+                "temperature": EVALUATOR_TEMPERATURE,
                 "max_tokens": 50
             }
         }
@@ -211,7 +225,7 @@ def main():
                 "<llm_output>{{output}}</llm_output>"
             ),
             "scoring_rubric": "true=Factually accurate, false=Contains inaccuracies",
-            "llm_engine": "gpt-4o-mini",
+            "llm_engine": EVALUATOR_LLM_ENGINE,
             "model_options": {
                 "temperature": 0.0,
                 "max_tokens": 10
@@ -239,7 +253,7 @@ def main():
         max_score=5.0,
         passing_score=4.0,
         model_options={
-            "temperature": 0.2,
+            "temperature": EVALUATOR_TEMPERATURE,
             "max_tokens": 100
         }
     )

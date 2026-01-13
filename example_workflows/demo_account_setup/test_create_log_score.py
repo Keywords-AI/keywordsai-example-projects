@@ -5,9 +5,15 @@ from basic_logging import create_log
 from create_evaluator import create_llm_evaluator
 from create_log_scores import create_log_score
 from dotenv import load_dotenv
+import os
 import time
 
 load_dotenv(override=True)
+
+# Test configuration from environment variables
+TEST_MODEL = os.getenv("TEST_MODEL", "gpt-4o")
+TEST_EVALUATOR_TEMPERATURE = float(os.getenv("TEST_EVALUATOR_TEMPERATURE", "0.1"))
+TEST_EVALUATOR_MAX_TOKENS = int(os.getenv("TEST_EVALUATOR_MAX_TOKENS", "200"))
 
 print('=' * 80)
 print('Testing Create Log Score - Complete Workflow')
@@ -16,7 +22,7 @@ print('=' * 80)
 # Step 1: Create a log
 print('\n📝 Step 1: Creating a log...')
 log_data = create_log(
-    model='gpt-4o',
+    model=TEST_MODEL,
     input_messages=[{'role': 'user', 'content': 'What is machine learning?'}],
     output_message={
         'role': 'assistant', 
@@ -38,7 +44,11 @@ evaluator_data = create_llm_evaluator(
         '<llm_output>{{output}}</llm_output>'
     ),
     scoring_rubric='0.0=Poor, 0.5=Average, 1.0=Excellent',
-    description='Test evaluator for log scoring'
+    description='Test evaluator for log scoring',
+    model_options={
+        "temperature": TEST_EVALUATOR_TEMPERATURE,
+        "max_tokens": TEST_EVALUATOR_MAX_TOKENS
+    }
 )
 evaluator_slug = evaluator_data.get('evaluator_slug')
 print(f'✓ Evaluator created with slug: {evaluator_slug}')

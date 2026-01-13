@@ -20,6 +20,11 @@ load_dotenv()
 BASE_URL = os.getenv("KEYWORDSAI_BASE_URL", "https://api.keywordsai.co/api")
 API_KEY = os.getenv("KEYWORDSAI_API_KEY")
 
+# Model configuration from environment variables
+DEFAULT_MODEL = os.getenv("DEFAULT_MODEL", "gpt-4o")
+DEFAULT_MODEL_MINI = os.getenv("DEFAULT_MODEL_MINI", "gpt-4o-mini")
+DEFAULT_MODEL_CLAUDE = os.getenv("DEFAULT_MODEL_CLAUDE", "claude-3-5-sonnet-20241022")
+
 
 def create_log(
     model: str,
@@ -100,7 +105,7 @@ def main():
     print("-" * 80)
     
     log_data = create_log(
-        model="gpt-4o",
+        model=DEFAULT_MODEL,
         input_messages=[
             {"role": "user", "content": "What is the capital of France?"}
         ],
@@ -115,7 +120,7 @@ def main():
     print("-" * 80)
     
     log_data_2 = create_log(
-        model="gpt-4o-mini",
+        model=DEFAULT_MODEL_MINI,
         input_messages=[
             {"role": "user", "content": "Tell me a fun fact about space"}
         ],
@@ -131,7 +136,7 @@ def main():
     print("-" * 80)
     
     log_data_3 = create_log(
-        model="claude-3-5-sonnet-20241022",
+        model=DEFAULT_MODEL_CLAUDE,
         input_messages=[
             {"role": "user", "content": "Explain quantum computing in simple terms"}
         ],
@@ -147,7 +152,7 @@ def main():
     print("-" * 80)
     
     log_data_4 = create_log(
-        model="gpt-4o",
+        model=DEFAULT_MODEL,
         input_messages=[
             {"role": "user", "content": "What's the weather like?"},
             {"role": "assistant", "content": "I don't have access to real-time weather data. Could you tell me your location?"},
