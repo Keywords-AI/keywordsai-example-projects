@@ -6,6 +6,7 @@ This directory contains examples for working with KeywordsAI's logging API, eval
 
 - **Quickstart Guide**: https://docs.keywordsai.co/get-started/quickstart/logging
 - **Create a Prompt**: https://docs.keywordsai.co/get-started/quickstart/create-a-prompt
+- **Create Datasets**: https://docs.keywordsai.co/documentation/products/dataset
 - **Evaluator Creation**: https://docs.keywordsai.co/api-endpoints/evaluate/evaluators/create
 - **Log Scores Creation**: https://docs.keywordsai.co/api-endpoints/evaluate/log-scores/create
 
@@ -121,9 +122,29 @@ Prompts are reusable templates for LLM conversations that can be versioned and d
 poetry run python demo_account_setup/create_prompt.py
 ```
 
+### 6. Create Dataset (`create_dataset.py`)
+
+This script demonstrates how to create and manage datasets in KeywordsAI:
+- Create an empty dataset
+- Add dataset logs (input/output JSON)
+- List dataset logs
+- Bulk add logs using filters and time range
+- Run evaluators on datasets
+- List eval runs
+- Update dataset metadata
+- Delete logs from dataset
+- Delete dataset
+
+Datasets are curated collections of logs that you can evaluate, annotate, and use to power Experiments.
+
+```bash
+poetry run python demo_account_setup/create_dataset.py
+```
+
 After running any of these scripts, you can view the results on the KeywordsAI platform:
 - Navigate to the **Logs** tab to see your created logs and their associated scores
 - Navigate to the **Prompt Management** section to see your created prompts
+- Navigate to the **Datasets** section to see your created datasets
 
 ## Additional Resources
 
