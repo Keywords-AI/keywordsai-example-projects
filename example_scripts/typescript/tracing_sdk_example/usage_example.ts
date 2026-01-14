@@ -15,17 +15,13 @@ import {
   withAgent,
 } from '@keywordsai/tracing';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Initialize tracing
-startTracing({
-  appName: 'my-ai-app',
-  apiKey: process.env.KEYWORDSAI_API_KEY || 'demo-key',
-  baseURL: process.env.KEYWORDSAI_BASE_URL || 'https://api.keywordsai.co',
-  traceContent: true,
-  logLevel: 'info',
-});
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Example 1: Using decorators for automatic tracing
 async function processDocument(document: string) {
@@ -78,25 +74,30 @@ async function processDocument(document: string) {
   );
 }
 
-// Example 2: Using manual spans
+// Example 2: Using manual spans within a workflow context
 async function customOperation() {
-  return withManualSpan(
-    'custom-database-query',
-    async (span) => {
-      span.setAttribute('db.operation', 'SELECT');
-      span.setAttribute('db.table', 'documents');
+  return withWorkflow(
+    { name: 'custom-database-workflow' },
+    async () => {
+      return withManualSpan(
+        'custom-database-query',
+        async (span) => {
+          span.setAttribute('db.operation', 'SELECT');
+          span.setAttribute('db.table', 'documents');
 
-      await new Promise((resolve) => setTimeout(resolve, 50));
+          await new Promise((resolve) => setTimeout(resolve, 50));
 
-      span.addEvent('query.executed', {
-        'rows.returned': 42,
-      });
+          span.addEvent('query.executed', {
+            'rows.returned': 42,
+          });
 
-      return { count: 42, data: ['doc1', 'doc2'] };
-    },
-    {
-      'service.name': 'document-service',
-      'service.version': '1.0.0',
+          return { count: 42, data: ['doc1', 'doc2'] };
+        },
+        {
+          'service.name': 'document-service',
+          'service.version': '1.0.0',
+        }
+      );
     }
   );
 }
@@ -184,6 +185,19 @@ async function errorProneOperation() {
 }
 
 async function main() {
+  console.log('🚀 Initializing KeywordsAI tracing...\n');
+  
+  // Initialize tracing and wait for it to complete
+  await startTracing({
+    appName: 'my-ai-app',
+    apiKey: process.env.KEYWORDSAI_API_KEY || 'demo-key',
+    baseURL: process.env.KEYWORDSAI_BASE_URL || 'https://api.keywordsai.co',
+    traceContent: true,
+    logLevel: 'info',
+  });
+  
+  console.log('✅ Tracing initialized\n');
+
   try {
     console.log('=== Document Processing Example ===');
     const result1 = await processDocument(
@@ -211,6 +225,14 @@ async function main() {
     }
   } catch (error) {
     console.error('Main execution failed:', error);
+  } finally {
+    // Shutdown and flush traces
+    console.log('\n🧹 Shutting down...');
+    const client = getClient();
+    if (client && typeof client.shutdown === 'function') {
+      await client.shutdown();
+    }
+    console.log('✅ All examples completed.');
   }
 }
 

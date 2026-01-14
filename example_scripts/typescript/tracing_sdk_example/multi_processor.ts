@@ -1,191 +1,172 @@
 import { KeywordsAITelemetry } from '@keywordsai/tracing';
-import {
-  SpanExporter,
-  ReadableSpan,
-} from '@opentelemetry/sdk-trace-base';
-import { ExportResult, ExportResultCode } from '@opentelemetry/core';
+import { updateCurrentSpan, addSpanEvent } from '@keywordsai/tracing';
 import * as fs from 'fs';
 import * as path from 'path';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 /**
- * This example demonstrates multi-processor routing:
- * 1. Adding custom processors with different exporters
- * 2. Routing spans to specific processors by name
- * 3. Using custom filter functions
- * 4. Sending spans to multiple destinations
+ * This example demonstrates span tracking and custom logging:
+ * 1. Tracking different types of tasks (normal, debug, analytics, slow)
+ * 2. Adding custom attributes and events
+ * 3. Logging span information to files and console
+ * 4. Demonstrating workflow with multiple task types
+ * 
+ * Note: This is a simplified version since addProcessor() API is not available
  */
 
-// Custom file exporter
-class FileExporter implements SpanExporter {
-  private filepath: string;
-
-  constructor(filepath: string) {
-    this.filepath = filepath;
+// Helper to log span information to file
+function logSpanToFile(filepath: string, spanInfo: any) {
+  try {
     const dir = path.dirname(filepath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-  }
-
-  export(
-    spans: ReadableSpan[],
-    resultCallback: (result: ExportResult) => void
-  ): void {
-    try {
-      const spanData = spans.map((span) => ({
-        name: span.name,
-        traceId: span.spanContext().traceId,
-        spanId: span.spanContext().spanId,
-        attributes: Object.fromEntries(
-          Object.entries(span.attributes).map(([k, v]) => [k, String(v)])
-        ),
-        timestamp: new Date().toISOString(),
-      }));
-
-      fs.appendFileSync(
-        this.filepath,
-        spanData.map((s) => JSON.stringify(s)).join('\n') + '\n'
-      );
-
-      console.log(`[FileExporter] Wrote ${spans.length} spans to ${this.filepath}`);
-      resultCallback({ code: ExportResultCode.SUCCESS });
-    } catch (error) {
-      console.error('[FileExporter] Error:', error);
-      resultCallback({ code: ExportResultCode.FAILURE });
-    }
-  }
-
-  shutdown(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  forceFlush(): Promise<void> {
-    return Promise.resolve();
+    fs.appendFileSync(filepath, JSON.stringify(spanInfo) + '\n');
+    console.log(`  📝 Logged to ${filepath}`);
+  } catch (error) {
+    console.error('  ❌ File logging error:', error);
   }
 }
 
-// Custom console exporter
-class ConsoleExporter implements SpanExporter {
-  private prefix: string;
-
-  constructor(prefix: string = 'ConsoleExporter') {
-    this.prefix = prefix;
-  }
-
-  export(
-    spans: ReadableSpan[],
-    resultCallback: (result: ExportResult) => void
-  ): void {
-    for (const span of spans) {
-      console.log(`[${this.prefix}] Span: ${span.name}`);
-      console.log(`  Trace ID: ${span.spanContext().traceId}`);
-      console.log(`  Attributes:`, span.attributes);
-    }
-    resultCallback({ code: ExportResultCode.SUCCESS });
-  }
-
-  shutdown(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  forceFlush(): Promise<void> {
-    return Promise.resolve();
-  }
+// Helper to log span information to console
+function logSpanToConsole(prefix: string, spanInfo: any) {
+  console.log(`  📊 [${prefix}] ${spanInfo.name} - ${spanInfo.type}`);
 }
-
-const keywordsAi = new KeywordsAITelemetry({
-  apiKey: process.env.KEYWORDSAI_API_KEY || 'demo-key',
-  baseURL: process.env.KEYWORDSAI_BASE_URL,
-  appName: 'multi-processor-demo',
-  logLevel: 'info',
-});
 
 async function runMultiProcessorDemo() {
-    await keywordsAi.initialize();
+  console.log('🚀 Starting Span Tracking & Logging Demo\n');
 
-    // Check if addProcessor is available
-    if (typeof keywordsAi.addProcessor !== 'function') {
-        console.log('⚠️  addProcessor() is not available in this SDK version');
-        console.log('This feature may require a newer version of @keywordsai/tracing');
-        await keywordsAi.shutdown();
-        return;
-    }
-
-    // Add debug processor
-    keywordsAi.addProcessor({
-    exporter: new FileExporter('./debug-spans.jsonl'),
-    name: 'debug',
+  const keywordsAi = new KeywordsAITelemetry({
+    apiKey: process.env.KEYWORDSAI_API_KEY || 'demo-key',
+    baseURL: process.env.KEYWORDSAI_BASE_URL,
+    appName: 'span-tracking-demo',
+    logLevel: 'info',
+    disableBatch: true,
   });
 
-  // Add analytics processor
-  keywordsAi.addProcessor({
-    exporter: new ConsoleExporter('Analytics'),
-    name: 'analytics',
-  });
+  await keywordsAi.initialize();
+  console.log('✅ Tracing initialized\n');
 
-  // Add slow span processor with custom filter
-  keywordsAi.addProcessor({
-    exporter: new ConsoleExporter('SlowSpans'),
-    name: 'slow',
-    filter: (span) => {
-      const duration = span.endTime[0] - span.startTime[0];
-      return duration > 0.1; // seconds
-    },
-  });
-
-  await keywordsAi.withWorkflow({ name: 'multi_processor_demo' }, async () => {
-    // Normal task (default processor only)
+  await keywordsAi.withWorkflow({ name: 'span_tracking_workflow' }, async () => {
+    // Normal task - standard tracing
+    console.log('1️⃣  Normal Task:');
     await keywordsAi.withTask({ name: 'normal_task' }, async () => {
-      console.log('Executing normal task (default processor)');
+      updateCurrentSpan({
+        attributes: {
+          'task.type': 'normal',
+          'task.priority': 'medium',
+        },
+      });
+      addSpanEvent('task.started', { timestamp: Date.now() });
       await new Promise((resolve) => setTimeout(resolve, 50));
+      addSpanEvent('task.completed', { timestamp: Date.now() });
+      console.log('  ✅ Completed (standard tracing)');
     });
 
-    // Debug task (debug processor only)
-    await keywordsAi.withTask(
-      {
+    // Debug task - with debug logging
+    console.log('\n2️⃣  Debug Task:');
+    await keywordsAi.withTask({ name: 'debug_task' }, async () => {
+      const startTime = Date.now();
+      updateCurrentSpan({
+        attributes: {
+          'task.type': 'debug',
+          'task.priority': 'low',
+          'debug.enabled': true,
+        },
+      });
+      addSpanEvent('debug.started', { level: 'verbose' });
+      
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      
+      const spanInfo = {
         name: 'debug_task',
-        processors: 'debug',
-      },
-      async () => {
-        console.log('Executing debug task (debug processor)');
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      }
-    );
+        type: 'debug',
+        duration: Date.now() - startTime,
+        timestamp: new Date().toISOString(),
+      };
+      
+      logSpanToFile('./debug-spans.jsonl', spanInfo);
+      addSpanEvent('debug.logged', { file: 'debug-spans.jsonl' });
+      console.log('  ✅ Completed (logged to file)');
+    });
 
-    // Multi task (both debug and analytics)
-    await keywordsAi.withTask(
-      {
-        name: 'multi_task',
-        processors: ['debug', 'analytics'],
-      },
-      async () => {
-        console.log('Executing multi task (debug + analytics processors)');
-        await new Promise((resolve) => setTimeout(resolve, 50));
-      }
-    );
+    // Analytics task - with console analytics
+    console.log('\n3️⃣  Analytics Task:');
+    await keywordsAi.withTask({ name: 'analytics_task' }, async () => {
+      const startTime = Date.now();
+      updateCurrentSpan({
+        attributes: {
+          'task.type': 'analytics',
+          'task.priority': 'high',
+          'analytics.enabled': true,
+        },
+      });
+      addSpanEvent('analytics.started', { metrics: 'enabled' });
+      
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      
+      const spanInfo = {
+        name: 'analytics_task',
+        type: 'analytics',
+        duration: Date.now() - startTime,
+        metrics: { processed: 42, errors: 0 },
+        timestamp: new Date().toISOString(),
+      };
+      
+      logSpanToConsole('Analytics', spanInfo);
+      logSpanToFile('./analytics-spans.jsonl', spanInfo);
+      addSpanEvent('analytics.completed', { records: 42 });
+      console.log('  ✅ Completed (logged to console & file)');
+    });
 
-    // Slow task (slow processor via filter)
-    await keywordsAi.withTask(
-      {
+    // Slow task - demonstrates long-running operation
+    console.log('\n4️⃣  Slow Task (long-running):');
+    await keywordsAi.withTask({ name: 'slow_task' }, async () => {
+      const startTime = Date.now();
+      updateCurrentSpan({
+        attributes: {
+          'task.type': 'slow',
+          'task.priority': 'low',
+          'performance.warning': true,
+        },
+      });
+      addSpanEvent('slow.task.started', { expected_duration: '200ms' });
+      
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      
+      const duration = Date.now() - startTime;
+      const spanInfo = {
         name: 'slow_task',
-        processors: 'slow',
-      },
-      async () => {
-        console.log('Executing slow task (slow processor with filter)');
-        await new Promise((resolve) => setTimeout(resolve, 200));
-      }
-    );
+        type: 'slow',
+        duration,
+        warning: duration > 100 ? 'Exceeded threshold' : null,
+        timestamp: new Date().toISOString(),
+      };
+      
+      logSpanToConsole('SlowSpans', spanInfo);
+      logSpanToFile('./slow-spans.jsonl', spanInfo);
+      addSpanEvent('slow.task.completed', { actual_duration: duration });
+      console.log(`  ⚠️  Completed in ${duration}ms (performance logged)`);
+    });
   });
 
+  console.log('\n🧹 Shutting down...');
   await keywordsAi.shutdown();
-  console.log('Check debug-spans.jsonl for debug spans');
+  console.log('✅ Span tracking demo completed.');
+  console.log('\n📄 Check these files for logged spans:');
+  console.log('   - ./debug-spans.jsonl');
+  console.log('   - ./analytics-spans.jsonl');
+  console.log('   - ./slow-spans.jsonl');
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   runMultiProcessorDemo().catch(console.error);
 }
 
-export { runMultiProcessorDemo };
+export { runMultiProcessorDemo, logSpanToFile, logSpanToConsole };

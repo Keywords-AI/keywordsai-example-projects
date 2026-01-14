@@ -1,16 +1,21 @@
-import { updateCurrentSpan } from '@keywordsai/tracing';
+import { updateCurrentSpan, startTracing, getClient } from '@keywordsai/tracing';
 import { withAgent } from '@keywordsai/tracing';
 import { SpanStatusCode } from '@opentelemetry/api';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 /**
  * Example demonstrating advanced span updating with KeywordsAI parameters
  */
 
 async function runUpdateSpanDemo() {
-    return withAgent(
+    return await withAgent(
         {
             name: 'advancedAgent',
             associationProperties: {
@@ -19,7 +24,10 @@ async function runUpdateSpanDemo() {
             },
         },
         async () => {
+            console.log('🤖 Agent started...');
+            
             // Update span with KeywordsAI-specific parameters
+            console.log('📝 Updating span with KeywordsAI parameters...');
             updateCurrentSpan({
                 keywordsaiParams: {
                     model: 'gpt-4',
@@ -41,6 +49,7 @@ async function runUpdateSpanDemo() {
             await new Promise((resolve) => setTimeout(resolve, 100));
 
             // Update span name and status during processing
+            console.log('🔄 Updating span name and processing stage...');
             updateCurrentSpan({
                 name: 'advancedAgent.processing',
                 attributes: {
@@ -49,6 +58,7 @@ async function runUpdateSpanDemo() {
             });
 
             // Simulate successful completion
+            console.log('✅ Marking span as completed...');
             updateCurrentSpan({
                 status: SpanStatusCode.OK,
                 statusDescription: 'Processing completed successfully',
@@ -69,11 +79,31 @@ async function runUpdateSpanDemo() {
 
 async function main() {
     console.log('🚀 Starting Update Span Demo\n');
+    
+    // Initialize tracing
+    await startTracing({
+        apiKey: process.env.KEYWORDSAI_API_KEY || 'demo-key',
+        baseURL: process.env.KEYWORDSAI_BASE_URL,
+        appName: 'update-span-demo',
+        disableBatch: true,
+        logLevel: 'info'
+    });
+    
+    console.log('✅ Tracing initialized\n');
+    
     try {
         const result = await runUpdateSpanDemo();
-        console.log('Result:', result);
+        console.log('\n✅ Result:', result);
     } catch (error) {
-        console.error('Error:', error);
+        console.error('❌ Error:', error);
+    } finally {
+        // Shutdown and flush traces
+        console.log('\n🧹 Shutting down...');
+        const client = getClient();
+        if (client && typeof client.shutdown === 'function') {
+            await client.shutdown();
+        }
+        console.log('✅ Update span demo completed.');
     }
 }
 
