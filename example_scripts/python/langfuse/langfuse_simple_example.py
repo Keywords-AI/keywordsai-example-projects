@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from langfuse import observe, get_client
+from langfuse import observe, Langfuse
 from dotenv import load_dotenv
 
 env_path = Path(__file__).parent / '.env'
@@ -99,11 +99,14 @@ keywordsai_base_url = os.getenv("KEYWORDSAI_BASE_URL", "https://api.keywordsai.c
 if not keywordsai_api_key:
     raise ValueError("KEYWORDSAI_API_KEY environment variable is required")
 
-os.environ["LANGFUSE_PUBLIC_KEY"] = os.getenv("LANGFUSE_PUBLIC_KEY", "")
-os.environ["LANGFUSE_SECRET_KEY"] = os.getenv("LANGFUSE_SECRET_KEY", "")
-os.environ["LANGFUSE_BASE_URL"] = os.getenv("KEYWORDSAI_BASE_URL", "")
+langfuse_public_key = os.getenv("LANGFUSE_PUBLIC_KEY", "")
+langfuse_secret_key = os.getenv("LANGFUSE_SECRET_KEY", "")
 
-langfuse = get_client()
+langfuse = Langfuse(
+    public_key=langfuse_public_key,
+    secret_key=langfuse_secret_key,
+    base_url=keywordsai_base_url
+)
 
 
 @observe(as_type="generation")
