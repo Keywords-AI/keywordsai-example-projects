@@ -1,0 +1,22 @@
+{
+  "name": "demo-account-setup-ts",
+  "version": "1.0.0",
+  "description": "TypeScript examples for KeywordsAI demo account setup",
+  "type": "module",
+  "scripts": {
+    "basic-logging": "npx tsx basic_logging.ts",
+    "create-dataset": "npx tsx create_dataset.ts",
+    "create-evaluator": "npx tsx create_evaluator.ts",
+    "create-log-scores": "npx tsx create_log_scores.ts",
+    "create-prompt": "npx tsx create_prompt.ts",
+    "test-create-log-score": "npx tsx test_create_log_score.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.2"
+  }
+}
