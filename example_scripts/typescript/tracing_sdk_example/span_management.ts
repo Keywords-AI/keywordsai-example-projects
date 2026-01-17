@@ -18,7 +18,7 @@ const keywordsAi = new KeywordsAITelemetry({
 
 async function runSpanManagementDemo() {
     await keywordsAi.initialize();
-    console.log("🚀 Starting Span Management Demo\n");
+    console.log("Starting Span Management Demo\n");
 
     await keywordsAi.withWorkflow({ name: "main_workflow" }, async () => {
         const client = getClient();
@@ -27,13 +27,13 @@ async function runSpanManagementDemo() {
         if (client && typeof client.getCurrentTraceId === 'function' && typeof client.getCurrentSpanId === 'function') {
             const traceId = client.getCurrentTraceId();
             const spanId = client.getCurrentSpanId();
-            console.log(`📍 Trace ID: ${traceId}`);
-            console.log(`📍 Span ID: ${spanId}`);
+            console.log(`Trace ID: ${traceId}`);
+            console.log(`Span ID: ${spanId}`);
         } else {
-            console.log('📍 Trace/span ID methods not available in this SDK version');
+            console.log('Trace/span ID methods not available in this SDK version');
         }
 
-        console.log("📝 Updating span attributes...");
+        console.log("Updating span attributes...");
         updateCurrentSpan({
             name: "main_workflow.executed",
             attributes: {
@@ -49,7 +49,7 @@ async function runSpanManagementDemo() {
             }
         });
 
-        console.log("🔔 Adding an event...");
+        console.log("Adding an event...");
         addSpanEvent("data_fetch_started", {
             source: "cache",
             priority: "high"
@@ -58,11 +58,11 @@ async function runSpanManagementDemo() {
         await new Promise(resolve => setTimeout(resolve, 200));
 
         await keywordsAi.withTask({ name: "sub_task" }, async () => {
-            console.log("🔨 In sub-task...");
+            console.log("In sub-task...");
             
             addSpanEvent("sub_task_event");
             
-            console.log("⚠️  Recording a simulated exception...");
+            console.log("Recording a simulated exception...");
             try {
                 throw new Error("Something went wrong in the sub-task");
             } catch (e) {
@@ -73,9 +73,9 @@ async function runSpanManagementDemo() {
         addSpanEvent("workflow_completed");
     });
 
-    console.log("\n🧹 Shutting down...");
+    console.log("\nShutting down...");
     await keywordsAi.shutdown();
-    console.log("✅ Span management demo completed.");
+    console.log("Span management demo completed.");
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

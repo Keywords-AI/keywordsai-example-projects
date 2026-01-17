@@ -34,12 +34,12 @@ const runAgentExample = async (query: string) => {
             }
         },
         async () => {
-            console.log(`🤖 Agent received query: ${query}`);
+            console.log(`Agent received query: ${query}`);
 
             const analysis = await keywordsAi.withTool(
                 { name: 'query_analyzer' },
                 async () => {
-                    console.log('🔍 Analyzing query...');
+                    console.log('Analyzing query...');
                     await new Promise(resolve => setTimeout(resolve, 300));
                     return {
                         topic: query.toLowerCase().includes('ai') ? 'technology' : 'general',
@@ -51,7 +51,7 @@ const runAgentExample = async (query: string) => {
             const searchResults = await keywordsAi.withTool(
                 { name: 'web_search' },
                 async () => {
-                    console.log('🌐 Searching the web...');
+                    console.log('Searching the web...');
                     return `Found some information about ${analysis.topic}`;
                 }
             );
@@ -59,7 +59,7 @@ const runAgentExample = async (query: string) => {
             const finalResponse = await keywordsAi.withTask(
                 { name: 'final_generation' },
                 async () => {
-                    console.log('✍️ Generating final response...');
+                    console.log('Generating final response...');
                     try {
                         const completion = await openai.chat.completions.create({
                             model: 'gpt-3.5-turbo',
@@ -87,15 +87,15 @@ const runAgentExample = async (query: string) => {
 async function main() {
     try {
         await keywordsAi.initialize();
-        console.log('🚀 Starting Advanced Tracing Example\n');
+        console.log('Starting Advanced Tracing Example\n');
 
         const result = await runAgentExample('How is AI changing software development?');
-        console.log('\n✨ Agent Execution Result:', JSON.stringify(result, null, 2));
+        console.log('\nAgent Execution Result:', JSON.stringify(result, null, 2));
 
-        console.log('\n✅ Example completed. Shutting down...');
+        console.log('\nExample completed. Shutting down...');
         await keywordsAi.shutdown();
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('Error:', error);
         await keywordsAi.shutdown();
     }
 }

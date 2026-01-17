@@ -48,7 +48,7 @@ async function runManualInstrumentationDemo() {
     }) : null;
 
     await keywordsAI.initialize();
-    console.log('🚀 Starting Manual Instrumentation Demo\n');
+    console.log('Starting Manual Instrumentation Demo\n');
 
     // Multi-provider workflow
     await keywordsAI.withWorkflow(
@@ -97,9 +97,9 @@ async function runManualInstrumentationDemo() {
         }
     );
 
-    console.log('\n🧹 Shutting down...');
+    console.log('\nShutting down...');
     await keywordsAI.shutdown();
-    console.log('✅ Manual instrumentation demo completed.');
+    console.log('Manual instrumentation demo completed.');
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

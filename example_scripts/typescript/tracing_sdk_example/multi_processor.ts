@@ -28,19 +28,19 @@ function logSpanToFile(filepath: string, spanInfo: any) {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.appendFileSync(filepath, JSON.stringify(spanInfo) + '\n');
-    console.log(`  📝 Logged to ${filepath}`);
+    console.log(`  Logged to ${filepath}`);
   } catch (error) {
-    console.error('  ❌ File logging error:', error);
+    console.error('  File logging error:', error);
   }
 }
 
 // Helper to log span information to console
 function logSpanToConsole(prefix: string, spanInfo: any) {
-  console.log(`  📊 [${prefix}] ${spanInfo.name} - ${spanInfo.type}`);
+  console.log(`  [${prefix}] ${spanInfo.name} - ${spanInfo.type}`);
 }
 
 async function runMultiProcessorDemo() {
-  console.log('🚀 Starting Span Tracking & Logging Demo\n');
+  console.log('Starting Span Tracking & Logging Demo\n');
 
   const keywordsAi = new KeywordsAITelemetry({
     apiKey: process.env.KEYWORDSAI_API_KEY || 'demo-key',
@@ -51,11 +51,11 @@ async function runMultiProcessorDemo() {
   });
 
   await keywordsAi.initialize();
-  console.log('✅ Tracing initialized\n');
+  console.log('Tracing initialized\n');
 
   await keywordsAi.withWorkflow({ name: 'span_tracking_workflow' }, async () => {
     // Normal task - standard tracing
-    console.log('1️⃣  Normal Task:');
+    console.log('1. Normal Task:');
     await keywordsAi.withTask({ name: 'normal_task' }, async () => {
       updateCurrentSpan({
         attributes: {
@@ -66,11 +66,11 @@ async function runMultiProcessorDemo() {
       addSpanEvent('task.started', { timestamp: Date.now() });
       await new Promise((resolve) => setTimeout(resolve, 50));
       addSpanEvent('task.completed', { timestamp: Date.now() });
-      console.log('  ✅ Completed (standard tracing)');
+      console.log('  Completed (standard tracing)');
     });
 
     // Debug task - with debug logging
-    console.log('\n2️⃣  Debug Task:');
+    console.log('\n2. Debug Task:');
     await keywordsAi.withTask({ name: 'debug_task' }, async () => {
       const startTime = Date.now();
       updateCurrentSpan({
@@ -93,11 +93,11 @@ async function runMultiProcessorDemo() {
       
       logSpanToFile('./debug-spans.jsonl', spanInfo);
       addSpanEvent('debug.logged', { file: 'debug-spans.jsonl' });
-      console.log('  ✅ Completed (logged to file)');
+      console.log('  Completed (logged to file)');
     });
 
     // Analytics task - with console analytics
-    console.log('\n3️⃣  Analytics Task:');
+    console.log('\n3. Analytics Task:');
     await keywordsAi.withTask({ name: 'analytics_task' }, async () => {
       const startTime = Date.now();
       updateCurrentSpan({
@@ -122,11 +122,11 @@ async function runMultiProcessorDemo() {
       logSpanToConsole('Analytics', spanInfo);
       logSpanToFile('./analytics-spans.jsonl', spanInfo);
       addSpanEvent('analytics.completed', { records: 42 });
-      console.log('  ✅ Completed (logged to console & file)');
+      console.log('  Completed (logged to console & file)');
     });
 
     // Slow task - demonstrates long-running operation
-    console.log('\n4️⃣  Slow Task (long-running):');
+    console.log('\n4. Slow Task (long-running):');
     await keywordsAi.withTask({ name: 'slow_task' }, async () => {
       const startTime = Date.now();
       updateCurrentSpan({
@@ -152,14 +152,14 @@ async function runMultiProcessorDemo() {
       logSpanToConsole('SlowSpans', spanInfo);
       logSpanToFile('./slow-spans.jsonl', spanInfo);
       addSpanEvent('slow.task.completed', { actual_duration: duration });
-      console.log(`  ⚠️  Completed in ${duration}ms (performance logged)`);
+      console.log(`  Completed in ${duration}ms (performance logged)`);
     });
   });
 
-  console.log('\n🧹 Shutting down...');
+  console.log('\nShutting down...');
   await keywordsAi.shutdown();
-  console.log('✅ Span tracking demo completed.');
-  console.log('\n📄 Check these files for logged spans:');
+  console.log('Span tracking demo completed.');
+  console.log('\nCheck these files for logged spans:');
   console.log('   - ./debug-spans.jsonl');
   console.log('   - ./analytics-spans.jsonl');
   console.log('   - ./slow-spans.jsonl');

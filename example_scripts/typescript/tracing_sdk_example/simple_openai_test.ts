@@ -62,7 +62,7 @@ export async function generateChatCompletion(messages: ChatMessage[]) {
 }
 
 async function simpleOpenAITest() {
-  console.log('🚀 Simple OpenAI + KeywordsAI Test\n');
+  console.log('Simple OpenAI + KeywordsAI Test\n');
 
   const keywordsai = new KeywordsAITelemetry({
     apiKey: process.env.KEYWORDSAI_API_KEY || 'test-api-key',
@@ -76,7 +76,7 @@ async function simpleOpenAITest() {
   await keywordsai.initialize();
   
   global.keywordsai = keywordsai;
-  console.log('✅ KeywordsAI setup complete\n');
+  console.log('KeywordsAI setup complete\n');
 
   const messages: ChatMessage[] = [
     { role: 'system', content: 'You are a helpful assistant.' },
@@ -84,20 +84,20 @@ async function simpleOpenAITest() {
   ];
 
   try {
-    console.log('📤 Sending request to OpenAI...');
+    console.log('Sending request to OpenAI...');
     const result = await generateChatCompletion(messages);
     
-    console.log('✅ Success!');
-    console.log('🤖 Response:', result.message);
-    console.log('📊 Usage:', result.usage);
-    console.log('🆔 ID:', result.id);
+    console.log('Success!');
+    console.log('Response:', result.message);
+    console.log('Usage:', result.usage);
+    console.log('ID:', result.id);
     
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('Error:', error);
   }
 
   await keywordsai.shutdown();
-  console.log('\n✅ Test completed!');
+  console.log('\nTest completed!');
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

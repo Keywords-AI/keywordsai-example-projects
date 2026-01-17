@@ -24,10 +24,10 @@ async function runUpdateSpanDemo() {
             },
         },
         async () => {
-            console.log('🤖 Agent started...');
+            console.log('Agent started...');
             
             // Update span with KeywordsAI-specific parameters
-            console.log('📝 Updating span with KeywordsAI parameters...');
+            console.log('Updating span with KeywordsAI parameters...');
             updateCurrentSpan({
                 keywordsaiParams: {
                     model: 'gpt-4',
@@ -49,7 +49,7 @@ async function runUpdateSpanDemo() {
             await new Promise((resolve) => setTimeout(resolve, 100));
 
             // Update span name and status during processing
-            console.log('🔄 Updating span name and processing stage...');
+            console.log('Updating span name and processing stage...');
             updateCurrentSpan({
                 name: 'advancedAgent.processing',
                 attributes: {
@@ -58,7 +58,7 @@ async function runUpdateSpanDemo() {
             });
 
             // Simulate successful completion
-            console.log('✅ Marking span as completed...');
+            console.log('Marking span as completed...');
             updateCurrentSpan({
                 status: SpanStatusCode.OK,
                 statusDescription: 'Processing completed successfully',
@@ -78,7 +78,7 @@ async function runUpdateSpanDemo() {
 }
 
 async function main() {
-    console.log('🚀 Starting Update Span Demo\n');
+    console.log('Starting Update Span Demo\n');
     
     // Initialize tracing
     await startTracing({
@@ -89,21 +89,21 @@ async function main() {
         logLevel: 'info'
     });
     
-    console.log('✅ Tracing initialized\n');
+    console.log('Tracing initialized\n');
     
     try {
         const result = await runUpdateSpanDemo();
-        console.log('\n✅ Result:', result);
+        console.log('\nResult:', result);
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('Error:', error);
     } finally {
         // Shutdown and flush traces
-        console.log('\n🧹 Shutting down...');
+        console.log('\nShutting down...');
         const client = getClient();
         if (client && typeof client.shutdown === 'function') {
             await client.shutdown();
         }
-        console.log('✅ Update span demo completed.');
+        console.log('Update span demo completed.');
     }
 }
 
