@@ -1,0 +1,126 @@
+{
+  "description": "Example of how the trace appears in Keywords AI after all hooks have sent their spans",
+  "trace_unique_id": "abc123-def456_gen789",
+  "spans": [
+    {
+      "span_unique_id": "gen789_root",
+      "span_parent_id": null,
+      "span_name": "cursor_gen789",
+      "log_type": "agent",
+      "span_workflow_name": "cursor_abc123-def456",
+      "span_path": "",
+      "thread_identifier": "cursor_abc123-def456",
+      "input": "[{\"role\":\"user\",\"content\":\"Can you create a Python function to calculate fibonacci numbers?\"}]",
+      "output": "{\"role\":\"assistant\",\"content\":\"I've created a fibonacci function in fibonacci.py and tested it. The output shows the first 10 fibonacci numbers correctly.\"}",
+      "prompt_messages": [
+        {
+          "role": "user",
+          "content": "Can you create a Python function to calculate fibonacci numbers?"
+        }
+      ],
+      "completion_message": {
+        "role": "assistant",
+        "content": "I've created a fibonacci function in fibonacci.py and tested it. The output shows the first 10 fibonacci numbers correctly."
+      },
+      "model": "claude-sonnet-4",
+      "provider_id": "anthropic",
+      "start_time": "2026-01-19T06:00:00.000Z",
+      "timestamp": "2026-01-19T06:00:15.234Z",
+      "latency": 15.234,
+      "metadata": {
+        "child_count": 5,
+        "cursor_version": "0.42.0"
+      }
+    },
+    {
+      "span_unique_id": "gen789_thinking_1",
+      "span_parent_id": "gen789_root",
+      "span_name": "Thinking 1",
+      "log_type": "generation",
+      "span_workflow_name": "cursor_abc123-def456",
+      "span_path": "thinking_1",
+      "input": "{\"type\":\"reasoning\"}",
+      "output": "I need to create a Python function for fibonacci. I'll write it to a file and then test it.",
+      "model": "claude-sonnet-4",
+      "provider_id": "anthropic",
+      "start_time": "2026-01-19T06:00:01.500Z",
+      "timestamp": "2026-01-19T06:00:01.950Z",
+      "latency": 0.45,
+      "metadata": {
+        "duration_ms": 450,
+        "index": 1
+      }
+    },
+    {
+      "span_unique_id": "gen789_file_2",
+      "span_parent_id": "gen789_root",
+      "span_name": "Edit: fibonacci.py",
+      "log_type": "tool",
+      "span_workflow_name": "cursor_abc123-def456",
+      "span_path": "file_2",
+      "input": "{\"file\":\"/Users/example/fibonacci.py\",\"edit_count\":1}",
+      "output": "[Edit 1] Lines 1-1\n+ def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\nfor i in range(10):\n    print(f\"F({i}) = {fibonacci(i)}\")",
+      "start_time": "2026-01-19T06:00:03.000Z",
+      "timestamp": "2026-01-19T06:00:03.100Z",
+      "latency": 0.1,
+      "metadata": {
+        "file_path": "/Users/example/fibonacci.py",
+        "edit_count": 1
+      }
+    },
+    {
+      "span_unique_id": "gen789_thinking_3",
+      "span_parent_id": "gen789_root",
+      "span_name": "Thinking 2",
+      "log_type": "generation",
+      "span_workflow_name": "cursor_abc123-def456",
+      "span_path": "thinking_3",
+      "input": "{\"type\":\"reasoning\"}",
+      "output": "Now I'll run the Python file to show the output.",
+      "model": "claude-sonnet-4",
+      "provider_id": "anthropic",
+      "start_time": "2026-01-19T06:00:04.200Z",
+      "timestamp": "2026-01-19T06:00:04.520Z",
+      "latency": 0.32,
+      "metadata": {
+        "duration_ms": 320,
+        "index": 2
+      }
+    },
+    {
+      "span_unique_id": "gen789_shell_4",
+      "span_parent_id": "gen789_root",
+      "span_name": "Shell: python fibonacci.py",
+      "log_type": "tool",
+      "span_workflow_name": "cursor_abc123-def456",
+      "span_path": "shell_4",
+      "input": "{\"command\":\"python fibonacci.py\"}",
+      "output": "F(0) = 0\nF(1) = 1\nF(2) = 1\nF(3) = 2\nF(4) = 3\nF(5) = 5\nF(6) = 8\nF(7) = 13\nF(8) = 21\nF(9) = 34",
+      "start_time": "2026-01-19T06:00:10.000Z",
+      "timestamp": "2026-01-19T06:00:10.156Z",
+      "latency": 0.156,
+      "metadata": {
+        "command": "python fibonacci.py",
+        "duration_ms": 156
+      }
+    },
+    {
+      "span_unique_id": "gen789_mcp_5",
+      "span_parent_id": "gen789_root",
+      "span_name": "MCP: search_codebase",
+      "log_type": "tool",
+      "span_workflow_name": "cursor_abc123-def456",
+      "span_path": "mcp_5",
+      "input": "{\"query\": \"fibonacci implementations\"}",
+      "output": "{\"results\": [\"fibonacci.py\"]}",
+      "start_time": "2026-01-19T06:00:12.000Z",
+      "timestamp": "2026-01-19T06:00:12.234Z",
+      "latency": 0.234,
+      "metadata": {
+        "tool_name": "search_codebase",
+        "duration_ms": 234
+      }
+    }
+  ],
+  "visualization": "In Keywords AI Platform, this appears as:\n\ncursor_abc123-def456_gen789 (15.2s)\n├── Thinking 1 (0.45s) - \"I need to create a Python function...\"\n├── Edit: fibonacci.py (0.1s)\n├── Thinking 2 (0.32s) - \"Now I'll run the Python file...\"\n├── Shell: python fibonacci.py (0.16s)\n└── MCP: search_codebase (0.23s)"
+}

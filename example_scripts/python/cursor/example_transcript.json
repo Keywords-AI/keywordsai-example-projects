@@ -1,92 +1,91 @@
 [
   {
-    "role": "user",
-    "text": "<user_query>\nCan you explain what a factorial is and write a Python example?\n</user_query>"
+    "description": "User submits a prompt - beforeSubmitPrompt hook fires",
+    "hook_event_name": "beforeSubmitPrompt",
+    "conversation_id": "abc123-def456",
+    "generation_id": "gen789",
+    "model": "claude-sonnet-4",
+    "cursor_version": "0.42.0",
+    "prompt": "Can you create a Python function to calculate fibonacci numbers?",
+    "attachments": []
   },
   {
-    "role": "assistant",
-    "text": "<think>\nThe user wants me to:\n1. Explain what a factorial is\n2. Write a Python example\n\nA factorial is a mathematical function that multiplies a number by all positive integers less than it. For example, 5! = 5 × 4 × 3 × 2 × 1 = 120.\n</think>\nA **factorial** is a mathematical operation that multiplies a positive integer by all the positive integers below it. It's denoted with an exclamation mark (!).\n\n**For example:**\n- 5! = 5 × 4 × 3 × 2 × 1 = 120\n- 3! = 3 × 2 × 1 = 6\n- 0! = 1 (by definition)\n\nLet me write a Python example:\n",
-    "toolCalls": [
+    "description": "Agent thinks - afterAgentThought hook fires (thinking block 1)",
+    "hook_event_name": "afterAgentThought",
+    "conversation_id": "abc123-def456",
+    "generation_id": "gen789",
+    "model": "claude-sonnet-4",
+    "cursor_version": "0.42.0",
+    "text": "I need to create a Python function for fibonacci. I'll write it to a file and then test it.",
+    "duration_ms": 450
+  },
+  {
+    "description": "Agent edits a file - afterFileEdit hook fires",
+    "hook_event_name": "afterFileEdit",
+    "conversation_id": "abc123-def456",
+    "generation_id": "gen789",
+    "model": "claude-sonnet-4",
+    "cursor_version": "0.42.0",
+    "file_path": "/Users/example/fibonacci.py",
+    "edits": [
       {
-        "toolName": "write_file",
-        "args": {
-          "target_file": "factorial.py",
-          "contents": "def factorial(n):\n    \"\"\"Calculate the factorial of n.\"\"\"\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers\")\n    if n == 0 or n == 1:\n        return 1\n    return n * factorial(n - 1)\n\n# Test the function\nfor i in range(6):\n    print(f\"{i}! = {factorial(i)}\")\n"
-        }
+        "oldText": "",
+        "newText": "def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\nfor i in range(10):\n    print(f\"F({i}) = {fibonacci(i)}\")",
+        "startLine": 1,
+        "endLine": 1
       }
     ]
   },
   {
-    "role": "tool",
-    "toolResult": {
-      "toolName": "write_file"
-    }
+    "description": "Agent thinks again - afterAgentThought hook fires (thinking block 2)",
+    "hook_event_name": "afterAgentThought",
+    "conversation_id": "abc123-def456",
+    "generation_id": "gen789",
+    "model": "claude-sonnet-4",
+    "cursor_version": "0.42.0",
+    "text": "Now I'll run the Python file to show the output.",
+    "duration_ms": 320
   },
   {
-    "role": "assistant",
-    "text": "<think>\nThe file was created successfully. Now I should run it to show the user the output.\n</think>\nI've created `factorial.py`. Now let me run it to show you the output:\n",
-    "toolCalls": [
-      {
-        "toolName": "run_terminal_cmd",
-        "args": {
-          "command": "python factorial.py"
-        }
-      }
-    ]
+    "description": "Agent runs shell command - afterShellExecution hook fires",
+    "hook_event_name": "afterShellExecution",
+    "conversation_id": "abc123-def456",
+    "generation_id": "gen789",
+    "model": "claude-sonnet-4",
+    "cursor_version": "0.42.0",
+    "command": "python fibonacci.py",
+    "output": "F(0) = 0\nF(1) = 1\nF(2) = 1\nF(3) = 2\nF(4) = 3\nF(5) = 5\nF(6) = 8\nF(7) = 13\nF(8) = 21\nF(9) = 34",
+    "duration": 156
   },
   {
-    "role": "tool",
-    "toolResult": {
-      "toolName": "run_terminal_cmd"
-    }
+    "description": "Agent uses MCP tool (example) - afterMCPExecution hook fires",
+    "hook_event_name": "afterMCPExecution",
+    "conversation_id": "abc123-def456",
+    "generation_id": "gen789",
+    "model": "claude-sonnet-4",
+    "cursor_version": "0.42.0",
+    "tool_name": "search_codebase",
+    "tool_input": "{\"query\": \"fibonacci implementations\"}",
+    "result_json": "{\"results\": [\"fibonacci.py\"]}",
+    "duration": 234
   },
   {
-    "role": "assistant",
-    "text": "The factorial function is working correctly! Here's what each output means:\n\n- **0! = 1**: By mathematical convention\n- **1! = 1**: 1 × 1 = 1\n- **2! = 2**: 2 × 1 = 2\n- **3! = 6**: 3 × 2 × 1 = 6\n- **4! = 24**: 4 × 3 × 2 × 1 = 24\n- **5! = 120**: 5 × 4 × 3 × 2 × 1 = 120\n\nThe function uses recursion - it calls itself with a smaller number until it reaches the base case (0 or 1)."
+    "description": "Agent finishes responding - afterAgentResponse hook fires (sends root span)",
+    "hook_event_name": "afterAgentResponse",
+    "conversation_id": "abc123-def456",
+    "generation_id": "gen789",
+    "model": "claude-sonnet-4",
+    "cursor_version": "0.42.0",
+    "text": "I've created a fibonacci function in fibonacci.py and tested it. The output shows the first 10 fibonacci numbers correctly."
   },
   {
-    "role": "user",
-    "text": "<user_query>\nCan you also add an iterative version?\n</user_query>"
-  },
-  {
-    "role": "assistant",
-    "text": "<think>\nThe user wants an iterative (loop-based) version of the factorial function in addition to the recursive one. I'll read the current file and add the iterative version.\n</think>\nSure! Let me add an iterative version:\n",
-    "toolCalls": [
-      {
-        "toolName": "read_file",
-        "args": {
-          "target_file": "factorial.py"
-        }
-      }
-    ]
-  },
-  {
-    "role": "tool",
-    "toolResult": {
-      "toolName": "read_file"
-    }
-  },
-  {
-    "role": "assistant",
-    "text": "<think>\nNow I'll add the iterative version to the file.\n</think>\nAdding the iterative version:\n",
-    "toolCalls": [
-      {
-        "toolName": "write_file",
-        "args": {
-          "target_file": "factorial.py",
-          "contents": "def factorial_recursive(n):\n    \"\"\"Calculate factorial using recursion.\"\"\"\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers\")\n    if n == 0 or n == 1:\n        return 1\n    return n * factorial_recursive(n - 1)\n\n\ndef factorial_iterative(n):\n    \"\"\"Calculate factorial using iteration (loop).\"\"\"\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers\")\n    result = 1\n    for i in range(2, n + 1):\n        result *= i\n    return result\n\n\n# Test both versions\nprint(\"Recursive vs Iterative:\")\nfor i in range(6):\n    rec = factorial_recursive(i)\n    itr = factorial_iterative(i)\n    print(f\"{i}! = {rec} (recursive) = {itr} (iterative)\")\n"
-        }
-      }
-    ]
-  },
-  {
-    "role": "tool",
-    "toolResult": {
-      "toolName": "write_file"
-    }
-  },
-  {
-    "role": "assistant",
-    "text": "Done! I've added an iterative version alongside the recursive one. The iterative version uses a simple loop instead of calling itself. Both approaches give the same results, but the iterative version is generally more memory-efficient for large numbers since it doesn't build up a call stack."
+    "description": "Agent stops - stop hook fires (cleanup)",
+    "hook_event_name": "stop",
+    "conversation_id": "abc123-def456",
+    "generation_id": "gen789",
+    "model": "claude-sonnet-4",
+    "cursor_version": "0.42.0",
+    "status": "completed",
+    "loop_count": 1
   }
 ]
