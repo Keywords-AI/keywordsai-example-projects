@@ -15,7 +15,7 @@ const openai = new OpenAI({
 });
 
 async function main() {
-    console.log('🚀 Starting KeywordsAI tracing test...');
+    console.log('Starting KeywordsAI tracing test...');
     
     const keywordsAi = new KeywordsAITelemetry({
         apiKey: process.env.KEYWORDSAI_API_KEY,
@@ -30,7 +30,7 @@ async function main() {
 
     try {
         await keywordsAi.initialize();
-        console.log('✅ SDK initialized');
+        console.log('SDK initialized');
 
         // Pirate Joke Workflow
         const finalResult = await keywordsAi.withWorkflow({ name: 'joke_workflow' }, async () => {
@@ -91,9 +91,9 @@ async function main() {
         console.log(finalResult);
         console.log('--------------------');
 
-        console.log('\n✅ Test completed successfully');
+        console.log('\nTest completed successfully');
     } catch (error) {
-        console.error('❌ Test failed:', error);
+        console.error('Test failed:', error);
     } finally {
         await keywordsAi.shutdown();
     }

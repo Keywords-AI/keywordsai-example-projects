@@ -19,7 +19,7 @@ async function runInstrumentationDemo() {
     });
 
     await autoDiscoveryClient.initialize();
-    console.log("✅ Auto-discovery client initialized\n");
+    console.log("Auto-discovery client initialized\n");
     await autoDiscoveryClient.shutdown();
 
     const explicitClient = new KeywordsAITelemetry({
@@ -30,12 +30,12 @@ async function runInstrumentationDemo() {
     });
 
     await explicitClient.initialize();
-    console.log("✅ Explicit client initialized\n");
+    console.log("Explicit client initialized\n");
     await explicitClient.shutdown();
 
     class MyCustomInstrumentation {
         manuallyInstrument(module: any) {
-            console.log("🔧 Custom instrumentation logic applied to module!");
+            console.log("Custom instrumentation logic applied to module!");
         }
     }
 
@@ -50,10 +50,10 @@ async function runInstrumentationDemo() {
     });
 
     await customClient.initialize();
-    console.log("✅ Custom module client initialized\n");
+    console.log("Custom module client initialized\n");
     await customClient.shutdown();
 
-    console.log("🎉 Instrumentation management demo completed.");
+    console.log("Instrumentation management demo completed.");
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

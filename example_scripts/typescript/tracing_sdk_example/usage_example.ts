@@ -185,7 +185,7 @@ async function errorProneOperation() {
 }
 
 async function main() {
-  console.log('🚀 Initializing KeywordsAI tracing...\n');
+  console.log('Initializing KeywordsAI tracing...\n');
   
   // Initialize tracing and wait for it to complete
   await startTracing({
@@ -196,7 +196,7 @@ async function main() {
     logLevel: 'info',
   });
   
-  console.log('✅ Tracing initialized\n');
+  console.log('Tracing initialized\n');
 
   try {
     console.log('=== Document Processing Example ===');
@@ -227,12 +227,12 @@ async function main() {
     console.error('Main execution failed:', error);
   } finally {
     // Shutdown and flush traces
-    console.log('\n🧹 Shutting down...');
+    console.log('\nShutting down...');
     const client = getClient();
     if (client && typeof client.shutdown === 'function') {
       await client.shutdown();
     }
-    console.log('✅ All examples completed.');
+    console.log('All examples completed.');
   }
 }
 

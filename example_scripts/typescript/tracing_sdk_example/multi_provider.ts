@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 async function runMultiProviderDemo() {
-    console.log('✅ OpenAI and Anthropic SDKs loaded');
+    console.log('OpenAI and Anthropic SDKs loaded');
 
     const keywordsAi = new KeywordsAITelemetry({
         apiKey: process.env.KEYWORDSAI_API_KEY || 'demo-key',
@@ -31,24 +31,24 @@ async function runMultiProviderDemo() {
     });
 
     await keywordsAi.initialize();
-    console.log("🚀 Starting Multi-Provider Demo\n");
+    console.log("Starting Multi-Provider Demo\n");
 
     await keywordsAi.withWorkflow({ name: "multi_llm_workflow" }, async () => {
         
-        console.log("🤖 Calling OpenAI...");
+        console.log("Calling OpenAI...");
         await keywordsAi.withTask({ name: "openai_step" }, async () => {
             try {
                 const response = await openai.chat.completions.create({
                     model: "gpt-3.5-turbo",
                     messages: [{ role: "user", content: "Hi" }]
                 });
-                console.log("  ✅ OpenAI response received:", response.choices[0]?.message?.content || "empty");
+                console.log("  OpenAI response received:", response.choices[0]?.message?.content || "empty");
             } catch (e: any) {
-                console.log("  ⚠️ OpenAI call failed:", e.message || e);
+                console.log("  OpenAI call failed:", e.message || e);
             }
         });
 
-        console.log("🤖 Calling Anthropic...");
+        console.log("Calling Anthropic...");
         await keywordsAi.withTask({ name: "anthropic_step" }, async () => {
             try {
                 const response = await anthropic.messages.create({
@@ -56,16 +56,16 @@ async function runMultiProviderDemo() {
                     max_tokens: 10,
                     messages: [{ role: "user", content: "Hi" }]
                 });
-                console.log("  ✅ Anthropic response received:", response.content[0]);
+                console.log("  Anthropic response received:", response.content[0]);
             } catch (e: any) {
-                console.log("  ⚠️ Anthropic call failed:", e.message || e);
+                console.log("  Anthropic call failed:", e.message || e);
             }
         });
     });
 
-    console.log("\n🧹 Shutting down...");
+    console.log("\nShutting down...");
     await keywordsAi.shutdown();
-    console.log("✅ Multi-provider demo completed.");
+    console.log("Multi-provider demo completed.");
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

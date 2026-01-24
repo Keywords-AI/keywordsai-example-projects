@@ -23,16 +23,16 @@ const openai = new OpenAI({
 });
 
 async function runOpenAIIntegrationTest() {
-  console.log("🚀 Starting OpenAI Integration Test with KeywordsAI\n");
+  console.log("Starting OpenAI Integration Test with KeywordsAI\n");
 
   try {
     await keywordsai.initialize();
-    console.log("✅ KeywordsAI initialized successfully\n");
+    console.log("KeywordsAI initialized successfully\n");
 
     await keywordsai.withWorkflow(
       { name: "openai_chat_completion" },
       async () => {
-        console.log("📝 Sending request to OpenAI...");
+        console.log("Sending request to OpenAI...");
         
         try {
           const completion = await openai.chat.completions.create({
@@ -43,11 +43,11 @@ async function runOpenAIIntegrationTest() {
             ],
           });
 
-          console.log("📥 OpenAI Response:", completion.choices[0].message.content);
+          console.log("OpenAI Response:", completion.choices[0].message.content);
         } catch (error) {
           if (process.env.OPENAI_API_KEY === undefined || process.env.OPENAI_API_KEY === "test-api-key") {
-            console.log("⚠️  Skipping real API call (no OPENAI_API_KEY found).");
-            console.log("ℹ️  In a real scenario, the instrumentation would capture the request and response automatically.");
+            console.log("Skipping real API call (no OPENAI_API_KEY found).");
+            console.log("In a real scenario, the instrumentation would capture the request and response automatically.");
           } else {
             throw error;
           }
@@ -55,12 +55,12 @@ async function runOpenAIIntegrationTest() {
       }
     );
 
-    console.log("\n🧹 Cleaning up...");
+    console.log("\nCleaning up...");
     await keywordsai.shutdown();
-    console.log("✅ Done!");
+    console.log("Done!");
 
   } catch (error) {
-    console.error("❌ Error:", error);
+    console.error("Error:", error);
     await keywordsai.shutdown();
   }
 }
