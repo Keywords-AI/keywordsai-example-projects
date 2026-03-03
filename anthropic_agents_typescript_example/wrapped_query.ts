@@ -8,7 +8,7 @@
  *   npm install (or yarn install)
  *
  * Run:
- *   npx tsx wrapped_query_test.ts
+ *   npx tsx wrapped_query.ts
  */
 
 import "dotenv/config";

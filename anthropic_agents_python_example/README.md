@@ -16,35 +16,28 @@ cp .env.example .env
 
 ## Examples
 
-### basic/hello_world_test.py
+### basic/hello_world.py
 The simplest example — ask Claude a question, see the trace in Respan.
 ```bash
-python basic/hello_world_test.py
+python basic/hello_world.py
 ```
 
-### basic/wrapped_query_test.py
+### basic/wrapped_query.py
 One-liner integration using `exporter.query()` — handles everything automatically.
 ```bash
-python basic/wrapped_query_test.py
+python basic/wrapped_query.py
 ```
 
-### basic/gateway_test.py
+### basic/gateway.py
 Route through the Respan gateway — only needs `RESPAN_API_KEY`, no Anthropic key.
 ```bash
-python basic/gateway_test.py
+python basic/gateway.py
 ```
 
-### basic/tool_use_test.py
+### basic/tool_use.py
 Run a query with tools (Read, Glob, Grep) and see tool spans in the trace.
 ```bash
-python basic/tool_use_test.py
-```
-
-## Running with pytest
-
-```bash
-pip install pytest pytest-asyncio
-pytest basic/ -v
+python basic/tool_use.py
 ```
 
 ## Environment Variables

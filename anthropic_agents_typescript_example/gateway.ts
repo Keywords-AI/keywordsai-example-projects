@@ -11,7 +11,7 @@
  *   RESPAN_API_KEY=your_key    # only key needed
  *
  * Run:
- *   npx tsx gateway_test.ts
+ *   npx tsx gateway.ts
  */
 
 import "dotenv/config";

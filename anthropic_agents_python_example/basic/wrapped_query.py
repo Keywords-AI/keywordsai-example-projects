@@ -8,10 +8,7 @@ Setup:
     pip install claude-agent-sdk respan-exporter-anthropic-agents python-dotenv
 
 Run:
-    python basic/wrapped_query_test.py
-
-    # or with pytest:
-    pytest basic/wrapped_query_test.py -v
+    python basic/wrapped_query.py
 """
 
 from dotenv import load_dotenv
@@ -20,8 +17,8 @@ load_dotenv(override=True)
 
 import asyncio
 import os
+import sys
 
-import pytest
 from claude_agent_sdk import ClaudeAgentOptions
 
 from respan_exporter_anthropic_agents import RespanAnthropicAgentsExporter
@@ -29,14 +26,17 @@ from respan_exporter_anthropic_agents import RespanAnthropicAgentsExporter
 API_KEY = os.getenv("RESPAN_API_KEY") or os.getenv("KEYWORDSAI_API_KEY")
 BASE_URL = os.getenv("RESPAN_BASE_URL") or os.getenv("KEYWORDSAI_BASE_URL")
 
+if not API_KEY:
+    print("Set RESPAN_API_KEY to run this example")
+    sys.exit(1)
+
 exporter = RespanAnthropicAgentsExporter(
     api_key=API_KEY,
     base_url=BASE_URL,
 )
 
 
-@pytest.mark.asyncio
-async def test_wrapped_query():
+async def main():
     """Use exporter.query() for automatic tracing — simplest pattern."""
 
     message_types = []
@@ -56,5 +56,4 @@ async def test_wrapped_query():
     print("All traces exported automatically via exporter.query()")
 
 
-if __name__ == "__main__":
-    asyncio.run(test_wrapped_query())
+asyncio.run(main())

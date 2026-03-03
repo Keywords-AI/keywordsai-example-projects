@@ -11,10 +11,7 @@ Environment:
     RESPAN_API_KEY=your_key    # only key needed
 
 Run:
-    python basic/gateway_test.py
-
-    # or with pytest:
-    pytest basic/gateway_test.py -v
+    python basic/gateway.py
 """
 
 from dotenv import load_dotenv
@@ -25,7 +22,6 @@ import asyncio
 import os
 import sys
 
-import pytest
 from claude_agent_sdk import ClaudeAgentOptions, ResultMessage
 
 from respan_exporter_anthropic_agents import RespanAnthropicAgentsExporter
@@ -38,18 +34,18 @@ BASE_URL = (
     or "https://api.keywordsai.co/api"
 ).rstrip("/")
 
+if not API_KEY:
+    print("Set RESPAN_API_KEY to run this example")
+    sys.exit(1)
+
 exporter = RespanAnthropicAgentsExporter(
     api_key=API_KEY,
     base_url=BASE_URL,
 )
 
 
-@pytest.mark.asyncio
-async def test_gateway_query():
+async def main():
     """Send a query through the Respan gateway and export traces."""
-
-    if not API_KEY:
-        pytest.skip("Set RESPAN_API_KEY to run this test")
 
     print(f"Gateway: {BASE_URL}")
     print(f"API key: {API_KEY[:8]}...\n")
@@ -82,11 +78,7 @@ async def test_gateway_query():
             print(f"Usage: {result.usage}")
 
     print(f"\nSession: {exporter._last_session_id}")
-    print(f"View trace at: https://platform.keywordsai.co/traces")
+    print("View trace at: https://platform.keywordsai.co/traces")
 
 
-if __name__ == "__main__":
-    if not API_KEY:
-        print("ERROR: Set RESPAN_API_KEY (or KEYWORDSAI_API_KEY)")
-        sys.exit(1)
-    asyncio.run(test_gateway_query())
+asyncio.run(main())

@@ -17,28 +17,28 @@ cp .env.example .env
 
 ## Examples
 
-### hello_world_test.ts
+### hello_world.ts
 The simplest example — ask Claude a question, see the trace in Respan.
 ```bash
-npx tsx hello_world_test.ts
+npx tsx hello_world.ts
 ```
 
-### wrapped_query_test.ts
+### wrapped_query.ts
 One-liner integration using `exporter.query()` — handles everything automatically.
 ```bash
-npx tsx wrapped_query_test.ts
+npx tsx wrapped_query.ts
 ```
 
-### gateway_test.ts
+### gateway.ts
 Route through the Respan gateway — only needs `RESPAN_API_KEY`, no Anthropic key.
 ```bash
-npx tsx gateway_test.ts
+npx tsx gateway.ts
 ```
 
-### tool_use_test.ts
+### tool_use.ts
 Run a query with tools (Read, Glob, Grep) and see tool spans in the trace.
 ```bash
-npx tsx tool_use_test.ts
+npx tsx tool_use.ts
 ```
 
 ## Environment Variables
