@@ -18,9 +18,10 @@ import asyncio
 import os
 import sys
 
-from claude_agent_sdk import ClaudeAgentOptions, ResultMessage
+from claude_agent_sdk import ClaudeAgentOptions
 
 from respan_exporter_anthropic_agents import RespanAnthropicAgentsExporter
+from _sdk_runtime import query_for_result
 
 API_KEY = os.getenv("RESPAN_API_KEY") or os.getenv("KEYWORDSAI_API_KEY")
 BASE_URL = os.getenv("RESPAN_BASE_URL") or os.getenv("KEYWORDSAI_BASE_URL")
@@ -43,18 +44,15 @@ async def main():
         max_turns=1,
     )
 
-    result_message = None
-
-    async for message in exporter.query(
+    result_message = await query_for_result(
+        exporter=exporter,
         prompt="What is 2 + 2? Reply in one word.",
         options=options,
-    ):
-        if isinstance(message, ResultMessage):
-            result_message = message
+    )
 
-    print(f"Result: {result_message.subtype if result_message else 'none'}")
+    print(f"Result: {result_message.subtype}")
     print(f"Session: {exporter._last_session_id}")
-    print("View trace at: https://platform.keywordsai.co/traces")
+    print("View trace at: https://platform.keywordsai.co/platform/traces")
 
 
 asyncio.run(main())

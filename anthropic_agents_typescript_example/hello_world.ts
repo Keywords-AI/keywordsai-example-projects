@@ -52,7 +52,7 @@ async function main(): Promise<void> {
   }
 
   console.log(`\nSession: ${sessionId}`);
-  console.log("View trace at: https://platform.keywordsai.co/traces");
+  console.log("View trace at: https://platform.keywordsai.co/platform/traces");
 }
 
 main().catch(console.error);

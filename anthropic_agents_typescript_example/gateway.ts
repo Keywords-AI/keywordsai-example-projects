@@ -41,40 +41,52 @@ async function main(): Promise<void> {
   console.log(`API key: ${API_KEY!.slice(0, 8)}...\n`);
 
   // Route Claude SDK through the Respan gateway — same key for auth + tracing
+  // The Anthropic SDK appends /v1/messages to ANTHROPIC_BASE_URL,
+  // so we point it at the /anthropic passthrough path.
+  const gatewayUrl = `${BASE_URL}/anthropic`;
   const options = exporter.withOptions({
     permissionMode: "bypassPermissions",
     maxTurns: 1,
     env: {
-      ANTHROPIC_BASE_URL: BASE_URL,
+      ANTHROPIC_BASE_URL: gatewayUrl,
       ANTHROPIC_AUTH_TOKEN: API_KEY,
       ANTHROPIC_API_KEY: API_KEY,
     },
   } as any);
 
   let sessionId: string | undefined;
+  let gotResult = false;
 
-  for await (const message of query({ prompt: "Reply with exactly: gateway_ok", options })) {
-    const msg = message as Record<string, unknown>;
+  try {
+    for await (const message of query({ prompt: "Reply with exactly: gateway_ok", options })) {
+      const msg = message as Record<string, unknown>;
 
-    if (msg.type === "system") {
-      const data = (msg.data ?? {}) as Record<string, unknown>;
-      sessionId = (data.session_id ?? data.sessionId ?? sessionId) as string;
-    }
-    if (msg.type === "result") {
-      sessionId = (msg.session_id ?? sessionId) as string;
-      const usage = msg.usage as Record<string, unknown> | undefined;
-      console.log(`  Result: subtype=${msg.subtype}, turns=${msg.num_turns}`);
-      if (usage) {
-        console.log(`  Usage: input=${usage.input_tokens}, output=${usage.output_tokens}`);
+      if (msg.type === "system") {
+        const data = (msg.data ?? {}) as Record<string, unknown>;
+        sessionId = (data.session_id ?? data.sessionId ?? sessionId) as string;
       }
-    }
+      if (msg.type === "result") {
+        gotResult = true;
+        sessionId = (msg.session_id ?? sessionId) as string;
+        const usage = msg.usage as Record<string, unknown> | undefined;
+        console.log(`  Result: subtype=${msg.subtype}, turns=${msg.num_turns}`);
+        if (usage) {
+          console.log(`  Usage: input=${usage.input_tokens}, output=${usage.output_tokens}`);
+        }
+      }
 
-    await exporter.trackMessage({ message, sessionId });
-    console.log(`  ${msg.type}`);
+      await exporter.trackMessage({ message, sessionId });
+      console.log(`  ${msg.type}`);
+    }
+  } catch (err) {
+    // The Claude Code subprocess may exit with code 1 due to internal
+    // hook cleanup after the query has already completed successfully.
+    // If we received a result, the query worked — ignore the error.
+    if (!gotResult) throw err;
   }
 
   console.log(`\nSession: ${sessionId}`);
-  console.log("View trace at: https://platform.keywordsai.co/traces");
+  console.log("View trace at: https://platform.keywordsai.co/platform/traces");
 }
 
 main().catch(console.error);

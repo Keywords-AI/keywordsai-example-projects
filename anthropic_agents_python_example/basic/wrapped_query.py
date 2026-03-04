@@ -22,6 +22,7 @@ import sys
 from claude_agent_sdk import ClaudeAgentOptions
 
 from respan_exporter_anthropic_agents import RespanAnthropicAgentsExporter
+from _sdk_runtime import query_for_result
 
 API_KEY = os.getenv("RESPAN_API_KEY") or os.getenv("KEYWORDSAI_API_KEY")
 BASE_URL = os.getenv("RESPAN_BASE_URL") or os.getenv("KEYWORDSAI_BASE_URL")
@@ -41,18 +42,23 @@ async def main():
 
     message_types = []
 
-    async for message in exporter.query(
+    def _on_message(message):
+        msg_type = type(message).__name__
+        message_types.append(msg_type)
+        print(f"  {msg_type}")
+
+    result = await query_for_result(
+        exporter=exporter,
         prompt="Name three primary colors. One word each, comma separated.",
         options=ClaudeAgentOptions(
             permission_mode="bypassPermissions",
             max_turns=1,
         ),
-    ):
-        msg_type = type(message).__name__
-        message_types.append(msg_type)
-        print(f"  {msg_type}")
+        on_message=_on_message,
+    )
 
     print(f"\nMessage flow: {' -> '.join(message_types)}")
+    print(f"Result: subtype={result.subtype}, turns={result.num_turns}")
     print("All traces exported automatically via exporter.query()")
 
 
