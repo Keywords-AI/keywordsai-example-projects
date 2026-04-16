@@ -1,0 +1,27 @@
+{
+  "name": "respan-openai-sdk-examples",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "hello": "tsx hello_world.ts",
+    "attributes": "tsx attributes.ts",
+    "decorators": "tsx decorators.ts"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-trace-base": "^2.6.0",
+    "@opentelemetry/sdk-trace-node": "^2.6.0",
+    "@respan/instrumentation-openai": "file:../../instrumentations/respan-instrumentation-openai",
+    "@respan/respan": "file:../../respan",
+    "@respan/respan-sdk": "file:../../respan-sdk",
+    "@respan/tracing": "file:../../respan-tracing",
+    "@traceloop/instrumentation-openai": "^0.22.5",
+    "dotenv": "^16.0.0",
+    "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
+}
