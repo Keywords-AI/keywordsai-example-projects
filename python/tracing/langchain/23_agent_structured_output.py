@@ -1,0 +1,46 @@
+"""Agent structured output."""
+
+from langchain.agents import create_agent
+from pydantic import BaseModel, Field
+
+from _shared import flush, init_telemetry, make_openai_chat_model, tracing_config
+
+
+class ContactInfo(BaseModel):
+    """Contact information extracted from text."""
+
+    name: str = Field(description="Person name")
+    email: str = Field(description="Email address")
+
+
+def agent_structured_output() -> None:
+    telemetry = init_telemetry("langchain-agent-structured-output")
+    try:
+        model = make_openai_chat_model()
+        if model is None:
+            print("Set OPENAI_API_KEY or RESPAN_API_KEY to run this provider-backed example.")
+            return
+
+        agent = create_agent(
+            model=model,
+            tools=[],
+            response_format=ContactInfo,
+        )
+        response = agent.invoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": "Extract contact info: Ada Lovelace, ada@example.com",
+                    }
+                ]
+            },
+            config=tracing_config("agent_structured_output"),
+        )
+        print(response["structured_response"])
+    finally:
+        flush(telemetry)
+
+
+if __name__ == "__main__":
+    agent_structured_output()
