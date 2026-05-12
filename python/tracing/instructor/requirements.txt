@@ -1,0 +1,5 @@
+respan-tracing
+respan-instrumentation-instructor
+instructor>=1.3.7
+openai>=2.0.0
+python-dotenv>=1.0.1

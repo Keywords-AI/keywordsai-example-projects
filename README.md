@@ -10,6 +10,7 @@ python/
     respan-tracing-sdk/   # Core respan-tracing SDK examples (basic usage, span operations, multi-provider)
     openai-agents-sdk/    # OpenAI Agents SDK with Respan tracing (basic, patterns, handoffs, tools, research bot)
     anthropic-agents-sdk/ # Anthropic Agents SDK with Respan tracing
+    dspy/                 # DSPy native instrumentation examples
     langfuse/             # Langfuse integration example
     instructor/           # Instructor library example
     langchain/            # LangChain agent example

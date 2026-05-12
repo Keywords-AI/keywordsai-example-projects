@@ -1,0 +1,5 @@
+agno>=2.6.5
+openai>=2.8.0
+python-dotenv>=1.0.0
+respan-ai
+respan-instrumentation-agno
