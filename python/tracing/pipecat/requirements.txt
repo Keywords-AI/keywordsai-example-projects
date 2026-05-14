@@ -1,0 +1,3 @@
+python-dotenv
+respan-ai
+respan-instrumentation-pipecat
