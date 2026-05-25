@@ -1,0 +1,26 @@
+{
+  "name": "respan-mcp-typescript-example",
+  "version": "0.1.0",
+  "description": "TypeScript MCP tracing examples for Respan",
+  "type": "module",
+  "scripts": {
+    "01:client-tool": "tsx 01_client_tool_call.ts",
+    "02:resources-prompts": "tsx 02_resources_and_prompts.ts",
+    "03:legacy-tool-api": "tsx 03_legacy_tool_api.ts",
+    "all": "tsx 01_client_tool_call.ts && tsx 02_resources_and_prompts.ts && tsx 03_legacy_tool_api.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@respan/instrumentation-mcp": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-mcp",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}

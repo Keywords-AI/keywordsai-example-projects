@@ -1,58 +1,33 @@
-# Mastra Weather Agent with Respan Observability
+# Mastra + Respan Tracing Examples
 
-A quick setup guide for running a Mastra weather agent with Respan telemetry integration.
+Runnable Mastra TypeScript examples using `@respan/instrumentation-mastra`.
 
 ## Setup
 
-### 1. Install Dependencies
+These examples load environment variables from the repository root `.env` file.
 
 ```bash
-pnpm install
+cd typescript/tracing/mastra
+npm install
+npm run examples
 ```
 
-The project includes the required `@respan/exporter-vercel` package for telemetry export.
+Required root `.env` values:
 
-### 2. Environment Variables
+| Variable | Required | Description |
+| --- | --- | --- |
+| `RESPAN_API_KEY` | Yes | Used for Respan tracing and the Respan gateway. |
+| `RESPAN_BASE_URL` | No | Defaults to `https://api.respan.ai/api`. |
+| `MASTRA_EXAMPLE_MODEL` | No | Defaults to `gpt-4.1-nano` through the OpenAI-compatible gateway. |
+| `RESPAN_EXAMPLE_RUN_ID` | No | Custom run id used in metadata and console output. |
 
-Copy the example environment file and add your API keys:
+The examples set `OPENAI_API_KEY` from `RESPAN_API_KEY` and `OPENAI_BASE_URL` from `RESPAN_BASE_URL`, so no separate provider key is required.
 
-```bash
-cp .env.local.example .env.local
-```
+## Scripts
 
-Update `.env.local` with your credentials:
+- `npm run example:basic` - simple agent generation.
+- `npm run example:tool` - agent with a local weather tool.
+- `npm run example:stream` - streaming agent response.
+- `npm run examples` - run the complete set.
 
-```env
-OPENAI_API_KEY=your-openai-api-key
-RESPAN_API_KEY=your-respan-api-key
-RESPAN_BASE_URL=https://api.respan.ai
-```
-
-### 3. Run the Project
-
-```bash
-mastra dev
-```
-
-This opens the Mastra playground where you can interact with the weather agent.
-
-## Observability
-
-The project is configured with Respan telemetry in `src/mastra/index.ts`:
-
-```typescript
-telemetry: {
-  serviceName: "keywordai-mastra-example",
-  enabled: true,
-  export: {
-    type: "custom",
-    exporter: new RespanExporter({
-      apiKey: process.env.RESPAN_API_KEY,
-      baseUrl: process.env.RESPAN_BASE_URL,
-      debug: true,
-    })
-  }
-}
-```
-
-Interact with the agent in the playground and view traces in your Respan dashboard. 
+Each script emits a readable workflow name such as `Mastra Tool Example.workflow`, sets the same value as `trace_group_identifier`, and includes the run id in metadata so traces are easy to find in Respan.
