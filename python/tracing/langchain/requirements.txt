@@ -1,0 +1,8 @@
+langchain>=1.0
+langchain-core>=1.0
+langchain-openai>=1.0
+langgraph>=1.0
+pydantic>=2
+python-dotenv
+respan-tracing
+respan-instrumentation-langchain

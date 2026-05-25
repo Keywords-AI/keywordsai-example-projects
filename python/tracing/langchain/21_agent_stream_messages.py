@@ -1,0 +1,31 @@
+"""Agent stream messages."""
+
+from langchain.agents import create_agent
+
+from _shared import fake_tool_calling_model, flush, get_weather, init_telemetry, tracing_config
+
+
+def agent_stream_messages() -> None:
+    telemetry = init_telemetry("langchain-agent-stream-messages")
+    model = fake_tool_calling_model(
+        tool_name="get_weather",
+        args={"city": "Seattle"},
+        final_text="Seattle is sunny.",
+    )
+    agent = create_agent(model=model, tools=[get_weather])
+    try:
+        chunks = list(
+            agent.stream(
+                {"messages": [{"role": "user", "content": "Weather in Seattle?"}]},
+                config=tracing_config("agent_stream_messages"),
+                stream_mode="messages",
+                version="v2",
+            )
+        )
+        print(chunks)
+    finally:
+        flush(telemetry)
+
+
+if __name__ == "__main__":
+    agent_stream_messages()
