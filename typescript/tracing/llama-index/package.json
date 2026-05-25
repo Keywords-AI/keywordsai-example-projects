@@ -1,0 +1,27 @@
+{
+  "name": "llama-index-typescript-tracing-examples",
+  "version": "0.1.0",
+  "description": "Example scripts for Respan + LlamaIndex TypeScript tracing",
+  "type": "module",
+  "scripts": {
+    "01:basic": "tsx 01_basic_llm_workflow.ts",
+    "02:rag": "tsx 02_rag_query_engine_workflow.ts",
+    "03:tools": "tsx 03_tool_call_workflow.ts",
+    "all": "npm run 01:basic && npm run 02:rag && npm run 03:tools",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@llamaindex/openai": "0.4.22",
+    "@respan/instrumentation-llama-index": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-llama-index",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^17.2.3",
+    "llamaindex": "0.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
