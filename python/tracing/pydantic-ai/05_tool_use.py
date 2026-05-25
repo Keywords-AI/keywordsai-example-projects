@@ -5,59 +5,63 @@ ensuring the exported trace contains tool-call spans.
 """
 
 import os
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
+
+from pydantic_ai import Agent
+from respan import Respan, workflow
+from respan_instrumentation_pydantic_ai import PydanticAIInstrumentor
 
 load_dotenv(find_dotenv(), override=True)
 
-# Route LLM calls through Respan (gateway pattern)
+# Route LLM calls through the Respan gateway.
 respan_api_key = os.environ["RESPAN_API_KEY"]
-respan_base_url = os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api")
+respan_base_url = os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api").rstrip("/")
+gateway_api_key = os.getenv("RESPAN_GATEWAY_API_KEY", respan_api_key)
+respan_model = os.getenv("RESPAN_MODEL", "gpt-4o")
+
 os.environ["OPENAI_BASE_URL"] = respan_base_url
-os.environ["OPENAI_API_KEY"] = respan_api_key
+os.environ["OPENAI_API_KEY"] = gateway_api_key
 
-from pydantic_ai import Agent
-from respan_tracing import RespanTelemetry
-from respan_tracing.decorators import workflow
-from respan_exporter_pydantic_ai import instrument_pydantic_ai
 
-agent = Agent(
-    "openai:gpt-4o",
-    system_prompt=(
-        "You are a calculator assistant. You must use the provided tools for any arithmetic. "
-        "Never compute numbers yourself; always call the add tool when asked to add numbers."
-    ),
-)
+def build_agent() -> Agent:
+    agent = Agent(
+        f"openai:{respan_model}",
+        system_prompt=(
+            "You are a calculator assistant. You must use the provided tools for any arithmetic. "
+            "Never compute numbers yourself; always call the add tool when asked to add numbers."
+        ),
+    )
 
-@agent.tool_plain
-def add(a: int, b: int) -> int:
-    """Add two numbers together."""
-    return a + b
+    @agent.tool_plain
+    def add(a: int, b: int) -> int:
+        """Add two numbers together."""
+        return a + b
+
+    return agent
 
 
 @workflow(name="calculator_agent_run")
-def run_calculator_agent(prompt: str):
+def run_calculator_agent(prompt: str) -> str:
+    agent = build_agent()
     result = agent.run_sync(prompt)
     return result.output
 
 
-def main():
-    # 1. Initialize Respan Telemetry
-    telemetry = RespanTelemetry(
+def main() -> None:
+    respan = Respan(
         app_name="pydantic-ai-tool-use",
         api_key=respan_api_key,
         base_url=respan_base_url,
+        instrumentations=[PydanticAIInstrumentor()],
     )
 
-    # 2. Instrument Pydantic AI
-    instrument_pydantic_ai()
-
-    # 3. Run the agent with a prompt that requires a tool call (so the trace contains tool-call spans)
-    output = run_calculator_agent(
-        "Use your add tool to compute 15 + 27, then reply with the result."
-    )
-    print("Agent Output:", output)
-
-    telemetry.flush()
+    try:
+        output = run_calculator_agent(
+            "Use your add tool to compute 15 + 27, then reply with the result."
+        )
+        print("Agent Output:", output)
+    finally:
+        respan.flush()
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-pydantic-ai>=0.0.36
-respan-tracing
-respan-exporter-pydantic-ai
+pydantic-ai>=0.2.0
+respan-ai
+respan-instrumentation-pydantic-ai
 python-dotenv
