@@ -1,0 +1,64 @@
+"""Return the parsed model and the raw provider completion."""
+
+from __future__ import annotations
+
+from typing import Literal
+from typing import TypedDict
+
+from respan_tracing import workflow
+from respan_tracing.exporters import propagate_attributes
+
+from _respan_instructor import create_respan_instructor_client
+
+
+class ReleaseNote(TypedDict):
+    title: str
+    category: Literal["feature", "fix", "docs"]
+    user_visible: bool
+    bullets: list[str]
+
+
+@workflow(name="instructor_example_03_create_with_completion")
+def draft_release_note(client) -> tuple[ReleaseNote, object]:
+    return client.create_with_completion(
+        response_model=ReleaseNote,
+        messages=[
+            {
+                "role": "user",
+                "content": (
+                    "Create a concise release note for a fix that preserves full "
+                    "Instructor tool schemas in traced Respan spans. Include two "
+                    "or three user-visible bullets."
+                ),
+            }
+        ],
+    )
+
+
+def run_create_with_completion_example() -> None:
+    telemetry, client = create_respan_instructor_client(
+        app_name="instructor-create-with-completion"
+    )
+
+    with propagate_attributes(
+        thread_identifier="instructor_example_03_create_with_completion",
+        metadata={
+            "example_script": "03_create_with_completion.py",
+            "instructor_api": "create_with_completion",
+        },
+    ):
+        release_note, completion = draft_release_note(client)
+
+    print(dict(release_note))
+    print(
+        {
+            "completion_type": type(completion).__name__,
+            "completion_id": getattr(completion, "id", None),
+            "completion_model": getattr(completion, "model", None),
+        }
+    )
+    telemetry.flush()
+
+
+if __name__ == "__main__":
+    run_create_with_completion_example()

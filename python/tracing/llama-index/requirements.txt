@@ -1,0 +1,6 @@
+python-dotenv
+respan-ai
+respan-instrumentation-llama-index
+llama-index
+llama-index-llms-openai
+llama-index-embeddings-openai
