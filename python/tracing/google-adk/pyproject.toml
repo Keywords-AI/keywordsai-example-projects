@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "google-adk-python-example"
+version = "0.1.0"
+description = "Google ADK tracing examples for Respan"
+authors = ["Respan <team@respan.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+google-adk = { version = ">=1.17.0", extras = ["extensions"] }
+python-dotenv = ">=1.0.0"
+respan-ai = ">=2.16.1"
+respan-instrumentation-google-adk = ">=0.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
