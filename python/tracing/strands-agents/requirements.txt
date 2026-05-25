@@ -1,0 +1,6 @@
+-e ../../../../respan/python-sdks/respan-sdk
+-e ../../../../respan/python-sdks/respan-tracing
+-e ../../../../respan/python-sdks/respan
+-e ../../../../respan/python-sdks/instrumentations/respan-instrumentation-strands-agents
+python-dotenv>=1.0.1
+strands-agents[openai]>=1.0.0,<2.0.0
