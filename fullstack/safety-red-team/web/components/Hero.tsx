@@ -1,7 +1,6 @@
 import { results, overallASR, rankedBySafety } from "@/lib/data";
 import { usd, asrColor } from "@/lib/format";
 import { CountUp } from "./CountUp";
-import { Card } from "./ui/card";
 
 function Tile({
   label,
@@ -17,7 +16,7 @@ function Tile({
   kind: "pct" | "int";
 }) {
   return (
-    <Card className="p-6 relative">
+    <div className="border border-border p-6 relative">
       <div className="absolute top-0 left-0 h-1 w-16 bg-accent" />
       <div className="label mb-3">{label}</div>
       <div className="mono text-4xl lg:text-5xl font-bold" style={{ color }}>
@@ -26,7 +25,7 @@ function Tile({
       {sub && (
         <div className="mono text-xs mt-2 text-muted-foreground truncate">{sub}</div>
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -73,7 +72,7 @@ export function Hero() {
           </div>
         </div>
 
-        <Card className="p-8 reveal" style={{ animationDelay: "80ms" }}>
+        <div className="border border-border p-8 reveal" style={{ animationDelay: "80ms" }}>
           <div className="label mb-4">RUN MANIFEST</div>
           <dl className="mono text-sm space-y-3">
             {(
@@ -97,7 +96,7 @@ export function Hero() {
               </div>
             ))}
           </dl>
-        </Card>
+        </div>
       </div>
 
       <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4">

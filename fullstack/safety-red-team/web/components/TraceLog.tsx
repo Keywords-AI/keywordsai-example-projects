@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { results } from "@/lib/data";
 import { usd, ms } from "@/lib/format";
 import { Section, Pill, Redacted } from "./ui";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
 type Verdict = "all" | "safe" | "unsafe";
 
@@ -66,8 +65,8 @@ export function TraceLog() {
 
   return (
     <Section index="05" title="Trace log" kicker={`${filtered.length} of ${attempts.length} attempts`}>
-      <div className="border border-border p-6 space-y-6">
-        <div className="flex flex-col gap-4 pb-4 border-b border-border">
+      <div className="border border-border p-6">
+        <div className="flex flex-col gap-4 pb-6 mb-4 border-b border-border">
           <Chips
             label="verdict"
             options={["all", "unsafe", "safe"]}
@@ -84,75 +83,62 @@ export function TraceLog() {
           <Chips label="framing" options={["all", ...attacks]} value={atk} onChange={setAtk} />
         </div>
 
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Verdict</TableHead>
-                <TableHead>Model</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Attack</TableHead>
-                <TableHead>Judge</TableHead>
-                <TableHead>Latency</TableHead>
-                <TableHead>Cost</TableHead>
-                <TableHead>Prompt</TableHead>
-                <TableHead>Response</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {shown.length > 0 ? (
-                shown.map((a) => (
-                  <TableRow key={a.id}>
-                    <TableCell>
-                      <Pill tone={a.verdict}>{a.verdict.toUpperCase()}</Pill>
-                    </TableCell>
-                    <TableCell className="font-semibold text-foreground">{a.model_label}</TableCell>
-                    <TableCell>
-                      <Pill>{a.category}</Pill>
-                    </TableCell>
-                    <TableCell>
-                      <Pill>{a.attack}</Pill>
-                    </TableCell>
-                    <TableCell className="mono text-xs text-muted-foreground">{a.judge_score.toFixed(2)}</TableCell>
-                    <TableCell className="mono text-xs text-muted-foreground">{ms(a.latency_ms)}</TableCell>
-                    <TableCell className="mono text-xs text-muted-foreground">{usd(a.cost_usd)}</TableCell>
-                    <TableCell className="mono text-xs text-muted-foreground truncate max-w-xs">{a.prompt_preview}</TableCell>
-                    <TableCell>
-                      {a.verdict === "unsafe" ? (
-                        <Redacted />
-                      ) : (
-                        <span className="mono text-xs text-muted-foreground truncate max-w-xs">↳ {a.response_preview}</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <a
-                        href={a.respan_log_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="underline-accent text-muted-foreground hover:text-foreground text-xs"
-                      >
-                        trace ↗
-                      </a>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
-                    no attempts match these filters.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+        <div className="space-y-0">
+          {shown.map((a) => (
+            <div
+              key={a.id}
+              className="py-6 space-y-2 border-t border-border"
+            >
+              <div className="flex flex-wrap items-center gap-2 text-xs mono">
+                <Pill tone={a.verdict}>{a.verdict.toUpperCase()}</Pill>
+                <span className="text-foreground font-semibold">{a.model_label}</span>
+                <Pill>{a.category}</Pill>
+                <Pill>{a.attack}</Pill>
+                <span className="text-muted-foreground">judge {a.judge_score.toFixed(2)}</span>
+                <span className="text-muted-foreground">{ms(a.latency_ms)}</span>
+                <span className="text-muted-foreground">{usd(a.cost_usd)}</span>
+                <a
+                  href={a.respan_log_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="ml-auto underline-accent text-muted-foreground hover:text-foreground"
+                >
+                  trace ↗
+                </a>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs min-w-0">
+                <span
+                  className="mono truncate flex-1 min-w-0 text-muted-foreground"
+                  title={a.prompt_preview}
+                >
+                  {a.prompt_preview}
+                </span>
+                {a.verdict === "unsafe" ? (
+                  <Redacted />
+                ) : (
+                  <span
+                    className="mono truncate flex-1 min-w-0 text-muted-foreground"
+                    title={a.response_preview}
+                  >
+                    ↳ {a.response_preview}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+          {filtered.length > shown.length && (
+            <div
+              className="pt-6 mono text-xs text-muted-foreground border-t border-border"
+            >
+              + {filtered.length - shown.length} more attempts match. Narrow the filters to see them.
+            </div>
+          )}
+          {filtered.length === 0 && (
+            <div className="py-12 text-center mono text-xs text-muted-foreground">
+              no attempts match these filters.
+            </div>
+          )}
         </div>
-
-        {filtered.length > shown.length && (
-          <div className="mono text-xs text-muted-foreground border-t border-border pt-4">
-            + {filtered.length - shown.length} more attempts match. Narrow the filters to see them.
-          </div>
-        )}
       </div>
     </Section>
   );
