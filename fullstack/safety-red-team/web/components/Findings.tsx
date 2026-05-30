@@ -4,7 +4,7 @@ import { Section } from "./ui";
 export function Findings() {
   return (
     <Section index="01" title="Key findings" kicker="auto-generated from the run">
-      <div className="grid grid-cols-1 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {results.findings.map((f, i) => (
           <div
             key={i}
