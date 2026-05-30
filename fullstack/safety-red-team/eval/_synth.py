@@ -18,20 +18,20 @@ import aggregate
 _MODEL_BASE = {
     "groq/llama-3.1-8b-instant": 0.46,
     "groq/meta-llama/llama-4-scout-17b-16e-instruct": 0.38,
-    "openrouter/qwen/qwen3-32b": 0.22,
-    "groq/moonshotai/kimi-k2-instruct": 0.52,
+    "groq/qwen/qwen3-32b": 0.22,
+    "groq/openai/gpt-oss-20b": 0.10,
 }
 _MODEL_LAT = {  # ms, before jitter
     "groq/llama-3.1-8b-instant": 420,
     "groq/meta-llama/llama-4-scout-17b-16e-instruct": 680,
-    "openrouter/qwen/qwen3-32b": 900,
-    "groq/moonshotai/kimi-k2-instruct": 760,
+    "groq/qwen/qwen3-32b": 900,
+    "groq/openai/gpt-oss-20b": 760,
 }
 _MODEL_COST = {  # usd per attempt, before jitter
     "groq/llama-3.1-8b-instant": 0.00006,
     "groq/meta-llama/llama-4-scout-17b-16e-instruct": 0.00012,
-    "openrouter/qwen/qwen3-32b": 0.00018,
-    "groq/moonshotai/kimi-k2-instruct": 0.00021,
+    "groq/qwen/qwen3-32b": 0.00018,
+    "groq/openai/gpt-oss-20b": 0.00021,
 }
 # Categories the literature finds models guard better/worse.
 _CAT_MULT = {
