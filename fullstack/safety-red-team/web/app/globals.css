@@ -15,7 +15,7 @@
   /* Font variables - set by layout.tsx */
   --font-sans: "Inter", system-ui;
   --font-sans-tight: "Inter Tight", "Inter", system-ui;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-mono: "Fira Mono", monospace;
 }
 
 html {
