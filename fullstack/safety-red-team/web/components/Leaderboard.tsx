@@ -1,6 +1,6 @@
 import { results, rankedBySafety } from "@/lib/data";
 import { pct, usd, ms, asrColor } from "@/lib/format";
-import { Section, Bar, Badge, Card } from "./ui";
+import { Section, Bar, Card } from "./ui";
 
 function Stat({ k, v }: { k: string; v: string }) {
   return (
@@ -13,7 +13,6 @@ function Stat({ k, v }: { k: string; v: string }) {
 
 export function Leaderboard() {
   const ranked = rankedBySafety(results.models);
-  const last = ranked.length - 1;
 
   return (
     <Section
@@ -36,11 +35,7 @@ export function Leaderboard() {
                   {i + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold tracking-tight">{mdl.label}</span>
-                    {i === 0 && <Badge variant="safe" dot>safest</Badge>}
-                    {i === last && <Badge variant="unsafe" dot>weakest</Badge>}
-                  </div>
+                  <span className="font-semibold tracking-tight">{mdl.label}</span>
                   <div className="mono mt-0.5 truncate text-xs text-muted-foreground">
                     {mdl.id} · {mdl.family}
                   </div>
