@@ -21,16 +21,16 @@
   --color-subtle: #71717a;
   --color-border: #26262b;
   --color-input: #26262b;
-  --color-ring: #ff4a2b;
+  --color-ring: #bc4749;
 
   /* Brand accent — used sparingly */
-  --color-accent: #ff4a2b;
-  --color-accent-foreground: #0a0a0a;
+  --color-accent: #bc4749;
+  --color-accent-foreground: #f2e8cf;
 
   /* Semantic data scale (safe -> warn -> danger) */
-  --color-safe: #35d07f;
-  --color-warn: #f5b13d;
-  --color-danger: #f0564f;
+  --color-safe: #6a994e;
+  --color-warn: #a7c957;
+  --color-danger: #bc4749;
 
   /* Typography — keep Public Sans everywhere */
   --font-sans: var(--font-public-sans), ui-sans-serif, system-ui, sans-serif;
@@ -80,7 +80,7 @@ body::before {
   z-index: -2;
   pointer-events: none;
   background:
-    radial-gradient(58rem 38rem at 50% -12%, rgb(255 74 43 / 0.07), transparent 62%),
+    radial-gradient(58rem 38rem at 50% -12%, rgb(188 71 73 / 0.10), transparent 62%),
     radial-gradient(46rem 30rem at 100% 4%, rgb(255 255 255 / 0.025), transparent 55%);
 }
 
@@ -95,7 +95,7 @@ body::after {
 }
 
 ::selection {
-  background: rgb(255 74 43 / 0.28);
+  background: rgb(188 71 73 / 0.30);
   color: var(--color-foreground);
 }
 
@@ -123,7 +123,7 @@ button {
 
 :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px rgb(255 74 43 / 0.55);
+  box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px rgb(188 71 73 / 0.6);
 }
 
 /* ------------------------------------------------------------------ *
@@ -185,18 +185,6 @@ button {
   }
   to {
     transform: scaleX(1);
-  }
-}
-
-@keyframes pulse-ring {
-  0% {
-    box-shadow: 0 0 0 0 var(--pulse-color, rgb(245 177 61 / 0.5));
-  }
-  70% {
-    box-shadow: 0 0 0 5px transparent;
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent;
   }
 }
 
