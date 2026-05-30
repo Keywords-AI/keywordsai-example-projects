@@ -1,150 +1,162 @@
 @import "tailwindcss";
 
-/* Palette mirrors respan.ai: neutral near-black, white-alpha borders,
-   Inter + JetBrains Mono, semantic green/amber/red for the safety signal. */
+/* Bold Typography Design System - Dark Mode */
 :root {
-  --bg: #060607;
-  --panel: #121316;
-  --panel-2: #1b1c21;
-  --line: rgba(255, 255, 255, 0.08);
-  --line-2: rgba(255, 255, 255, 0.16);
-  --ink: #fafafa;
-  --muted: #a0a0a7;
-  --faint: #6f6f78;
-  --signal: #f55656; /* Respan error red, used sparingly as the red-team accent */
-  --accent: #6483f0; /* Respan periwinkle, used for interactive focus */
-  --success: #31de4b;
-  --warn: #ffb340;
+  --background: #0A0A0A;
+  --foreground: #FAFAFA;
+  --muted: #1A1A1A;
+  --muted-foreground: #737373;
+  --accent: #FF3D00;
+  --accent-foreground: #0A0A0A;
+  --border: #262626;
+  --input: #1A1A1A;
+  --ring: #FF3D00;
+
+  /* Font variables - set by layout.tsx */
+  --font-sans: "Inter", system-ui;
+  --font-sans-tight: "Inter Tight", "Inter", system-ui;
+  --font-mono: "JetBrains Mono", monospace;
 }
 
 html {
   color-scheme: dark;
-  background: var(--bg);
+  background: var(--background);
 }
 
 body {
   background:
-    radial-gradient(120% 75% at 50% -18%, rgba(255, 255, 255, 0.028), transparent 58%),
-    var(--bg);
-  color: var(--ink);
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/></filter><rect width="100" height="100" fill="rgba(255,255,255,0.015)" filter="url(%23noise)"/></svg>')
+    fixed,
+    var(--background);
+  background-size: auto;
+  color: var(--foreground);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(100, 131, 240, 0.3);
-  color: #fff;
+  background: rgba(255, 61, 0, 0.3);
+  color: var(--foreground);
 }
 
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #24252b;
-  border-radius: 10px;
-  border: 2px solid var(--bg);
+  background: var(--border);
+  border: 2px solid var(--background);
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* ---------------------------------------------------------------- atoms --- */
-.display {
-  font-family: var(--font-sans), ui-sans-serif, sans-serif;
-  letter-spacing: -0.02em;
-}
+/* Typography Utilities */
 .mono {
-  font-family: var(--font-mono), ui-monospace, monospace;
+  font-family: var(--font-mono), monospace;
   font-variant-numeric: tabular-nums;
 }
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
+
 .label {
   font-family: var(--font-mono), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 10.5px;
-  color: var(--faint);
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
 }
 
-/* clean redaction tag (responsible-disclosure signature, kept subtle) */
-.redaction {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45em;
-  font-family: var(--font-mono), monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  color: #ff8d8d;
-  background: rgba(245, 86, 86, 0.07);
-  border: 1px solid rgba(245, 86, 86, 0.18);
-  border-radius: 6px;
-  padding: 0.2em 0.55em;
-}
-
-/* section tick */
-.tick::before {
-  content: "";
+/* Interactive Underline (for links/buttons) */
+.underline-accent {
+  position: relative;
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  background: var(--signal);
-  border-radius: 2px;
-  margin-right: 0.6em;
-  vertical-align: middle;
+  text-decoration: none;
+  color: var(--accent);
+  transition: color 150ms cubic-bezier(0.25, 0, 0, 1);
 }
 
-.live-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--warn);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 179, 64, 0.45); }
-  70% { box-shadow: 0 0 0 6px rgba(255, 179, 64, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 179, 64, 0); }
-}
-
-/* ---------------------------------------------------------------- motion -- */
-.reveal {
-  animation: reveal 0.6s cubic-bezier(0.22, 0.7, 0.2, 1) both;
-}
-@keyframes reveal {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
-}
-.bar-fill {
+.underline-accent::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
   transform-origin: left;
-  animation: grow 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-@keyframes grow {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-.cell-in {
-  animation: cellIn 0.5s ease both;
-}
-@keyframes cellIn {
-  from { opacity: 0; transform: scale(0.94); }
-  to { opacity: 1; transform: none; }
+  transition: transform 150ms cubic-bezier(0.25, 0, 0, 1);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .reveal, .bar-fill, .cell-in, .live-dot {
-    animation: none !important;
-  }
+.underline-accent:hover::after {
+  transform: scaleX(1);
 }
 
+/* Active underline (always visible) */
+.underline-accent.active::after {
+  transform: scaleX(1);
+}
+
+/* Link reset */
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Remove default focus outline, will use ring instead */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+/* Button base reset */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Animations */
+.reveal {
+  animation: reveal 500ms cubic-bezier(0.25, 0, 0, 1) both;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Underline scale animation for interactive elements */
+@keyframes underlineScale {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

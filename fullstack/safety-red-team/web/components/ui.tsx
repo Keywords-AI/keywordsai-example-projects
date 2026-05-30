@@ -14,14 +14,11 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section id={id} className="reveal" style={{ scrollMarginTop: 72 }}>
-      <div
-        className="flex items-baseline gap-4 pb-3 mb-7 border-b"
-        style={{ borderColor: "var(--line)" }}
-      >
+    <section id={id} className="reveal py-28 border-b border-border" style={{ scrollMarginTop: 72 }}>
+      <div className="flex items-baseline gap-4 pb-6 mb-12">
         <span className="label">{index}</span>
-        <h2 className="display text-xl sm:text-2xl font-bold">{title}</h2>
-        {kicker && <span className="label ml-auto hidden sm:block">{kicker}</span>}
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-sans-tight font-semibold leading-tight tracking-tighter">{title}</h2>
+        {kicker && <span className="label ml-auto hidden sm:block text-xs">{kicker}</span>}
       </div>
       {children}
     </section>
@@ -38,14 +35,14 @@ export function Pill({
   title?: string;
 }) {
   const styles: Record<string, CSSProperties> = {
-    default: { color: "var(--muted)", borderColor: "var(--line)", background: "var(--panel-2)" },
-    unsafe: { color: "#ff8d8d", borderColor: "rgba(245,86,86,0.32)", background: "rgba(245,86,86,0.08)" },
-    safe: { color: "#46d964", borderColor: "rgba(49,222,75,0.32)", background: "rgba(49,222,75,0.08)" },
+    default: { color: "var(--muted-foreground)" },
+    unsafe: { color: "#FF6B6B" },
+    safe: { color: "#31DE4B" },
   };
   return (
     <span
       title={title}
-      className="mono inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] whitespace-nowrap"
+      className="mono inline-flex items-center border border-border px-2 py-1 text-xs whitespace-nowrap"
       style={styles[tone]}
     >
       {children}
@@ -63,15 +60,20 @@ export function Bar({
   delay?: number;
 }) {
   return (
-    <div className="h-2 w-full rounded-full overflow-hidden" style={{ background: "var(--panel-2)" }}>
+    <div className="h-1 w-full overflow-hidden bg-muted">
       <div
-        className="h-full rounded-full bar-fill"
-        style={{ width: `${Math.max(2, value * 100)}%`, background: color, animationDelay: `${delay}ms` }}
+        className="h-full"
+        style={{
+          width: `${Math.max(2, value * 100)}%`,
+          background: color,
+          animation: `underlineScale 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both`,
+          animationDelay: `${delay}ms`,
+        }}
       />
     </div>
   );
 }
 
 export function Redacted() {
-  return <span className="redaction">▮ REDACTED</span>;
+  return <span className="mono text-xs px-2 py-1 border border-accent text-accent">▮ REDACTED</span>;
 }

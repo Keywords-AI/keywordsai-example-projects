@@ -12,15 +12,15 @@ export function ThreatMatrix() {
 
   return (
     <Section index="03" title="Threat matrix" kicker="attack-success by category × model">
-      <div className="panel p-4 sm:p-5 overflow-x-auto">
+      <div className="border border-border p-6 overflow-x-auto">
         <div className="min-w-[560px]">
-          <div className="grid gap-1.5 mb-1.5" style={{ gridTemplateColumns: gridCols }}>
+          <div className="grid gap-1 mb-1" style={{ gridTemplateColumns: gridCols }}>
             <div />
             {models.map((mdl) => (
               <div
                 key={mdl.id}
                 className="label text-center truncate px-1"
-                style={{ color: hover?.m === mdl.id ? "var(--ink)" : "var(--faint)" }}
+                style={{ color: hover?.m === mdl.id ? "var(--foreground)" : "var(--muted-foreground)" }}
                 title={mdl.id}
               >
                 {mdl.label}
@@ -28,16 +28,16 @@ export function ThreatMatrix() {
             ))}
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {categories.map((cat) => (
               <div
                 key={cat}
-                className="grid gap-1.5 items-stretch"
+                className="grid gap-1 items-stretch"
                 style={{ gridTemplateColumns: gridCols }}
               >
                 <div
-                  className="mono text-[11px] flex items-center justify-end pr-2 text-right"
-                  style={{ color: hover?.c === cat ? "var(--ink)" : "var(--muted)" }}
+                  className="mono text-xs flex items-center justify-end pr-2 text-right"
+                  style={{ color: hover?.c === cat ? "var(--foreground)" : "var(--muted-foreground)" }}
                 >
                   {cat}
                 </div>
@@ -52,18 +52,18 @@ export function ThreatMatrix() {
                       key={mdl.id}
                       onMouseEnter={() => setHover({ c: cat, m: mdl.id })}
                       onMouseLeave={() => setHover(null)}
-                      className="cell-in relative h-11 rounded-md flex items-center justify-center mono text-[12px] transition-all duration-150"
+                      className="relative h-11 flex items-center justify-center mono text-xs transition-all duration-150"
                       style={{
+                        animation: `reveal 500ms cubic-bezier(0.25, 0, 0, 1) both`,
                         animationDelay: `${ci * 30}ms`,
-                        background: asrBg(v, 0.14 + v * 0.5),
-                        color: v > 0.55 ? "#fff" : asrColor(v),
-                        outline: isCell
-                          ? "1px solid var(--ink)"
+                        background: asrBg(v, 0.08 + v * 0.3),
+                        color: v > 0.55 ? "#000" : asrColor(v),
+                        border: isCell
+                          ? "1px solid var(--foreground)"
                           : isRow || isCol
-                            ? "1px solid var(--line-2)"
+                            ? "1px solid var(--border)"
                             : "1px solid transparent",
-                        boxShadow: v > 0.5 ? `0 0 16px ${asrBg(v, v * 0.35)}` : "none",
-                        opacity: dim ? 0.4 : 1,
+                        opacity: dim ? 0.3 : 1,
                       }}
                       title={`${mdl.label} × ${cat}: ${pct(v)} ASR`}
                     >
@@ -75,16 +75,13 @@ export function ThreatMatrix() {
             ))}
           </div>
 
-          <div
-            className="flex items-center gap-3 mt-4 pt-3"
-            style={{ borderTop: "1px solid var(--line)" }}
-          >
+          <div className="flex items-center gap-3 mt-6 pt-4 border-t border-border">
             <span className="label">SAFE 0%</span>
             <div
-              className="h-2 flex-1 rounded-full"
-              style={{ background: "linear-gradient(90deg, #31de4b, #ffb340, #f55656)" }}
+              className="h-1 flex-1"
+              style={{ background: "linear-gradient(90deg, #31DE4B, #FFC107, #FF3D00)" }}
             />
-            <span className="label" style={{ color: "var(--signal)" }}>
+            <span className="label text-accent">
               100% JAILBROKEN
             </span>
           </div>

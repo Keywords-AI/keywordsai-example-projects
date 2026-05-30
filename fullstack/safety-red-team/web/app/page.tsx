@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <>
       <StatusBar />
-      <main className="mx-auto max-w-[1180px] px-5 pb-10 space-y-16">
+      <main className="mx-auto max-w-5xl px-6 sm:px-12 lg:px-16 pb-12 space-y-0">
         <Hero />
         <Findings />
         <Leaderboard />

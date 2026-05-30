@@ -16,15 +16,14 @@ function Tile({
   kind: "pct" | "int";
 }) {
   return (
-    <div className="panel px-4 py-4">
-      <div className="label">{label}</div>
-      <div className="display mono text-3xl font-bold mt-2" style={{ color }}>
+    <div className="border border-border p-6 relative">
+      <div className="absolute top-0 left-0 h-1 w-16 bg-accent" />
+      <div className="label mb-3">{label}</div>
+      <div className="mono text-4xl lg:text-5xl font-bold" style={{ color }}>
         <CountUp value={value} kind={kind} />
       </div>
       {sub && (
-        <div className="mono text-[11px] mt-1 truncate" style={{ color: "var(--faint)" }}>
-          {sub}
-        </div>
+        <div className="mono text-xs mt-2 text-muted-foreground truncate">{sub}</div>
       )}
     </div>
   );
@@ -38,36 +37,26 @@ export function Hero() {
   const asr = overallASR(results);
 
   return (
-    <header className="pt-12 pb-2">
-      <div className="grid lg:grid-cols-[1.4fr_1fr] gap-10 items-start">
+    <header className="pt-20 pb-6">
+      <div className="grid lg:grid-cols-[1.4fr_1fr] gap-12 items-start">
         <div className="reveal">
-          <div className="label tick mb-5">
-            LLM SAFETY EVALUATION · {m.generated_at.slice(0, 10)}
-          </div>
-          <h1 className="display font-extrabold leading-[0.92] tracking-[-0.03em] text-[clamp(2.6rem,7vw,4.6rem)]">
-            The Safety
-            <br />
-            Scorecard<span style={{ color: "var(--signal)" }}>.</span>
+          <div className="label mb-6">LLM SAFETY EVALUATION · {m.generated_at.slice(0, 10)}</div>
+          <h1 className="font-sans-tight font-bold leading-none tracking-tighter text-6xl sm:text-7xl lg:text-8xl mb-8">
+            The Safety<br />Scorecard<span className="text-accent">.</span>
           </h1>
-          <p
-            className="mt-6 max-w-xl text-[15px] leading-relaxed"
-            style={{ color: "var(--muted)" }}
-          >
-            {m.n_models} open models, red-teamed with {m.n_attacks} jailbreak framings across{" "}
-            {m.n_behaviors} harmful behaviors. Every call is routed and judged through the{" "}
-            <span style={{ color: "var(--ink)" }}>Respan gateway</span>, scored by{" "}
-            <span className="mono" style={{ color: "var(--ink)" }}>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground mb-8">
+            {m.n_models} open models, red-teamed with {m.n_attacks} jailbreak framings across {m.n_behaviors} harmful behaviors. Every call is routed and judged through the <span className="text-foreground">Respan gateway</span>, scored by{" "}
+            <span className="mono text-foreground">
               {m.judge}
             </span>
             . Harmful outputs are redacted.
           </p>
-          <div className="mt-7 flex flex-wrap items-center gap-2 text-[11px] mono">
+          <div className="flex flex-wrap items-center gap-3 text-xs mono">
             <a
               href="https://respan.ai"
               target="_blank"
               rel="noreferrer"
-              className="rounded-md border px-2.5 py-1 transition-colors"
-              style={{ borderColor: "var(--line)", color: "var(--ink)" }}
+              className="underline-accent text-foreground"
             >
               respan.ai ↗
             </a>
@@ -75,18 +64,17 @@ export function Hero() {
               href={`https://${m.source_repo}`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-md border px-2.5 py-1"
-              style={{ borderColor: "var(--line)", color: "var(--muted)" }}
+              className="underline-accent text-muted-foreground hover:text-foreground"
             >
               PAIR replication ↗
             </a>
-            {m.redacted && <span className="redaction">▮ REDACTED BY DEFAULT</span>}
+            {m.redacted && <span className="mono text-xs px-2 py-1 border border-accent text-accent">▮ REDACTED</span>}
           </div>
         </div>
 
-        <div className="panel p-5 reveal" style={{ animationDelay: "80ms" }}>
-          <div className="label mb-3">RUN MANIFEST</div>
-          <dl className="mono text-[12.5px]">
+        <div className="border border-border p-8 reveal" style={{ animationDelay: "80ms" }}>
+          <div className="label mb-4">RUN MANIFEST</div>
+          <dl className="mono text-sm space-y-3">
             {(
               [
                 ["models", String(m.n_models)],
@@ -100,20 +88,18 @@ export function Hero() {
             ).map(([k, v], i) => (
               <div
                 key={k}
-                className="flex justify-between gap-4 py-1.5"
-                style={{ borderTop: i === 0 ? "none" : "1px solid var(--line)" }}
+                className="flex justify-between gap-4 py-2"
+                style={{ borderTop: i === 0 ? "none" : `1px solid var(--border)` }}
               >
-                <dt style={{ color: "var(--faint)" }}>{k}</dt>
-                <dd className="text-right truncate" style={{ color: "var(--ink)" }}>
-                  {v}
-                </dd>
+                <dt className="text-muted-foreground">{k}</dt>
+                <dd className="text-right truncate text-foreground">{v}</dd>
               </div>
             ))}
           </dl>
         </div>
       </div>
 
-      <div className="mt-9 grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Tile label="OVERALL ASR" value={asr} color={asrColor(asr)} kind="pct" />
         <Tile
           label="MOST RESISTANT"
@@ -132,7 +118,7 @@ export function Hero() {
         <Tile
           label="TOTAL QUERIES"
           value={m.total_attempts}
-          color="var(--ink)"
+          color="var(--foreground)"
           kind="int"
         />
       </div>
