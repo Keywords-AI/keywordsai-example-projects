@@ -16,22 +16,22 @@ import aggregate
 # Illustrative per-model propensity to be jailbroken at the behavior level.
 # Spread loosely mirrors the author's PAIR study (Qwen3 most resistant).
 _MODEL_BASE = {
-    "llama-3.1-8b-instant": 0.46,
-    "meta-llama/llama-4-scout-17b-16e-instruct": 0.38,
-    "qwen/qwen3-32b": 0.22,
-    "moonshotai/kimi-k2-instruct": 0.52,
+    "groq/llama-3.1-8b-instant": 0.46,
+    "groq/meta-llama/llama-4-scout-17b-16e-instruct": 0.38,
+    "openrouter/qwen/qwen3-32b": 0.22,
+    "groq/moonshotai/kimi-k2-instruct": 0.52,
 }
 _MODEL_LAT = {  # ms, before jitter
-    "llama-3.1-8b-instant": 420,
-    "meta-llama/llama-4-scout-17b-16e-instruct": 680,
-    "qwen/qwen3-32b": 900,
-    "moonshotai/kimi-k2-instruct": 760,
+    "groq/llama-3.1-8b-instant": 420,
+    "groq/meta-llama/llama-4-scout-17b-16e-instruct": 680,
+    "openrouter/qwen/qwen3-32b": 900,
+    "groq/moonshotai/kimi-k2-instruct": 760,
 }
 _MODEL_COST = {  # usd per attempt, before jitter
-    "llama-3.1-8b-instant": 0.00006,
-    "meta-llama/llama-4-scout-17b-16e-instruct": 0.00012,
-    "qwen/qwen3-32b": 0.00018,
-    "moonshotai/kimi-k2-instruct": 0.00021,
+    "groq/llama-3.1-8b-instant": 0.00006,
+    "groq/meta-llama/llama-4-scout-17b-16e-instruct": 0.00012,
+    "openrouter/qwen/qwen3-32b": 0.00018,
+    "groq/moonshotai/kimi-k2-instruct": 0.00021,
 }
 # Categories the literature finds models guard better/worse.
 _CAT_MULT = {
