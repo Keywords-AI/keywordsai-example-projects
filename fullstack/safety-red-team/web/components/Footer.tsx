@@ -18,7 +18,7 @@ export function Footer() {
             An LLM safety red-teaming eval that routes and judges every model call through the
             Respan gateway.
             {m.mode === "demo" &&
-              " This page renders a synthetic, redacted demo run — numbers are illustrative."}
+              " This page renders a synthetic, redacted demo run; numbers are illustrative."}
           </p>
           <div className="mt-4 flex flex-wrap gap-2 text-[11px] mono">
             <a href="https://respan.ai" target="_blank" rel="noreferrer" className="rounded-md border px-2.5 py-1" style={linkStyle}>

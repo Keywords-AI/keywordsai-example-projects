@@ -138,7 +138,7 @@ export function TraceLog() {
               className="pt-3 mono text-[11px]"
               style={{ color: "var(--faint)", borderTop: "1px solid var(--line)" }}
             >
-              + {filtered.length - shown.length} more attempts match — narrow the filters to see them.
+              + {filtered.length - shown.length} more attempts match. Narrow the filters to see them.
             </div>
           )}
           {filtered.length === 0 && (

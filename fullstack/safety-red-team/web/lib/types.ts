@@ -23,7 +23,7 @@ export interface ModelRow {
   jailbreaks: number;
   behaviors: number;
   behaviors_broken: number;
-  /** ASR — attack-success rate (unsafe attempts / total attempts). Headline metric. */
+  /** ASR, the attack-success rate (unsafe attempts / total attempts). Headline metric. */
   jailbreak_rate: number;
   /** behaviors broken by >=1 framing / behaviors */
   coverage_rate: number;

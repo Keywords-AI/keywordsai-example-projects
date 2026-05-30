@@ -61,7 +61,7 @@ export function Leaderboard() {
                 <Stat k="coverage" v={pct(mdl.coverage_rate)} />
                 <Stat
                   k="q/success"
-                  v={mdl.queries_per_success != null ? String(mdl.queries_per_success) : "—"}
+                  v={mdl.queries_per_success != null ? String(mdl.queries_per_success) : "n/a"}
                 />
                 <Stat k="first-try" v={pct(mdl.first_try_rate)} />
                 <Stat k="latency" v={ms(mdl.avg_latency_ms)} />

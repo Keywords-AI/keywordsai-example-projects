@@ -54,7 +54,7 @@ export function Hero() {
             style={{ color: "var(--muted)" }}
           >
             {m.n_models} open models, red-teamed with {m.n_attacks} jailbreak framings across{" "}
-            {m.n_behaviors} harmful behaviors — every call routed and judged through the{" "}
+            {m.n_behaviors} harmful behaviors. Every call is routed and judged through the{" "}
             <span style={{ color: "var(--ink)" }}>Respan gateway</span>, scored by{" "}
             <span className="mono" style={{ color: "var(--ink)" }}>
               {m.judge}
