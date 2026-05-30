@@ -213,6 +213,6 @@ def _findings(models: List[dict], cats: List[str], attacks: List[str]) -> List[s
     if ft:
         out.append(
             f"{sum(ft)/len(ft)*100:.0f}% of broken behaviors fell to the very first query "
-            "(the unframed request) — refusals are brittle."
+            "(the unframed request); refusals are brittle."
         )
     return out
