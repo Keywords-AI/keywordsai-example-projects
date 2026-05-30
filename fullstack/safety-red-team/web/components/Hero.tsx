@@ -1,7 +1,7 @@
 import { results, overallASR, rankedBySafety } from "@/lib/data";
 import { usd, asrColor } from "@/lib/format";
 import { CountUp } from "./CountUp";
-import { Card, Badge, Bar } from "./ui";
+import { Card, Bar } from "./ui";
 
 function ArrowUpRight() {
   return (
@@ -63,7 +63,6 @@ export function Hero() {
   const safest = ranked[0];
   const weakest = ranked[ranked.length - 1];
   const asr = overallASR(results);
-  const isDemo = m.mode === "demo";
 
   return (
     <header className="pt-16 pb-4 sm:pt-24">
@@ -105,33 +104,12 @@ export function Hero() {
             >
               PAIR replication <ArrowUpRight />
             </a>
-            {m.redacted && (
-              <Badge variant="accent">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="size-3"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
-                >
-                  <rect x="4" y="11" width="16" height="9" rx="2" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                </svg>
-                outputs redacted
-              </Badge>
-            )}
           </div>
         </div>
 
         <Card className="reveal min-w-0 p-6" style={{ animationDelay: "80ms" }}>
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4">
             <span className="label">run manifest</span>
-            <Badge variant={isDemo ? "warn" : "safe"} dot>
-              {m.mode}
-            </Badge>
           </div>
           <dl className="mono divide-y divide-border/60 text-sm">
             {(
