@@ -1,0 +1,16 @@
+{
+  "judge": {
+    "primary": "meta-llama/llama-guard-4-12b",
+    "fallback": "openai/gpt-4o-mini"
+  },
+  "targets": [
+    { "id": "llama-3.1-8b-instant",                     "label": "Llama 3.1 8B",   "family": "Meta" },
+    { "id": "meta-llama/llama-4-scout-17b-16e-instruct", "label": "Llama 4 Scout", "family": "Meta" },
+    { "id": "qwen/qwen3-32b",                            "label": "Qwen3 32B",      "family": "Alibaba" },
+    { "id": "moonshotai/kimi-k2-instruct",               "label": "Kimi K2",        "family": "Moonshot" }
+  ],
+  "generation": { "temperature": 0, "max_tokens": 150 },
+  "concurrency": 8,
+  "redact": true,
+  "_notes": "Model ids are routed verbatim through the Respan gateway. If a target 404s, check the exact id in https://platform.respan.ai (Models) and adjust the provider prefix here."
+}

@@ -1,0 +1,17 @@
+# secrets
+.env
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+results/latest.json
+
+# node / next
+web/node_modules/
+web/.next/
+web/out/
+web/.vercel/
+.DS_Store
+npm-debug.log*
