@@ -82,7 +82,7 @@ export function ThreatMatrix() {
             <span className="label">SAFE 0%</span>
             <div
               className="h-2 flex-1 rounded-full"
-              style={{ background: "linear-gradient(90deg, #1fbf75, #e8b53a, #e5484d)" }}
+              style={{ background: "linear-gradient(90deg, #31de4b, #ffb340, #f55656)" }}
             />
             <span className="label" style={{ color: "var(--signal)" }}>
               100% JAILBROKEN

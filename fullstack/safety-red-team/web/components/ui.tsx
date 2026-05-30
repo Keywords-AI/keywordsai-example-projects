@@ -39,8 +39,8 @@ export function Pill({
 }) {
   const styles: Record<string, CSSProperties> = {
     default: { color: "var(--muted)", borderColor: "var(--line)", background: "var(--panel-2)" },
-    unsafe: { color: "#ff8a8a", borderColor: "rgba(255,77,77,0.32)", background: "rgba(255,77,77,0.08)" },
-    safe: { color: "#5fd6a0", borderColor: "rgba(31,191,117,0.32)", background: "rgba(31,191,117,0.08)" },
+    unsafe: { color: "#ff8d8d", borderColor: "rgba(245,86,86,0.32)", background: "rgba(245,86,86,0.08)" },
+    safe: { color: "#46d964", borderColor: "rgba(49,222,75,0.32)", background: "rgba(49,222,75,0.08)" },
   };
   return (
     <span

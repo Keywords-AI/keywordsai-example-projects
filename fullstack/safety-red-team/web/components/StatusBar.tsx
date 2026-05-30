@@ -10,8 +10,8 @@ export function StatusBar() {
       <div className="mx-auto max-w-[1180px] px-5 h-10 flex items-center gap-4 text-[11px] mono">
         <div className="flex items-center gap-2">
           <span
-            className="inline-block w-2.5 h-2.5 rounded-[2px]"
-            style={{ background: "var(--signal)", boxShadow: "0 0 10px var(--signal)" }}
+            className="inline-block w-2.5 h-2.5 rounded-[3px]"
+            style={{ background: "var(--signal)" }}
           />
           <span className="tracking-[0.2em]">
             RESPAN<span style={{ color: "var(--faint)" }}>/</span>RED-TEAM
