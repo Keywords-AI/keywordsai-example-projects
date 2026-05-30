@@ -2,15 +2,22 @@
 
 /* Bold Typography Design System - Dark Mode */
 :root {
-  --background: #0A0A0A;
+  --background: #000000;
   --foreground: #FAFAFA;
   --muted: #1A1A1A;
   --muted-foreground: #737373;
   --accent: #FF3D00;
-  --accent-foreground: #0A0A0A;
+  --accent-foreground: #000000;
   --border: #262626;
   --input: #1A1A1A;
   --ring: #FF3D00;
+  --primary: #FF3D00;
+  --primary-foreground: #000000;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FAFAFA;
+  --destructive: #FF6B6B;
+  --destructive-foreground: #FAFAFA;
+  --card: transparent;
 
   /* Font variables - set by layout.tsx */
   --font-sans: "Public Sans", system-ui;
