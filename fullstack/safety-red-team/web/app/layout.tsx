@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Inter_Tight, Fira_Mono } from "next/font/google";
+import { Public_Sans } from "next/font/google";
 import "./globals.css";
 
-// Bold Typography stack: Inter for body, Inter Tight for headlines, Fira Mono for metrics
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const interTight = Inter_Tight({ subsets: ["latin"], variable: "--font-sans-tight", display: "swap" });
-const mono = Fira_Mono({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-mono", display: "swap" });
+// Bold Typography stack: Public Sans for all typography
+const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Respan Red-Team · LLM Safety Scorecard",
@@ -15,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${interTight.variable} ${mono.variable}`}>
+    <html lang="en" className={`${publicSans.variable}`}>
       {/* suppressHydrationWarning: browser extensions (e.g. Grammarly) inject
           attributes on <body> after SSR, which would otherwise trip hydration. */}
       <body suppressHydrationWarning>

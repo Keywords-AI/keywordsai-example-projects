@@ -13,9 +13,9 @@
   --ring: #FF3D00;
 
   /* Font variables - set by layout.tsx */
-  --font-sans: "Inter", system-ui;
-  --font-sans-tight: "Inter Tight", "Inter", system-ui;
-  --font-mono: "Fira Mono", monospace;
+  --font-sans: "Public Sans", system-ui;
+  --font-sans-tight: "Public Sans", system-ui;
+  --font-mono: "Public Sans", monospace;
 }
 
 html {
