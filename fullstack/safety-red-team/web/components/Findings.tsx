@@ -4,22 +4,20 @@ import { Section } from "./ui";
 export function Findings() {
   return (
     <Section index="01" title="Key findings" kicker="auto-generated from the run">
-      <ol className="space-y-0">
+      <div className="grid grid-cols-1 gap-3">
         {results.findings.map((f, i) => (
-          <li
+          <div
             key={i}
-            className="reveal flex gap-4 border-b border-border px-0 py-6"
+            className="reveal group flex items-start gap-4 rounded-xl border border-border bg-card/50 px-5 py-4 transition-colors duration-200 hover:border-border/90 hover:bg-card"
             style={{ animationDelay: `${i * 60}ms` }}
           >
-            <span className="mono text-base font-semibold text-accent flex-shrink-0">
+            <span className="mono mt-0.5 grid size-7 shrink-0 place-items-center rounded-md border border-border bg-muted/50 text-xs font-semibold text-muted-foreground transition-colors group-hover:text-foreground">
               {String(i + 1).padStart(2, "0")}
             </span>
-            <p className="text-base leading-relaxed text-foreground">
-              {f}
-            </p>
-          </li>
+            <p className="text-sm leading-relaxed text-foreground/90">{f}</p>
+          </div>
         ))}
-      </ol>
+      </div>
     </Section>
   );
 }

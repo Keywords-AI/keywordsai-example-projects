@@ -1,13 +1,13 @@
 import { results, rankedBySafety } from "@/lib/data";
 import { pct, usd, ms, asrColor } from "@/lib/format";
-import { Section, Bar, Pill } from "./ui";
+import { Section, Bar, Badge, Card } from "./ui";
 
 function Stat({ k, v }: { k: string; v: string }) {
   return (
-    <span>
-      <span className="text-muted-foreground">{k} </span>
-      <span className="text-foreground font-semibold">{v}</span>
-    </span>
+    <div className="flex items-baseline gap-1.5">
+      <span className="text-muted-foreground">{k}</span>
+      <span className="text-foreground">{v}</span>
+    </div>
   );
 }
 
@@ -21,40 +21,41 @@ export function Leaderboard() {
       title="Safety leaderboard"
       kicker="ranked by attack-success rate · lower is safer"
     >
-      <div className="space-y-0">
+      <div className="grid grid-cols-1 gap-3">
         {ranked.map((mdl, i) => {
           const asr = mdl.jailbreak_rate;
+          const color = asrColor(asr);
           return (
-            <div
+            <Card
               key={mdl.id}
-              className="border-b border-border px-0 py-6 reveal"
+              className="reveal p-5 transition-colors duration-200 hover:border-border/90"
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <div className="flex items-center gap-4 mb-4">
-                <span className="mono text-sm font-semibold w-6 text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <span className="mono grid size-8 shrink-0 place-items-center rounded-lg border border-border bg-muted/50 text-sm font-semibold text-muted-foreground">
                   {i + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-base">{mdl.label}</span>
-                    {i === 0 && <Pill tone="safe">● SAFEST</Pill>}
-                    {i === last && <Pill tone="unsafe">⚠ WEAKEST</Pill>}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold tracking-tight">{mdl.label}</span>
+                    {i === 0 && <Badge variant="safe" dot>safest</Badge>}
+                    {i === last && <Badge variant="unsafe" dot>weakest</Badge>}
                   </div>
-                  <div className="mono text-xs text-muted-foreground truncate">
+                  <div className="mono mt-0.5 truncate text-xs text-muted-foreground">
                     {mdl.id} · {mdl.family}
                   </div>
                 </div>
-                <div className="w-32 sm:w-48 shrink-0">
-                  <div className="flex justify-between items-baseline mb-2">
+                <div className="w-28 shrink-0 sm:w-44">
+                  <div className="mb-1.5 flex items-baseline justify-between">
                     <span className="label">ASR</span>
-                    <span className="mono font-bold text-lg" style={{ color: asrColor(asr) }}>
+                    <span className="mono text-lg font-semibold" style={{ color }}>
                       {pct(asr)}
                     </span>
                   </div>
-                  <Bar value={asr} color={asrColor(asr)} delay={i * 80} />
+                  <Bar value={asr} color={color} delay={i * 80} />
                 </div>
               </div>
-              <div className="flex flex-wrap gap-x-6 gap-y-2 mono text-xs border-t border-border pt-4">
+              <div className="mono mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-border/60 pt-4 text-xs">
                 <Stat k="coverage" v={pct(mdl.coverage_rate)} />
                 <Stat
                   k="q/success"
@@ -64,7 +65,7 @@ export function Leaderboard() {
                 <Stat k="latency" v={ms(mdl.avg_latency_ms)} />
                 <Stat k="avg cost" v={usd(mdl.avg_cost_usd)} />
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>

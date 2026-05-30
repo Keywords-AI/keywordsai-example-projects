@@ -1,6 +1,6 @@
 import { results, attackAverages } from "@/lib/data";
 import { pct, asrColor } from "@/lib/format";
-import { Section, Bar } from "./ui";
+import { Section, Bar, Card } from "./ui";
 
 export function AttackVectors() {
   const rows = attackAverages(results);
@@ -11,29 +11,38 @@ export function AttackVectors() {
       title="Attack vectors"
       kicker="avg attack-success per framing, across models"
     >
-      <div className="space-y-0">
-        {rows.map((r, i) => (
-          <div
-            key={r.attack}
-            className="grid grid-cols-[96px_1fr_48px] sm:grid-cols-[130px_1fr_56px] items-center gap-4 border-b border-border py-6 px-0"
-          >
-            <span
-              className="mono text-sm truncate"
-              style={{ color: r.attack === "direct" ? "var(--muted-foreground)" : "var(--foreground)" }}
+      <Card className="divide-y divide-border/60 px-5 sm:px-6">
+        {rows.map((r, i) => {
+          const isCtl = r.attack === "direct";
+          const color = asrColor(r.asr);
+          return (
+            <div
+              key={r.attack}
+              className="grid grid-cols-[100px_1fr_52px] items-center gap-4 py-4 sm:grid-cols-[150px_1fr_56px]"
             >
-              {r.attack}
-              {r.attack === "direct" ? " ·ctl" : ""}
-            </span>
-            <Bar value={r.asr} color={asrColor(r.asr)} delay={i * 70} />
-            <span
-              className="mono text-sm text-right font-semibold"
-              style={{ color: asrColor(r.asr) }}
-            >
-              {pct(r.asr)}
-            </span>
-          </div>
-        ))}
-      </div>
+              <div className="flex min-w-0 items-center gap-2">
+                <span
+                  className="mono truncate text-sm"
+                  style={{
+                    color: isCtl ? "var(--color-muted-foreground)" : "var(--color-foreground)",
+                  }}
+                >
+                  {r.attack}
+                </span>
+                {isCtl && (
+                  <span className="rounded border border-border px-1 py-px text-[10px] uppercase tracking-wider text-subtle">
+                    ctl
+                  </span>
+                )}
+              </div>
+              <Bar value={r.asr} color={color} delay={i * 70} />
+              <span className="mono text-right text-sm font-semibold" style={{ color }}>
+                {pct(r.asr)}
+              </span>
+            </div>
+          );
+        })}
+      </Card>
     </Section>
   );
 }
