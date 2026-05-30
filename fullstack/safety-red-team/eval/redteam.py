@@ -45,12 +45,6 @@ def _load_json(name: str):
         return json.load(f)
 
 
-def _preview_goal(goal: str) -> str:
-    if goal.startswith("["):
-        return goal
-    return (goal[:54] + "…") if len(goal) > 55 else goal
-
-
 def _write(results: dict, out: str) -> None:
     paths = (
         [out]
@@ -69,7 +63,7 @@ def _write(results: dict, out: str) -> None:
 
 async def _run_live(cfg, behaviors, attack_names, trace_group, concurrency, redact) -> dict:
     import respan_client
-    from judge import judge as judge_fn
+    from judge import judge as judge_fn, strip_think
     from rich.progress import Progress
 
     client = respan_client.build_client()
@@ -101,12 +95,15 @@ async def _run_live(cfg, behaviors, attack_names, trace_group, concurrency, reda
                 response=call.text,
                 trace_group=trace_group,
             )
-            if redact and v.verdict == "unsafe":
-                preview = "[unsafe output redacted by harness]"
-            elif call.error:
+            if call.error:
                 preview = f"[error: {call.error}]"
+            elif not redact:
+                clean = strip_think(call.text)
+                preview = (clean[:90] + "…") if len(clean) > 91 else (clean or "[empty]")
+            elif v.verdict == "unsafe":
+                preview = "[unsafe output redacted by harness]"
             else:
-                preview = (call.text[:90] + "…") if len(call.text) > 91 else (call.text or "[empty]")
+                preview = "[safe output withheld]"
             attempts.append({
                 "id": cid,
                 "model_id": m["id"],
@@ -118,7 +115,7 @@ async def _run_live(cfg, behaviors, attack_names, trace_group, concurrency, reda
                 "judge_score": round(v.score, 3),
                 "latency_ms": call.latency_ms,
                 "cost_usd": round(call.cost_usd, 7),
-                "prompt_preview": f"[{atk}] " + _preview_goal(b["goal"]),
+                "prompt_preview": f"[{atk}] {b['category']} request",
                 "response_preview": preview,
                 "respan_log_url": f"{PLATFORM}/platform/requests?group={trace_group}",
             })

@@ -45,14 +45,6 @@ _ATK_MULT = {
     "persona": 1.25, "formatting": 0.95,
 }
 
-_REFUSALS = [
-    "I can't help with that.",
-    "I'm sorry, but I can't assist with this request.",
-    "I won't provide that. If you're in danger, please contact local services.",
-    "That request could cause harm, so I have to decline.",
-]
-
-
 def _rand(*parts: str) -> float:
     h = hashlib.sha256("|".join(parts).encode()).hexdigest()
     return int(h[:8], 16) / 0xFFFFFFFF
@@ -60,16 +52,6 @@ def _rand(*parts: str) -> float:
 
 def _clamp(x: float, lo: float = 0.02, hi: float = 0.98) -> float:
     return max(lo, min(hi, x))
-
-
-def _preview_goal(goal: str) -> str:
-    if goal.startswith("["):
-        return goal
-    return (goal[:54] + "…") if len(goal) > 55 else goal
-
-
-def _refusal(seed: str) -> str:
-    return _REFUSALS[int(_rand("ref", seed) * len(_REFUSALS)) % len(_REFUSALS)]
 
 
 def synth_results(
@@ -107,8 +89,8 @@ def synth_results(
                     "judge_score": round(score, 3),
                     "latency_ms": int(lat0 * (0.80 + 0.5 * _rand("lat", mid, bid, atk))),
                     "cost_usd": round(cost0 * (0.80 + 0.6 * _rand("cost", mid, bid, atk)), 7),
-                    "prompt_preview": f"[{atk}] " + _preview_goal(goal),
-                    "response_preview": "[unsafe output redacted by harness]" if unsafe else _refusal(seed),
+                    "prompt_preview": f"[{atk}] {cat} request",
+                    "response_preview": "[unsafe output redacted by harness]" if unsafe else "[safe output withheld]",
                     "respan_log_url": f"{platform}/platform/requests?group={trace_group}",
                 })
 
