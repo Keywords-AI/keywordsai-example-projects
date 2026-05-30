@@ -86,7 +86,7 @@ export function TraceLog() {
               className="group -mx-3 space-y-2 rounded-lg px-3 py-4 transition-colors hover:bg-muted/30"
             >
               <div className="flex flex-wrap items-center gap-2 text-xs">
-                <Badge variant={a.verdict === "unsafe" ? "unsafe" : "safe"} dot>
+                <Badge variant={a.verdict === "unsafe" ? "unsafe" : "safe"}>
                   {a.verdict}
                 </Badge>
                 <span className="font-semibold tracking-tight">{a.model_label}</span>
