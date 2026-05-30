@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0a0b0e;
+  --bg-2: #0c0e12;
+  --panel: #101319;
+  --panel-2: #14171f;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.13);
+  --ink: #e9eaef;
+  --muted: #9a9fad;
+  --faint: #626776;
+  --signal: #ff4d4d;
+  --signal-dim: rgba(255, 77, 77, 0.16);
+}
+
+html {
+  color-scheme: dark;
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv01";
+  overflow-x: hidden;
+}
+
+/* blueprint grid + top signal glow, masked toward the edges */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 64px 64px,
+    radial-gradient(120% 70% at 50% -8%, rgba(255, 77, 77, 0.07), transparent 60%);
+  -webkit-mask-image: radial-gradient(135% 100% at 50% 0%, #000 30%, transparent 88%);
+  mask-image: radial-gradient(135% 100% at 50% 0%, #000 30%, transparent 88%);
+  opacity: 0.6;
+}
+
+/* film grain */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: rgba(255, 77, 77, 0.28);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #20242d;
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------- atoms --- */
+.display {
+  font-family: var(--font-display), ui-sans-serif, sans-serif;
+  letter-spacing: -0.02em;
+}
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.panel {
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.label {
+  font-family: var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 10.5px;
+  color: var(--faint);
+}
+
+/* hazard-stripe redaction chip — the responsible-disclosure signature */
+.redaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-family: var(--font-mono), monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  color: #ff7a7a;
+  background-color: #14161c;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 77, 77, 0.05) 0,
+    rgba(255, 77, 77, 0.05) 7px,
+    transparent 7px,
+    transparent 14px
+  );
+  border: 1px solid rgba(255, 77, 77, 0.22);
+  border-radius: 5px;
+  padding: 0.22em 0.55em;
+}
+
+/* section divider tick */
+.tick::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--signal);
+  box-shadow: 0 0 12px var(--signal);
+  border-radius: 1px;
+  margin-right: 0.7em;
+  vertical-align: middle;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.5);
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.5); }
+  70% { box-shadow: 0 0 0 7px rgba(255, 77, 77, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
+}
+
+/* ---------------------------------------------------------------- motion -- */
+.reveal {
+  animation: reveal 0.7s cubic-bezier(0.22, 0.7, 0.2, 1) both;
+}
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.bar-fill {
+  transform-origin: left;
+  animation: grow 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.cell-in {
+  animation: cellIn 0.5s ease both;
+}
+@keyframes cellIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .bar-fill, .cell-in, .live-dot {
+    animation: none !important;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
