@@ -28,8 +28,8 @@
   --color-accent-foreground: #f2e8cf;
 
   /* Semantic data scale (safe -> warn -> danger) */
-  --color-safe: #6a994e;
-  --color-warn: #a7c957;
+  --color-safe: #008000;
+  --color-warn: #149014;
   --color-danger: #bc4749;
 
   /* Typography — keep Public Sans everywhere */
