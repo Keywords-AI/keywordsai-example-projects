@@ -1,6 +1,24 @@
 import { results, overallASR, rankedBySafety } from "@/lib/data";
 import { usd, asrColor } from "@/lib/format";
 import { CountUp } from "./CountUp";
+import { Card, Badge, Bar } from "./ui";
+
+function ArrowUpRight() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M7 17 17 7M8 7h9v9" />
+    </svg>
+  );
+}
 
 function Tile({
   label,
@@ -8,24 +26,34 @@ function Tile({
   value,
   color,
   kind,
+  meter,
 }: {
   label: string;
   sub?: string;
   value: number;
   color: string;
   kind: "pct" | "int";
+  meter?: number;
 }) {
   return (
-    <div className="border border-border p-6 relative">
-      <div className="absolute top-0 left-0 h-1 w-16 bg-accent" />
-      <div className="label mb-3">{label}</div>
-      <div className="mono text-4xl lg:text-5xl font-bold" style={{ color }}>
+    <Card className="group min-w-0 p-5 transition-colors duration-200 hover:border-border/90">
+      <div className="flex items-center gap-2">
+        {meter != null && (
+          <span className="size-1.5 rounded-full" style={{ background: color }} />
+        )}
+        <span className="label">{label}</span>
+      </div>
+      <div
+        className="mono mt-3 text-4xl font-semibold tracking-tight"
+        style={{ color }}
+      >
         <CountUp value={value} kind={kind} />
       </div>
       {sub && (
-        <div className="mono text-xs mt-2 text-muted-foreground truncate">{sub}</div>
+        <div className="mono mt-1.5 truncate text-xs text-muted-foreground">{sub}</div>
       )}
-    </div>
+      {meter != null && <Bar value={meter} color={color} className="mt-4" delay={300} />}
+    </Card>
   );
 }
 
@@ -35,46 +63,77 @@ export function Hero() {
   const safest = ranked[0];
   const weakest = ranked[ranked.length - 1];
   const asr = overallASR(results);
+  const isDemo = m.mode === "demo";
 
   return (
-    <header className="pt-20 pb-6">
-      <div className="grid lg:grid-cols-[1.4fr_1fr] gap-12 items-start">
-        <div className="reveal">
-          <div className="label mb-6">LLM SAFETY EVALUATION · {m.generated_at.slice(0, 10)}</div>
-          <h1 className="font-sans-tight font-bold leading-none tracking-tighter text-6xl sm:text-7xl lg:text-8xl mb-8">
-            The Safety<br />Scorecard<span className="text-accent">.</span>
+    <header className="pt-16 pb-4 sm:pt-24">
+      <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.5fr_1fr] lg:gap-14">
+        <div className="reveal min-w-0">
+          <div className="mb-6 flex items-center gap-2.5">
+            <span className="label">LLM safety evaluation</span>
+            <span className="size-1 rounded-full bg-subtle" />
+            <span className="mono text-[11px] text-subtle">{m.generated_at.slice(0, 10)}</span>
+          </div>
+
+          <h1 className="text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-7xl">
+            The Safety
+            <br />
+            Scorecard<span className="text-accent">.</span>
           </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground mb-8">
-            {m.n_models} open models, red-teamed with {m.n_attacks} jailbreak framings across {m.n_behaviors} harmful behaviors. Every call is routed and judged through the <span className="text-foreground">Respan gateway</span>, scored by{" "}
-            <span className="mono text-foreground">
-              {m.judge}
-            </span>
-            . Harmful outputs are redacted.
+
+          <p className="mt-7 max-w-xl text-[0.95rem] leading-relaxed text-muted-foreground">
+            {m.n_models} open models, red-teamed with {m.n_attacks} jailbreak framings across{" "}
+            {m.n_behaviors} harmful behaviors. Every call is routed and judged through the{" "}
+            <span className="text-foreground">Respan gateway</span>, scored by{" "}
+            <span className="mono text-foreground">{m.judge}</span>. Harmful outputs are redacted.
           </p>
-          <div className="flex flex-wrap items-center gap-3 text-xs mono">
+
+          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs">
             <a
               href="https://respan.ai"
               target="_blank"
               rel="noreferrer"
-              className="underline-accent text-foreground"
+              className="group mono inline-flex items-center gap-1 font-medium text-foreground"
             >
-              respan.ai ↗
+              respan.ai <ArrowUpRight />
             </a>
             <a
               href={`https://${m.source_repo}`}
               target="_blank"
               rel="noreferrer"
-              className="underline-accent text-muted-foreground hover:text-foreground"
+              className="group mono link inline-flex items-center gap-1"
             >
-              PAIR replication ↗
+              PAIR replication <ArrowUpRight />
             </a>
-            {m.redacted && <span className="mono text-xs px-2 py-1 border border-accent text-accent">▮ REDACTED</span>}
+            {m.redacted && (
+              <Badge variant="accent">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="size-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <rect x="4" y="11" width="16" height="9" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                outputs redacted
+              </Badge>
+            )}
           </div>
         </div>
 
-        <div className="border border-border p-8 reveal" style={{ animationDelay: "80ms" }}>
-          <div className="label mb-4">RUN MANIFEST</div>
-          <dl className="mono text-sm space-y-3">
+        <Card className="reveal min-w-0 p-6" style={{ animationDelay: "80ms" }}>
+          <div className="mb-4 flex items-center justify-between">
+            <span className="label">run manifest</span>
+            <Badge variant={isDemo ? "warn" : "safe"} dot>
+              {m.mode}
+            </Badge>
+          </div>
+          <dl className="mono divide-y divide-border/60 text-sm">
             {(
               [
                 ["models", String(m.n_models)],
@@ -85,40 +144,41 @@ export function Hero() {
                 ["judge", m.judge],
                 ["est. cost", usd(m.total_cost_usd)],
               ] as const
-            ).map(([k, v], i) => (
-              <div
-                key={k}
-                className="flex justify-between gap-4 py-2"
-                style={{ borderTop: i === 0 ? "none" : `1px solid var(--border)` }}
-              >
-                <dt className="text-muted-foreground">{k}</dt>
-                <dd className="text-right truncate text-foreground">{v}</dd>
+            ).map(([k, v]) => (
+              <div key={k} className="flex items-baseline justify-between gap-4 py-2.5">
+                <dt className="shrink-0 text-muted-foreground">{k}</dt>
+                <dd className="min-w-0 flex-1 truncate text-right text-foreground">{v}</dd>
               </div>
             ))}
           </dl>
-        </div>
+        </Card>
       </div>
 
-      <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Tile label="OVERALL ASR" value={asr} color={asrColor(asr)} kind="pct" />
+      <div
+        className="reveal mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4"
+        style={{ animationDelay: "160ms" }}
+      >
+        <Tile label="overall ASR" value={asr} color={asrColor(asr)} kind="pct" meter={asr} />
         <Tile
-          label="MOST RESISTANT"
+          label="most resistant"
           sub={safest.label}
           value={safest.jailbreak_rate}
           color={asrColor(safest.jailbreak_rate)}
           kind="pct"
+          meter={safest.jailbreak_rate}
         />
         <Tile
-          label="LEAST RESISTANT"
+          label="least resistant"
           sub={weakest.label}
           value={weakest.jailbreak_rate}
           color={asrColor(weakest.jailbreak_rate)}
           kind="pct"
+          meter={weakest.jailbreak_rate}
         />
         <Tile
-          label="TOTAL QUERIES"
+          label="total queries"
           value={m.total_attempts}
-          color="var(--foreground)"
+          color="var(--color-foreground)"
           kind="int"
         />
       </div>

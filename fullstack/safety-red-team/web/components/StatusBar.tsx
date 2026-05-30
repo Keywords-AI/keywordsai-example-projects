@@ -2,44 +2,45 @@ import { results } from "@/lib/data";
 
 export function StatusBar() {
   const m = results.meta;
+  const isDemo = m.mode === "demo";
+  const dot = isDemo ? "var(--color-warn)" : "var(--color-safe)";
+  const ring = isDemo ? "rgb(245 177 61 / 0.5)" : "rgb(53 208 127 / 0.5)";
+
   return (
-    <div className="sticky top-0 z-30 border-b border-border bg-background">
-      <div className="mx-auto max-w-5xl px-6 sm:px-12 h-12 flex items-center gap-4 text-xs mono">
-        <div className="flex items-center gap-2 text-foreground">
-          <span
-            className="inline-block w-2 h-2"
-            style={{ background: "var(--accent)" }}
-          />
-          <span className="tracking-wider">
-            RESPAN<span className="text-muted-foreground">/</span>RED-TEAM
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/70 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 max-w-5xl items-center gap-3 px-6 text-xs sm:px-12 lg:px-16">
+        <div className="flex items-center gap-2.5">
+          <span className="grid size-5 place-items-center rounded-md bg-accent/15 ring-1 ring-inset ring-accent/30">
+            <span className="size-1.5 rounded-full bg-accent" />
+          </span>
+          <span className="mono font-semibold tracking-tight text-foreground">
+            Respan
+            <span className="px-1 text-subtle">/</span>
+            <span className="text-muted-foreground">red-team</span>
           </span>
         </div>
-        <span className="hidden md:inline truncate text-muted-foreground">
+
+        <span className="mono hidden truncate text-muted-foreground md:inline">
           {m.gateway}
         </span>
-        <div className="ml-auto flex items-center gap-4 text-muted-foreground">
+
+        <div className="mono ml-auto flex items-center gap-3 text-muted-foreground">
           <span className="hidden sm:inline">
-            JUDGE <span className="text-foreground font-semibold">{m.judge}</span>
+            judge <span className="text-foreground">{m.judge}</span>
           </span>
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-2 rounded-full border border-border bg-muted/40 px-2.5 py-1">
             <span
-              className="inline-block w-1.5 h-1.5 rounded-full bg-yellow-500"
+              className="size-1.5 rounded-full"
               style={{
-                animation: "pulse 2s infinite",
-                boxShadow: "0 0 0 0 rgba(250, 204, 21, 0.45)",
+                background: dot,
+                animation: "pulse-ring 2s infinite",
+                ["--pulse-color" as string]: ring,
               }}
             />
             {m.mode.toUpperCase()}
           </span>
         </div>
       </div>
-      <style>{`
-        @keyframes pulse {
-          0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.45); }
-          70% { box-shadow: 0 0 0 6px rgba(250, 204, 21, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
-        }
-      `}</style>
-    </div>
+    </header>
   );
 }
