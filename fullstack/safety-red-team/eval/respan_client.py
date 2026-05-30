@@ -36,7 +36,8 @@ def build_client() -> AsyncOpenAI:
             "(free credits at https://platform.respan.ai)."
         )
     base = os.environ.get("RESPAN_BASE_URL", DEFAULT_BASE_URL)
-    return AsyncOpenAI(api_key=key, base_url=base)
+    # max_retries gives the SDK exponential backoff on 429s (the gateway rate-limits free keys).
+    return AsyncOpenAI(api_key=key, base_url=base, max_retries=8, timeout=90.0)
 
 
 def _extract_cost(resp: Any) -> float:
