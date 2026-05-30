@@ -135,7 +135,7 @@ async def _run_live(cfg, behaviors, attack_names, trace_group, concurrency, reda
         attempts=attempts,
         mode="live",
         gateway=gateway,
-        judge=jcfg["primary"],
+        judge=jcfg["primary"] or jcfg["fallback"],
         strategy="template (single-shot framings)",
         trace_group=trace_group,
         source_repo="github.com/islamborghini/JailbreakingLLMs",
