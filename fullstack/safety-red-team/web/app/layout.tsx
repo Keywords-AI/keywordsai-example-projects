@@ -15,7 +15,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${mono.variable}`}>
-      <body>
+      {/* suppressHydrationWarning: browser extensions (e.g. Grammarly) inject
+          attributes on <body> after SSR, which would otherwise trip hydration. */}
+      <body suppressHydrationWarning>
         <div className="relative z-10">{children}</div>
       </body>
     </html>
