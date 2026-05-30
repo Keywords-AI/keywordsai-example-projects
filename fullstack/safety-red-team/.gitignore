@@ -15,3 +15,8 @@ web/out/
 web/.vercel/
 .DS_Store
 npm-debug.log*
+
+# this is a JS/Next subproject: re-include web/lib/, which the repo-root
+# .gitignore excludes via the Python `lib/` virtualenv rule.
+!web/lib/
+!web/lib/**
