@@ -13,7 +13,7 @@ export function ThreatMatrix() {
   return (
     <Section index="03" title="Threat matrix" kicker="attack-success by category × model">
       <Card className="overflow-x-auto p-5 sm:p-6">
-        <div className="min-w-[560px]">
+        <div className="mx-auto min-w-[560px] max-w-2xl">
           <div className="mb-1.5 grid gap-1.5" style={{ gridTemplateColumns: gridCols }}>
             <div />
             {models.map((mdl) => (
@@ -86,7 +86,7 @@ export function ThreatMatrix() {
           <div className="mt-6 flex items-center gap-3 border-t border-border/60 pt-5">
             <span className="label">safe 0%</span>
             <div
-              className="h-1.5 flex-1 rounded-full"
+              className="h-1.5 flex-1 rounded-sm"
               style={{
                 background:
                   "linear-gradient(90deg, var(--color-safe), var(--color-warn), var(--color-danger))",
