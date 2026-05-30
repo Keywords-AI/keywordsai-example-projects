@@ -7,9 +7,9 @@ export const ms = (x: number) => `${Math.round(x)}ms`;
 
 // --- safety scale: 0% (safe) -> green, 50% -> amber, 100% -> red -------------
 type RGB = { r: number; g: number; b: number };
-const SAFE: RGB = { r: 49, g: 222, b: 75 }; // #31de4b Respan success
-const MID: RGB = { r: 255, g: 179, b: 64 }; // #ffb340 Respan warning
-const HOT: RGB = { r: 245, g: 86, b: 86 }; // #f55656 Respan error
+const SAFE: RGB = { r: 106, g: 153, b: 78 }; // #6a994e green (safe)
+const MID: RGB = { r: 167, g: 201, b: 87 }; // #a7c957 yellow-green (warning)
+const HOT: RGB = { r: 188, g: 71, b: 73 }; // #bc4749 red (danger)
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
