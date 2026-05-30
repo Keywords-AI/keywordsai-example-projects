@@ -38,6 +38,7 @@ export function TraceLog() {
   const [cat, setCat] = useState("all");
   const [atk, setAtk] = useState("all");
   const [verdict, setVerdict] = useState<Verdict>("all");
+  const [expanded, setExpanded] = useState(false);
 
   const filtered = useMemo(
     () =>
@@ -51,7 +52,8 @@ export function TraceLog() {
     [attempts, model, cat, atk, verdict],
   );
 
-  const shown = filtered.slice(0, 80);
+  const LIMIT = 4;
+  const shown = expanded ? filtered : filtered.slice(0, LIMIT);
 
   return (
     <Section
@@ -123,17 +125,34 @@ export function TraceLog() {
             </div>
           ))}
 
-          {filtered.length > shown.length && (
-            <div className="mono pt-5 text-xs text-muted-foreground">
-              + {filtered.length - shown.length} more attempts match. Narrow the filters to see them.
-            </div>
-          )}
           {filtered.length === 0 && (
             <div className="mono py-12 text-center text-xs text-muted-foreground">
               no attempts match these filters.
             </div>
           )}
         </div>
+
+        {filtered.length > LIMIT && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="mono mt-4 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-2.5 text-xs text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+          >
+            {expanded ? "Show less" : `Show ${filtered.length - LIMIT} more`}
+            <svg
+              viewBox="0 0 24 24"
+              className={`size-3.5 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+        )}
       </Card>
     </Section>
   );
