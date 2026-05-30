@@ -124,9 +124,9 @@ export function Bar({
   className?: string;
 }) {
   return (
-    <div className={cn("h-1.5 w-full overflow-hidden rounded-full bg-muted", className)}>
+    <div className={cn("h-1.5 w-full overflow-hidden rounded-sm bg-muted", className)}>
       <div
-        className="h-full origin-left rounded-full"
+        className="h-full origin-left rounded-sm"
         style={{
           width: `${Math.max(2, value * 100)}%`,
           background: color,
