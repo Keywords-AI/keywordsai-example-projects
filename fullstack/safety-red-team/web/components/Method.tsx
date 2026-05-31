@@ -106,8 +106,8 @@ export function Method() {
       <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[240px_1fr] lg:gap-14">
         {/* Attacker <-> Target loop */}
         <div className="mx-auto flex w-full max-w-[240px] flex-col items-center gap-1 lg:self-center">
-          <div className="w-full rounded-md border border-danger/40 bg-danger/10 py-3 text-center">
-            <span className="text-lg font-semibold tracking-tight text-danger">Attacker</span>
+          <div className="w-full rounded-md border border-danger bg-danger py-3 text-center">
+            <span className="text-lg font-semibold tracking-tight text-white">Attacker</span>
           </div>
 
           <div className="flex w-full items-start justify-between px-4 text-muted-foreground">
@@ -126,8 +126,8 @@ export function Method() {
             </div>
           </div>
 
-          <div className="w-full rounded-md border border-safe/40 bg-safe/10 py-3 text-center">
-            <span className="text-lg font-semibold tracking-tight text-safe">Target</span>
+          <div className="w-full rounded-md border border-safe bg-safe py-3 text-center">
+            <span className="text-lg font-semibold tracking-tight text-white">Target</span>
           </div>
         </div>
 
