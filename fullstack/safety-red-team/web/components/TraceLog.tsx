@@ -57,7 +57,7 @@ export function TraceLog() {
 
   return (
     <Section
-      index="05"
+      index="06"
       title="Trace log"
       kicker={`${filtered.length} of ${attempts.length} attempts`}
     >

@@ -16,7 +16,7 @@ export function Leaderboard() {
 
   return (
     <Section
-      index="02"
+      index="03"
       title="Safety leaderboard"
       kicker="ranked by attack-success rate · lower is safer"
     >

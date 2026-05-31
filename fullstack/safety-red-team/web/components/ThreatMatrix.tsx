@@ -11,7 +11,7 @@ export function ThreatMatrix() {
   const gridCols = `minmax(104px, 1.2fr) repeat(${models.length}, minmax(0, 1fr))`;
 
   return (
-    <Section index="03" title="Threat matrix" kicker="attack-success by category × model">
+    <Section index="04" title="Threat matrix" kicker="attack-success by category × model">
       <Card className="overflow-x-auto p-5 sm:p-6">
         <div className="mx-auto min-w-[560px] max-w-2xl">
           <div className="mb-1.5 grid gap-1.5" style={{ gridTemplateColumns: gridCols }}>

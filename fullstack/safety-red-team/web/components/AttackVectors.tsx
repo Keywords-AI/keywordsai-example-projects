@@ -7,7 +7,7 @@ export function AttackVectors() {
 
   return (
     <Section
-      index="04"
+      index="05"
       title="Attack vectors"
       kicker="avg attack-success per framing, across models"
     >
