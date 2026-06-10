@@ -26,7 +26,8 @@ python 02_pipeline_run.py
 ```
 
 Gateway scripts route OpenAI-compatible Haystack calls through Respan and require `RESPAN_API_KEY`.
-The prompt-management gateway script also requires `RESPAN_PROMPT_ID` for a deployed Respan prompt.
+They do not require `OPENAI_API_KEY`: the examples point Haystack's OpenAI-compatible components at the Respan gateway, and keys with credits can use Respan-managed model credentials.
+Prompt-management gateway scripts also require `RESPAN_PROMPT_ID` for a deployed Respan prompt.
 Set `RESPAN_PROMPT_VARIABLES_JSON` when the managed prompt uses custom variable names.
 
 Run the complex edge case separately:
@@ -84,3 +85,4 @@ python complex_edge_cases.py
 | `41_openai_generator_gateway.py` | `OpenAIGenerator` through Respan gateway |
 | `42_openai_chat_generator_gateway.py` | `OpenAIChatGenerator` through Respan gateway |
 | `43_prompt_management_gateway.py` | Respan prompt management through Haystack `OpenAIChatGenerator` and the Respan gateway |
+| `44_prompt_management_extra_body_gateway.py` | Respan prompt management passed through Haystack `generation_kwargs.extra_body` while the LLM call uses Respan gateway credits |
