@@ -1,0 +1,32 @@
+{
+  "name": "respan-strands-agents-typescript-examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01:basic": "tsx 01_basic_invoke.ts",
+    "02:tool": "tsx 02_tool_call.ts",
+    "03:streaming": "tsx 03_streaming.ts",
+    "04:structured": "tsx 04_structured_output.ts",
+    "05:graph": "tsx 05_graph.ts",
+    "06:swarm": "tsx 06_swarm.ts",
+    "07:mcp": "tsx 07_mcp_tool.ts",
+    "all": "npm run 01:basic && npm run 02:tool && npm run 03:streaming && npm run 04:structured && npm run 05:graph && npm run 06:swarm && npm run 07:mcp",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@respan/instrumentation-strands-agents": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-strands-agents",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "@strands-agents/sdk": "^1.5.0",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}
