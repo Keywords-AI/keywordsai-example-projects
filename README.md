@@ -14,6 +14,7 @@ python/
     langfuse/             # Langfuse integration example
     instructor/           # Instructor library example
     langchain/            # LangChain agent example
+    cursor-sdk/           # Cursor SDK hook replay tracing examples
   gateway/
     google-genai/         # Google Gemini SDK example
   dev-tools/

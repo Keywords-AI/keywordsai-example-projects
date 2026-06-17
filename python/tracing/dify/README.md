@@ -1,32 +1,46 @@
-# Dify AI Tracing Examples
+# Dify Python Tracing Examples
 
-This directory contains examples of how to integrate Respan observability with
-the Dify Python SDK request/response models using the local unpublished
-`respan-exporter-dify` compatibility layer.
+These examples exercise the first-party `respan-instrumentation-dify` package
+with the real `dify-client` Python package.
 
-These examples run through the Respan gateway with only `RESPAN_API_KEY`.
-No `DIFY_API_KEY` is required.
+The scripts load the repo-root `.env` in `respan-example-projects/.env`. If no
+`DIFY_BASE_URL` is configured, they start a local Dify-compatible HTTP server so
+the full tracing path is runnable with only `RESPAN_API_KEY`.
 
 ## Setup
 
-1. Copy `.env.example` to `.env` and fill in your Respan credentials:
-   ```bash
-   cp .env.example .env
-   ```
+From this directory:
 
-2. Install dependencies via poetry:
-   ```bash
-   poetry install
-   ```
+```bash
+uv venv .venv
+uv pip install --python .venv/bin/python -r requirements.txt
+uv pip install --python .venv/bin/python \
+  -e ../../../../respan/python-sdks/respan-sdk \
+  -e ../../../../respan/python-sdks/respan-tracing \
+  -e ../../../../respan/python-sdks/respan \
+  -e ../../../../respan/python-sdks/instrumentations/respan-instrumentation-dify
+```
 
-3. Run an example:
-   ```bash
-   poetry run python hello_world.py
-   ```
+## Run
 
-## Notes
+```bash
+.venv/bin/python run_all.py
+```
 
-- `RESPAN_BASE_URL` defaults to `https://api.respan.ai/api`
-- `RESPAN_MODEL` defaults to `gpt-4o-mini`
-- The local SDK translates Dify request objects such as `ChatRequest` into
-  OpenAI-compatible gateway calls under the hood
+Primary examples:
+
+- `01_chat_blocking.py` - blocking chat messages
+- `02_chat_streaming.py` - streaming chat messages
+- `03_completion.py` - text completion messages
+- `04_workflow_and_api.py` - workflow run, parameters, conversations, messages, feedback, rename
+- `05_respan_context_and_files.py` - file upload, multimodal file reference, propagated Respan attributes
+
+Compatibility aliases are kept for the previous filenames:
+`hello_world.py`, `streaming.py`, `tracing.py`, `gateway.py`, and
+`respan_params.py`.
+
+## Real Dify Apps
+
+Set `DIFY_BASE_URL` and one or more Dify app keys in `.env` to run against a
+real Dify deployment. Without those variables, the local test server returns
+Dify-shaped responses and the Respan instrumentation still exports live spans.
