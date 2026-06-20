@@ -1,0 +1,26 @@
+{
+  "name": "respan-superagent-typescript-example",
+  "version": "0.1.0",
+  "description": "TypeScript Superagent safety-agent tracing examples for Respan",
+  "type": "module",
+  "scripts": {
+    "01:guard": "tsx 01_guard.ts",
+    "02:redact": "tsx 02_redact.ts",
+    "03:workflow": "tsx 03_workflow.ts",
+    "04:scan": "tsx 04_scan.ts",
+    "all": "tsx 01_guard.ts && tsx 02_redact.ts && tsx 03_workflow.ts && tsx 04_scan.ts"
+  },
+  "dependencies": {
+    "@respan/instrumentation-superagent": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-superagent",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^17.2.3",
+    "safety-agent": "0.1.6",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}
