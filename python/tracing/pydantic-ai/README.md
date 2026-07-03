@@ -1,6 +1,6 @@
 # Pydantic AI Respan Integration Examples
 
-These examples demonstrate how to integrate `pydantic-ai` with Respan tracing using `respan-ai` and `respan-instrumentation-pydantic-ai`.
+These examples demonstrate how to integrate `pydantic-ai` v2 with Respan tracing using `respan-ai` and `respan-instrumentation-pydantic-ai`.
 
 ## Setup
 
@@ -15,15 +15,21 @@ pip install -r requirements.txt
 > ```bash
 > pip install -e /path/to/respan/python-sdks/respan \
 >             -e /path/to/respan/python-sdks/instrumentations/respan-instrumentation-pydantic-ai \
->             pydantic-ai python-dotenv
+>             'pydantic-ai>=2.0.0' python-dotenv
 > ```
 
-2. Set your environment variables:
+2. Use the repository root `.env` values:
 
 ```bash
-cp .env.example .env
+RESPAN_API_KEY=...
+RESPAN_BASE_URL=https://api.respan.ai/api
+RESPAN_GATEWAY_BASE_URL=https://api.respan.ai/api
+RESPAN_GATEWAY_API_KEY=...
+PYDANTIC_AI_GATEWAY_MODEL=gemini/gemini-2.5-flash
+PYDANTIC_AI_ANTHROPIC_GATEWAY_MODEL=claude-sonnet-4-5-20250929
 ```
-Then edit `.env` and set your Respan API key. All examples route LLM calls through Respan, so no OpenAI key is needed.
+
+The examples build an explicit `OpenAIChatModel` with the Respan gateway client, so Pydantic AI v2 does not fall back to the default Responses API. Model selection is `PYDANTIC_AI_GATEWAY_MODEL`, then `RESPAN_VERTEX_GATEWAY_MODEL`, then `RESPAN_MODEL`. The Anthropic example uses the same Respan gateway path with `PYDANTIC_AI_ANTHROPIC_GATEWAY_MODEL`, so no `ANTHROPIC_API_KEY` is required in the application runtime.
 
 ## Examples
 
@@ -46,8 +52,8 @@ python 01_hello_world.py
 
 1. `Respan(...)` initializes the OpenTelemetry pipeline for Respan.
 2. `PydanticAIInstrumentor()` enables Pydantic AI's native OpenTelemetry spans and normalizes them for Respan.
-3. Traces, spans, and metrics from LLM calls (and tools/workflows) are sent to Respan and visible in the dashboard.
-4. **Gateway pattern**: By pointing `OPENAI_BASE_URL` and `OPENAI_API_KEY` to Respan, LLM calls are routed through Respan, so only `RESPAN_API_KEY` is required.
+3. Examples construct `OpenAIChatModel` with `OpenAIProvider(base_url=RESPAN_GATEWAY_BASE_URL, api_key=RESPAN_GATEWAY_API_KEY)`.
+4. Traces, spans, and metrics from LLM calls, tools, and workflows are sent to Respan and visible in the dashboard.
 
 ## Further reading
 
