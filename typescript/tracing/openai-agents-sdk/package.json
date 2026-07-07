@@ -1,0 +1,31 @@
+{
+  "name": "respan-openai-agents-sdk-examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "basic": "tsx 01_gateway_basic.ts",
+    "tools": "tsx 02_gateway_tool.ts",
+    "agent-tool": "tsx 03_gateway_agent_as_tool.ts",
+    "handoff": "tsx 04_gateway_handoff.ts",
+    "guardrails": "tsx 05_gateway_guardrails.ts",
+    "structured-session": "tsx 06_gateway_structured_session.ts",
+    "streaming-lifecycle": "tsx 07_gateway_streaming_lifecycle.ts",
+    "all": "npm run basic && npm run tools && npm run agent-tool && npm run handoff && npm run guardrails && npm run structured-session && npm run streaming-lifecycle",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@openai/agents": "0.12.0",
+    "@respan/instrumentation-openai-agents": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-openai-agents",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^16.4.7",
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "tsx": "^4.20.3",
+    "typescript": "^5.7.3"
+  }
+}

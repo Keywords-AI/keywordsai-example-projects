@@ -1,0 +1,30 @@
+{
+  "name": "respan-pydantic-ai-typescript-examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "openai": "tsx 01_openai_gateway.ts",
+    "anthropic": "tsx 02_anthropic_gateway.ts",
+    "tools": "tsx 03_tool_span.ts",
+    "structured": "tsx 04_structured_output.ts",
+    "openinference": "tsx 05_openinference_span.ts",
+    "agent-workflow": "tsx 06_agent_workflow_spans.ts",
+    "all": "npm run openai && npm run anthropic && npm run tools && npm run structured && npm run openinference && npm run agent-workflow",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@respan/instrumentation-pydantic-ai": "file:../../../respan/javascript-sdks/instrumentations/respan-instrumentation-pydantic-ai",
+    "@respan/respan": "file:../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^16.4.7",
+    "openai": "^6.42.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "tsx": "^4.20.3",
+    "typescript": "^5.7.3"
+  }
+}
