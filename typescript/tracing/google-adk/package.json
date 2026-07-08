@@ -1,0 +1,27 @@
+{
+  "name": "respan-google-adk-typescript-examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01:hello": "tsx 01_hello_world.ts",
+    "02:tool": "tsx 02_tool_use.ts",
+    "03:streaming": "tsx 03_streaming_attributes.ts",
+    "all": "npm run 01:hello && npm run 02:tool && npm run 03:streaming",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/adk": "^1.2.0",
+    "@respan/instrumentation-google-adk": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-google-adk",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}
