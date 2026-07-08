@@ -1,0 +1,6 @@
+python-dotenv>=1.0.1
+httpx>=0.28.0
+pydantic>=2.10.0
+respan-ai
+respan-instrumentation-writer
+writerai>=4.0.1
