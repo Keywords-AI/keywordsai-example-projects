@@ -1,0 +1,30 @@
+{
+  "name": "respan-codex-sdk-typescript-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01:basic": "tsx 01_basic_turn.ts",
+    "02:streaming": "tsx 02_streamed_turn.ts",
+    "03:structured": "tsx 03_structured_output.ts",
+    "04:image": "tsx 04_image_input.ts",
+    "05:resume": "tsx 05_resume_thread.ts",
+    "06:file-change": "tsx 06_workspace_file_change.ts",
+    "07:error": "tsx 07_expected_error.ts",
+    "examples": "tsx run_all.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@openai/codex-sdk": "^0.141.0",
+    "@respan/instrumentation-codex-sdk": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-codex-sdk",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "respan-cursor-sdk-typescript-example",
+  "version": "0.1.0",
+  "description": "TypeScript Cursor SDK tracing examples for Respan",
+  "type": "module",
+  "scripts": {
+    "01:prompt": "tsx 01_agent_prompt.ts",
+    "02:stream": "tsx 02_agent_stream.ts",
+    "03:custom-tools": "tsx 03_custom_tools.ts",
+    "all": "tsx 01_agent_prompt.ts && tsx 02_agent_stream.ts && tsx 03_custom_tools.ts"
+  },
+  "dependencies": {
+    "@cursor/sdk": "^1.0.19",
+    "@respan/instrumentation-cursor": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-cursor",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}
