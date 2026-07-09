@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "watson-orchestrate-adk-python-example"
+version = "0.1.0"
+description = "IBM watsonx Orchestrate ADK tracing examples for Respan"
+authors = ["Respan <team@respan.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.15"
+ibm-watsonx-orchestrate = ">=2.12.0,<3.0.0"
+python-dotenv = ">=1.0.0"
+respan-ai = ">=2.17.0"
+respan-instrumentation-watson-orchestrate-adk = ">=0.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

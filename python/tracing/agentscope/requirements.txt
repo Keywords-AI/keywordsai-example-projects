@@ -1,0 +1,4 @@
+python-dotenv>=1.0.1
+respan-ai
+respan-instrumentation-agentscope
+agentscope>=2.0.3,<3.0.0
