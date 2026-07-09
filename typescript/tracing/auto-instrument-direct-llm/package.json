@@ -1,0 +1,31 @@
+{
+  "name": "respan-auto-instrument-direct-llm-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "batch": "tsx 01_batch_auto_instrument.ts",
+    "openai-gateway": "tsx 01_openai_gateway_auto.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
+    "@google-cloud/vertexai": "^1.10.0",
+    "@openrouter/sdk": "^0.13.7",
+    "@respan/instrumentation-anthropic": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-anthropic",
+    "@respan/instrumentation-azure-openai": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-azure-openai",
+    "@respan/instrumentation-openai": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-openai",
+    "@respan/instrumentation-openrouter": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-openrouter",
+    "@respan/instrumentation-vertexai": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-vertexai",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "@traceloop/instrumentation-openai": "^0.14.4",
+    "dotenv": "^16.4.7",
+    "openai": "^4.80.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
