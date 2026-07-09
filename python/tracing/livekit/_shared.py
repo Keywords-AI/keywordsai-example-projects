@@ -83,7 +83,6 @@ def print_result(label: str, value: Any) -> None:
 
 
 def finish_respan(respan: Respan) -> None:
-    respan.flush()
     shutdown = getattr(respan, "shutdown", None)
     if shutdown is not None:
         shutdown()

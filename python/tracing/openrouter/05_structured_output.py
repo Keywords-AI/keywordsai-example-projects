@@ -36,5 +36,4 @@ def run(topic: str) -> dict[str, object]:
 try:
     run("observability for OpenRouter apps")
 finally:
-    respan.flush()
     respan.shutdown()

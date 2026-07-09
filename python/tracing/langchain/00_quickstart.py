@@ -10,7 +10,6 @@ When RESPAN_API_KEY is set, the LangChain run is exported to Respan.
 from __future__ import annotations
 
 import os
-from contextlib import suppress
 
 from dotenv import find_dotenv, load_dotenv
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
@@ -46,19 +45,14 @@ def langchain_instrumentation_quickstart() -> None:
     if telemetry:
         config = add_respan_callback(config)
 
-    try:
-        response = model.invoke(
-            [
-                SystemMessage(content="Reply in one short sentence."),
-                HumanMessage(content="Say hello to Respan tracing."),
-            ],
-            config=config,
-        )
-        print(response.content)
-    finally:
-        if telemetry:
-            with suppress(Exception):
-                telemetry.flush()
+    response = model.invoke(
+        [
+            SystemMessage(content="Reply in one short sentence."),
+            HumanMessage(content="Say hello to Respan tracing."),
+        ],
+        config=config,
+    )
+    print(response.content)
 
 
 if __name__ == "__main__":

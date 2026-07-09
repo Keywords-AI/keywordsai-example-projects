@@ -82,11 +82,6 @@ async def main() -> None:
         instrumentations=[AutoGenInstrumentor()],
         metadata={"example": "autogen-round-robin-team", "script": SCRIPT_NAME},
     )
-    try:
-        await run_round_robin_team()
-    finally:
-        respan.flush()
-
-
+    await run_round_robin_team()
 if __name__ == "__main__":
     asyncio.run(main())

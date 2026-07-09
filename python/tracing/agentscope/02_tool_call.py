@@ -64,7 +64,6 @@ async def main() -> None:
         result = await agent.reply(UserMsg(name="user", content="What is Tokyo weather?"))
         print(result.get_text_content())
     finally:
-        respan.flush()
         respan.shutdown()
 
 

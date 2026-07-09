@@ -91,5 +91,4 @@ def print_trace_lookup(*, workflow_name: str, run_id: str) -> None:
 
 def flush_and_shutdown(respan: Respan, logger: braintrust.Logger) -> None:
     logger.flush()
-    respan.flush()
     respan.shutdown()

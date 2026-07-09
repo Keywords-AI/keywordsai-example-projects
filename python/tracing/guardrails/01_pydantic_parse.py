@@ -41,7 +41,6 @@ def run_pydantic_parse() -> None:
     print("Workflow name:", WORKFLOW_NAME)
     print("Validation passed:", result.validation_passed)
     print("Validated output:", result.validated_output)
-    respan.flush()
 
 
 if __name__ == "__main__":

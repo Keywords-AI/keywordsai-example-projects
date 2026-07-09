@@ -34,7 +34,6 @@ async def main() -> None:
     try:
         classification, violations = await run_guard()
     finally:
-        respan.flush()
         respan.shutdown()
 
     print("classification:", classification)

@@ -36,7 +36,6 @@ async def run_tool_use_agent() -> None:
 
     print_result("Agent answer", response)
     print_result("Example run id", context.run_id)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

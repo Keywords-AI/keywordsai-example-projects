@@ -69,5 +69,4 @@ def run(question: str) -> str:
 try:
     run("What is the weather in Tokyo?")
 finally:
-    respan.flush()
     respan.shutdown()

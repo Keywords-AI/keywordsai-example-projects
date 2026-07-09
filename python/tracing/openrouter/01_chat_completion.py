@@ -24,5 +24,4 @@ def run() -> str:
 try:
     print(run())
 finally:
-    respan.flush()
     respan.shutdown()

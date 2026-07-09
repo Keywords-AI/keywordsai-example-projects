@@ -49,7 +49,6 @@ async def main() -> None:
     try:
         await run_plugin_tool_call()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

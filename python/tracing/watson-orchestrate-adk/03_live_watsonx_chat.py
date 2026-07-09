@@ -32,7 +32,6 @@ def main() -> None:
     try:
         run_live_watsonx_chat()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

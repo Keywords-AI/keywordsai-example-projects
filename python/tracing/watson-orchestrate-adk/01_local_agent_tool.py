@@ -56,7 +56,6 @@ def main() -> None:
     try:
         run_local_agent_tool()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

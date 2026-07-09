@@ -17,7 +17,6 @@ def run_embedding() -> None:
 
     print_result("Embedding dimensions", len(embedding))
     print_result("Example run id", context.run_id)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

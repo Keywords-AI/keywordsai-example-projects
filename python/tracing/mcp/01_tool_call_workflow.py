@@ -24,7 +24,6 @@ async def main() -> None:
     try:
         with Respan.propagate_attributes(**workflow_attributes(WORKFLOW_NAME)):
             await run_tool_call_example()
-        respan.flush()
     finally:
         respan.shutdown()
 

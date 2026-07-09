@@ -46,12 +46,7 @@ def main() -> None:
         instrumentations=[PydanticAIInstrumentor()],
     )
 
-    try:
-        output = travel_planning_workflow("Paris")
-        print("Workflow Output:", output)
-    finally:
-        respan.flush()
-
-
+    output = travel_planning_workflow("Paris")
+    print("Workflow Output:", output)
 if __name__ == "__main__":
     main()

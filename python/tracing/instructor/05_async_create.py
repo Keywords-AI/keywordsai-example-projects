@@ -52,7 +52,6 @@ async def run_async_create_example() -> None:
         project_brief = await create_project_brief(client)
 
     print(dict(project_brief))
-    telemetry.flush()
 
 
 if __name__ == "__main__":

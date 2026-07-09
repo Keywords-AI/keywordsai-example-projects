@@ -57,7 +57,6 @@ def run_create_with_completion_example() -> None:
             "completion_model": getattr(completion, "model", None),
         }
     )
-    telemetry.flush()
 
 
 if __name__ == "__main__":

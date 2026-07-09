@@ -52,7 +52,6 @@ async def run_agent_tool_workflow() -> str:
         print(result)
         return result
     finally:
-        respan.flush()
         respan.shutdown()
 
 

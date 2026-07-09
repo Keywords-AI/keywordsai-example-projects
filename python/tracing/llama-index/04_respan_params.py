@@ -21,7 +21,6 @@ def run_query_engine() -> None:
 
     print_result("Query answer", response)
     print_result("Example run id", context.run_id)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

@@ -52,7 +52,6 @@ def run_rerank() -> None:
             print_start(EXAMPLE_NAME, custom_identifier)
             text = _rerank_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

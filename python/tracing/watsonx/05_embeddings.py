@@ -63,7 +63,6 @@ def run_embeddings() -> None:
     try:
         output = asyncio.run(_run_embeddings(custom_identifier))
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_lookup(EXAMPLE_NAME, custom_identifier, output)

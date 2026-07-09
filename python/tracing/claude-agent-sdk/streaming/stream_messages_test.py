@@ -5,29 +5,18 @@ Stream Messages — Process each message type as it arrives.
 Shows how to handle the different message types streamed by the SDK:
 SystemMessage, UserMessage, AssistantMessage, ResultMessage, StreamEvent.
 
+Setup:
+    pip install claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
+
 Run:
     python streaming/stream_messages_test.py
 """
 
-from dotenv import load_dotenv
-
-load_dotenv(override=True)
-
 import asyncio
-import os
 
 import pytest
+import claude_agent_sdk
 from claude_agent_sdk import ClaudeAgentOptions, ResultMessage
-
-from respan_exporter_anthropic_agents import RespanAnthropicAgentsExporter
-
-API_KEY = os.getenv("RESPAN_API_KEY")
-BASE_URL = os.getenv("RESPAN_BASE_URL")
-
-exporter = RespanAnthropicAgentsExporter(
-    api_key=API_KEY,
-    base_url=BASE_URL,
-)
 
 
 @pytest.mark.asyncio
@@ -41,7 +30,7 @@ async def test_stream_messages():
 
     message_flow = []
 
-    async for message in exporter.query(
+    async for message in claude_agent_sdk.query(
         prompt="Write a haiku about programming.",
         options=options,
     ):
@@ -49,9 +38,9 @@ async def test_stream_messages():
         message_flow.append(msg_type)
 
         if msg_type == "SystemMessage":
-            print(f"  [System] Session started")
+            print("  [System] Session started")
         elif msg_type == "UserMessage":
-            print(f"  [User] Prompt submitted")
+            print("  [User] Prompt submitted")
         elif msg_type == "AssistantMessage":
             # Extract text content from assistant response
             text_parts = []
@@ -66,8 +55,16 @@ async def test_stream_messages():
             print(f"  [{msg_type}]")
 
     print(f"\nMessage flow: {' -> '.join(message_flow)}")
-    print("All messages traced automatically via exporter.query()")
+    print("All messages traced automatically via auto-instrumented query()")
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv(override=True)
+
+    from respan import Respan
+    from respan_instrumentation_claude_agent_sdk import ClaudeAgentSDKInstrumentor
+
+    respan = Respan(instrumentations=[ClaudeAgentSDKInstrumentor()])
     asyncio.run(test_stream_messages())

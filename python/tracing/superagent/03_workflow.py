@@ -44,7 +44,6 @@ async def main() -> None:
 
     print("classification:", classification)
     print("redacted:", redacted)
-    respan.flush()
     respan.shutdown()
 
 

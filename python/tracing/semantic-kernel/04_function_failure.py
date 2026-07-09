@@ -43,7 +43,6 @@ async def main() -> None:
     try:
         await run_function_failure()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

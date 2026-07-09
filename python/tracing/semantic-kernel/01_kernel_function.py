@@ -40,7 +40,6 @@ async def main() -> None:
     try:
         await run_kernel_function()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

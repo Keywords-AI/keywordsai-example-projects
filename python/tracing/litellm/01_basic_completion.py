@@ -32,16 +32,11 @@ def litellm_basic_completion() -> str:
 
 def main() -> None:
     respan = create_respan("litellm-basic-completion")
-    try:
-        output = run_with_example_attributes(
-            respan,
-            workflow_name=WORKFLOW_NAME,
-            action=litellm_basic_completion,
-        )
-        print(output)
-    finally:
-        respan.telemetry.flush()
-
-
+    output = run_with_example_attributes(
+        respan,
+        workflow_name=WORKFLOW_NAME,
+        action=litellm_basic_completion,
+    )
+    print(output)
 if __name__ == "__main__":
     main()

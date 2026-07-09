@@ -872,7 +872,6 @@ def main() -> int:
             results.append(result)
             print(f"case={result.case_id} status={result.status} detail={result.detail}")
     finally:
-        respan.flush()
         respan.shutdown()
 
     failed = [result for result in results if result.status == "failed"]

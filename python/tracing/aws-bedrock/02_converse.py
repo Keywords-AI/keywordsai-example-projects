@@ -42,7 +42,4 @@ def run_converse() -> str:
 
 if __name__ == "__main__":
     respan = create_respan()
-    try:
-        print(run_converse())
-    finally:
-        respan.flush()
+    print(run_converse())

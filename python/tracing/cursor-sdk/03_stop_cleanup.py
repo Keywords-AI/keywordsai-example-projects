@@ -45,7 +45,6 @@ def main() -> None:
                 flush=True,
             )
 
-    respan.telemetry.flush()
     state = json.loads(state_file.read_text()) if state_file.exists() else {}
     print(f"state_after_stop={state}", flush=True)
 

@@ -1,4 +1,8 @@
-import { query } from "@anthropic-ai/claude-agent-sdk";
+import * as _ClaudeAgentSDK from "@anthropic-ai/claude-agent-sdk";
+import { Respan } from "@respan/respan";
+import { ClaudeAgentSDKInstrumentor } from "@respan/instrumentation-claude-agent-sdk";
+
+export const ClaudeAgentSDK = { ..._ClaudeAgentSDK };
 
 export const QUERY_TIMEOUT_SECONDS = Number.parseInt(
   process.env.RESPAN_QUERY_TIMEOUT_SECONDS ?? "90",
@@ -11,12 +15,23 @@ type MessageHandler = (
   context: { sessionId?: string },
 ) => Promise<void> | void;
 
-export function suppressStderr(): () => void {
-  const originalWrite = process.stderr.write.bind(process.stderr);
-  process.stderr.write = (() => true) as typeof process.stderr.write;
-  return () => {
-    process.stderr.write = originalWrite as typeof process.stderr.write;
-  };
+let respanInit: Promise<Respan> | undefined;
+
+export function initializeRespan(): Promise<Respan> {
+  if (!respanInit) {
+    const respan = new Respan({
+      apiKey: process.env.RESPAN_API_KEY,
+      baseURL: process.env.RESPAN_BASE_URL,
+      instrumentations: [
+        new ClaudeAgentSDKInstrumentor({
+          sdkModule: ClaudeAgentSDK,
+          agentName: "claude-agent-sdk",
+        }),
+      ],
+    });
+    respanInit = respan.initialize().then(() => respan);
+  }
+  return respanInit;
 }
 
 function sleep(ms: number): Promise<void> {
@@ -39,18 +54,19 @@ interface QueryForResultResult {
 export async function queryForResult(
   params: QueryForResultOptions,
 ): Promise<QueryForResultResult> {
+  await initializeRespan();
+
   const timeoutSeconds = params.timeoutSeconds ?? QUERY_TIMEOUT_SECONDS;
   const messageTypes: string[] = [];
   let sessionId: string | undefined;
   let result: QueryMessage | undefined;
   let timedOut = false;
 
-  const stream = query({
+  const stream = (await ClaudeAgentSDK.query({
     prompt: params.prompt,
     options: params.options as any,
-  }) as AsyncGenerator<unknown, void, unknown>;
+  })) as AsyncGenerator<unknown, void, unknown>;
 
-  const restoreStderr = suppressStderr();
   const timeoutId = setTimeout(() => {
     timedOut = true;
     void stream.return?.(undefined);
@@ -83,7 +99,6 @@ export async function queryForResult(
         }
       }
     } catch (error) {
-      // Claude Code subprocess can exit non-zero after already yielding result.
       if (!result) {
         throw error;
       }
@@ -91,7 +106,6 @@ export async function queryForResult(
   } finally {
     clearTimeout(timeoutId);
     await sleep(250);
-    restoreStderr();
   }
 
   if (timedOut) {
@@ -101,9 +115,5 @@ export async function queryForResult(
     throw new Error("Query completed without a result message.");
   }
 
-  return {
-    result,
-    sessionId,
-    messageTypes,
-  };
+  return { result, sessionId, messageTypes };
 }

@@ -28,7 +28,6 @@ def run_predict_signature_example() -> None:
         span.set_output({"answer": prediction.answer})
 
     print_result("Answer", prediction.answer)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

@@ -43,7 +43,4 @@ def run_example() -> str:
 
 if __name__ == "__main__":
     respan = Respan(instrumentations=[VertexAIInstrumentor()])
-    try:
-        run_example()
-    finally:
-        respan.flush()
+    run_example()

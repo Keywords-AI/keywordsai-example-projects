@@ -121,7 +121,6 @@ def run_tool_calling() -> None:
             print_start(EXAMPLE_NAME, custom_identifier)
             text = _tool_calling_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

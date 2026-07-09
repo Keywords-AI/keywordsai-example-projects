@@ -38,7 +38,6 @@ def run_text_generation() -> None:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             output = _text_generation_workflow(model)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_lookup(EXAMPLE_NAME, custom_identifier, output)

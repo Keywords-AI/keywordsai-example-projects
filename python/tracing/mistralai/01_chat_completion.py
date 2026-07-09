@@ -44,7 +44,6 @@ def run_chat_completion() -> None:
                 print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
                 text = _chat_completion_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

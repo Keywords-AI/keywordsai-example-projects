@@ -108,7 +108,6 @@ async def main():
         for k, v in results.items():
             print(f"  {k}: {v}")
     finally:
-        keywords_ai.flush()
         await asyncio.sleep(1)
 
     print("\nOutput files:")

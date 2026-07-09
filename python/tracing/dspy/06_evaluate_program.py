@@ -60,7 +60,6 @@ def run_evaluate_program_example() -> None:
         span.set_output({"score": result.score})
 
     print_result("Score", result.score)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

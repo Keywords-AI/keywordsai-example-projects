@@ -19,7 +19,6 @@ def hello_world() -> None:
     respan, _ = create_respan(app_name="agno-01-hello-world")
     output = run_hello_world()
     print_result("Agent output", output)
-    respan.flush()
 
 
 if __name__ == "__main__":

@@ -37,7 +37,6 @@ def run_basic_agent() -> None:
 
     print(f"RESPAN_EXAMPLE_RUN_ID={run_id}")
     print(result)
-    respan.flush()
 
 
 if __name__ == "__main__":

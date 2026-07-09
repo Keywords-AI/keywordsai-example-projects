@@ -39,7 +39,6 @@ async def run_async_prediction() -> None:
             print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
             text = await _async_run_prediction_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

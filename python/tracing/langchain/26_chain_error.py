@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnableLambda
 
-from _shared import flush, init_telemetry, tracing_config
+from _shared import init_telemetry, tracing_config
 
 
 def chain_error() -> None:
@@ -13,13 +13,8 @@ def chain_error() -> None:
 
     runnable = RunnableLambda(fail)
     try:
-        try:
-            runnable.invoke("trigger", config=tracing_config("chain_error"))
-        except RuntimeError as exc:
-            print(f"caught: {exc}")
-    finally:
-        flush(telemetry)
-
-
+        runnable.invoke("trigger", config=tracing_config("chain_error"))
+    except RuntimeError as exc:
+        print(f"caught: {exc}")
 if __name__ == "__main__":
     chain_error()

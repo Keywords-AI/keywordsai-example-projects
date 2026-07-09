@@ -76,7 +76,6 @@ def run_validation_hooks_example() -> None:
 
     print(dict(escalation))
     print(hook_counts)
-    telemetry.flush()
 
 
 if __name__ == "__main__":

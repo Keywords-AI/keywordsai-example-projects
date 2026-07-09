@@ -36,7 +36,6 @@ def run_chain_of_thought_example() -> None:
         )
 
     print_result("Summary", prediction.summary)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

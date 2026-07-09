@@ -41,7 +41,6 @@ def run_tool_calling_agent() -> str:
     try:
         return execute_tool_calling_agent_workflow()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

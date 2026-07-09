@@ -44,7 +44,6 @@ def run_text_completion() -> None:
             print_start(EXAMPLE_NAME, custom_identifier)
             text = _text_completion_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

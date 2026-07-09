@@ -44,16 +44,11 @@ def litellm_streaming_completion() -> str:
 
 def main() -> None:
     respan = create_respan("litellm-streaming-completion")
-    try:
-        output = run_with_example_attributes(
-            respan,
-            workflow_name=WORKFLOW_NAME,
-            action=litellm_streaming_completion,
-        )
-        print(output)
-    finally:
-        respan.telemetry.flush()
-
-
+    output = run_with_example_attributes(
+        respan,
+        workflow_name=WORKFLOW_NAME,
+        action=litellm_streaming_completion,
+    )
+    print(output)
 if __name__ == "__main__":
     main()

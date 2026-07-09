@@ -29,16 +29,11 @@ def main() -> None:
         instrumentations=[PydanticAIInstrumentor()],
     )
 
-    try:
-        agent = Agent(
-            model=f"anthropic:{anthropic_model}",
-            system_prompt="You are a helpful assistant. Keep answers brief.",
-        )
-        result = agent.run_sync("What is the largest ocean on Earth?")
-        print("Agent Output:", result.output)
-    finally:
-        respan.flush()
-
-
+    agent = Agent(
+        model=f"anthropic:{anthropic_model}",
+        system_prompt="You are a helpful assistant. Keep answers brief.",
+    )
+    result = agent.run_sync("What is the largest ocean on Earth?")
+    print("Agent Output:", result.output)
 if __name__ == "__main__":
     main()

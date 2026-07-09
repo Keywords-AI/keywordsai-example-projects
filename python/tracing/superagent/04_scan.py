@@ -37,7 +37,6 @@ async def main() -> None:
     try:
         result = await run_scan()
     finally:
-        respan.flush()
         respan.shutdown()
 
     if result.startswith("DAYTONA_API_KEY"):

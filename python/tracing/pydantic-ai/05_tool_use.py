@@ -55,14 +55,9 @@ def main() -> None:
         instrumentations=[PydanticAIInstrumentor()],
     )
 
-    try:
-        output = run_calculator_agent(
-            "Use your add tool to compute 15 + 27, then reply with the result."
-        )
-        print("Agent Output:", output)
-    finally:
-        respan.flush()
-
-
+    output = run_calculator_agent(
+        "Use your add tool to compute 15 + 27, then reply with the result."
+    )
+    print("Agent Output:", output)
 if __name__ == "__main__":
     main()

@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnableLambda
 
-from _shared import flush, init_telemetry, tracing_config
+from _shared import init_telemetry, tracing_config
 
 
 def runnable_with_retry() -> None:
@@ -16,15 +16,10 @@ def runnable_with_retry() -> None:
         return f"recovered: {text}"
 
     runnable = RunnableLambda(flaky).with_retry(stop_after_attempt=2)
-    try:
-        response = runnable.invoke(
-            "respan",
-            config=tracing_config("runnable_with_retry"),
-        )
-        print(response)
-    finally:
-        flush(telemetry)
-
-
+    response = runnable.invoke(
+        "respan",
+        config=tracing_config("runnable_with_retry"),
+    )
+    print(response)
 if __name__ == "__main__":
     runnable_with_retry()

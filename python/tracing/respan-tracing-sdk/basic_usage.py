@@ -41,7 +41,6 @@ async def main():
     try:
         await parent_trace()
     finally:
-        telemetry.flush()
         await asyncio.sleep(1)
 
 

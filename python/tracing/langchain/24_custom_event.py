@@ -5,7 +5,7 @@ from typing import Any
 from langchain_core.callbacks import dispatch_custom_event
 from langchain_core.runnables import RunnableLambda
 
-from _shared import flush, init_telemetry, tracing_config
+from _shared import init_telemetry, tracing_config
 
 
 def custom_event() -> None:
@@ -20,15 +20,10 @@ def custom_event() -> None:
         return {"text": payload["text"].upper()}
 
     runnable = RunnableLambda(normalize)
-    try:
-        response = runnable.invoke(
-            {"text": "respan"},
-            config=tracing_config("custom_event"),
-        )
-        print(response)
-    finally:
-        flush(telemetry)
-
-
+    response = runnable.invoke(
+        {"text": "respan"},
+        config=tracing_config("custom_event"),
+    )
+    print(response)
 if __name__ == "__main__":
     custom_event()

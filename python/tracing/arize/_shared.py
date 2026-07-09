@@ -152,5 +152,4 @@ def print_trace_lookup(*, workflow_name: str, run_id: str) -> None:
 
 
 def flush_and_shutdown(respan: Respan) -> None:
-    respan.flush()
     respan.shutdown()

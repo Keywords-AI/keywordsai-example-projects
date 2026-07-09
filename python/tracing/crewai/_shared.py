@@ -49,10 +49,7 @@ def load_gateway_settings() -> GatewaySettings:
         default=DEFAULT_RESPAN_BASE_URL,
     )
 
-    provider = os.getenv("CREWAI_RESPAN_LLM_PROVIDER")
-    if provider is None:
-        provider = "anthropic" if os.getenv("ANTHROPIC_API_KEY") else "respan-gateway"
-    provider = provider.lower()
+    provider = os.getenv("CREWAI_RESPAN_LLM_PROVIDER", "respan-gateway").lower()
 
     if provider == "respan-gateway":
         os.environ["OPENAI_API_KEY"] = api_key

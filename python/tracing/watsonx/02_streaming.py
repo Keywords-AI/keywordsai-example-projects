@@ -44,7 +44,6 @@ def run_streaming() -> None:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             output = _streaming_workflow(model)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_lookup(EXAMPLE_NAME, custom_identifier, output)

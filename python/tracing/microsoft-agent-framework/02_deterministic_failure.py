@@ -23,7 +23,6 @@ async def run_failure_example() -> None:
         except RuntimeError as exc:
             print(f"expected failure: {exc}")
     finally:
-        respan.flush()
         respan.shutdown()
 
 

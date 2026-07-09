@@ -21,9 +21,11 @@ RESPAN_API_KEY=your-respan-api-key
 RESPAN_BASE_URL=https://api.respan.ai/api
 ```
 
-`RESPAN_MODEL` is optional and defaults to `gpt-4o-mini`. The examples set
-`OPENAI_API_KEY` and `OPENAI_BASE_URL` from the Respan values at runtime, so a
-separate provider key is not required when using the Respan gateway.
+`RESPAN_MODEL` is optional and defaults to `gpt-4o-mini`. The examples default
+to the Respan gateway and set `OPENAI_API_KEY` and `OPENAI_BASE_URL` from the
+Respan values at runtime, so a separate provider key is not required. Set
+`CREWAI_RESPAN_LLM_PROVIDER=anthropic` or `CREWAI_RESPAN_LLM_PROVIDER=openai`
+only when you explicitly want to use a provider key directly.
 
 ## Examples
 

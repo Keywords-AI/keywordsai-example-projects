@@ -54,7 +54,6 @@ def run_module_workflow_example() -> None:
 
     print_result("Context", prediction.context)
     print_result("Answer", prediction.answer)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

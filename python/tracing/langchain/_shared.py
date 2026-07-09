@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-from contextlib import suppress
 from typing import Any
 
 from dotenv import find_dotenv, load_dotenv
@@ -17,8 +16,7 @@ load_dotenv(find_dotenv(), override=False)
 
 
 class NoopTelemetry:
-    def flush(self) -> None:
-        return None
+    pass
 
 
 def init_telemetry(app_name: str) -> RespanTelemetry | NoopTelemetry:
@@ -45,11 +43,6 @@ def tracing_config(name: str, metadata: dict[str, Any] | None = None) -> dict[st
             "metadata": {"example": name, **(metadata or {})},
         }
     )
-
-
-def flush(telemetry: RespanTelemetry | NoopTelemetry) -> None:
-    with suppress(Exception):
-        telemetry.flush()
 
 
 def message_text(message: Any) -> str:

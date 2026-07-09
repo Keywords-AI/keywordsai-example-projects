@@ -1,7 +1,7 @@
 {
-  "name": "anthropic-agents-gateway-typescript-example",
+  "name": "claude-agent-sdk-gateway-typescript-example",
   "version": "0.1.0",
-  "description": "Example scripts for Respan gateway + Anthropic Agent SDK integration",
+  "description": "Example scripts for Respan gateway + Claude Agent SDK integration",
   "type": "module",
   "scripts": {
     "gateway": "tsx basic_gateway.ts",
@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": ">=0.2.0",
-    "@respan/exporter-anthropic-agents": "^1.0.0",
+    "@respan/respan": "^2.1.0",
+    "@respan/instrumentation-claude-agent-sdk": "^1.0.0",
     "dotenv": "^16.0.0"
   },
   "devDependencies": {

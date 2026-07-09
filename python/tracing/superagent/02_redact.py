@@ -34,7 +34,6 @@ async def main() -> None:
     try:
         redacted, findings = await run_redact()
     finally:
-        respan.flush()
         respan.shutdown()
 
     print("redacted:", redacted)

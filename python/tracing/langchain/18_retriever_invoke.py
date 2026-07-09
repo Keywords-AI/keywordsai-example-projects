@@ -3,7 +3,7 @@
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 
-from _shared import flush, init_telemetry, tracing_config
+from _shared import init_telemetry, tracing_config
 
 
 class StaticRetriever(BaseRetriever):
@@ -26,15 +26,10 @@ def retriever_invoke() -> None:
             Document(page_content="Callbacks cover tools, chains, models, and retrievers."),
         ]
     )
-    try:
-        documents = retriever.invoke(
-            "callbacks",
-            config=tracing_config("retriever_invoke"),
-        )
-        print([document.page_content for document in documents])
-    finally:
-        flush(telemetry)
-
-
+    documents = retriever.invoke(
+        "callbacks",
+        config=tracing_config("retriever_invoke"),
+    )
+    print([document.page_content for document in documents])
 if __name__ == "__main__":
     retriever_invoke()

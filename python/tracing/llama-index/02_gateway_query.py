@@ -27,7 +27,6 @@ def run_chat() -> None:
 
     print_result("Chat response", response)
     print_result("Example run id", context.run_id)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

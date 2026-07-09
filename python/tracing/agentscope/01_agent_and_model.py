@@ -36,7 +36,6 @@ async def main() -> None:
         result = await agent.reply(UserMsg(name="user", content="Draft a tiny plan."))
         print(result.get_text_content())
     finally:
-        respan.flush()
         respan.shutdown()
 
 

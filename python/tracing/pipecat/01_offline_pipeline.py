@@ -112,7 +112,6 @@ async def main() -> None:
         print(result)
     finally:
         await asyncio.sleep(1)
-        respan.flush()
 
 
 if __name__ == "__main__":

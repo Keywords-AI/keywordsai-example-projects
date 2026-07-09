@@ -53,7 +53,6 @@ def run_stream_chat() -> None:
             print_start(EXAMPLE_NAME, custom_identifier)
             text = _stream_chat_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

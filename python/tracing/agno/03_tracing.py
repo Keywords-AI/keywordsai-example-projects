@@ -25,7 +25,6 @@ def tracing() -> None:
     respan, _ = create_respan(app_name="agno-03-tracing")
     output = run_checklist_workflow(topic="reviewing an SDK integration")
     print_result("Workflow output", output)
-    respan.flush()
 
 
 if __name__ == "__main__":

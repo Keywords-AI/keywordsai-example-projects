@@ -49,7 +49,4 @@ def run_converse_stream() -> str:
 
 if __name__ == "__main__":
     respan = create_respan()
-    try:
-        print(run_converse_stream())
-    finally:
-        respan.flush()
+    print(run_converse_stream())
