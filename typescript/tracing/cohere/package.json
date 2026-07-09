@@ -1,0 +1,33 @@
+{
+  "name": "cohere-typescript-tracing-examples",
+  "version": "0.1.0",
+  "description": "Example scripts for Respan + Cohere TypeScript tracing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:instrumentation": "cd ../../../../respan/javascript-sdks && yarn workspace @respan/instrumentation-cohere build",
+    "pretypecheck": "npm run build:instrumentation",
+    "preexamples": "npm run build:instrumentation",
+    "01:chat-tools": "tsx 01_v2_chat_tools.ts",
+    "02:streaming": "tsx 02_v2_streaming_chat.ts",
+    "03:embeddings": "tsx 03_embeddings.ts",
+    "04:rerank": "tsx 04_rerank.ts",
+    "05:generate": "tsx 05_legacy_generate.ts",
+    "06:error": "tsx 06_expected_error.ts",
+    "examples": "tsx run_all.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@respan/instrumentation-cohere": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-cohere",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "cohere-ai": "^8.0.0",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29"
+  }
+}

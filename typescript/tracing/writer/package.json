@@ -1,0 +1,30 @@
+{
+  "name": "respan-writer-typescript-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01:basic": "tsx 01_basic_chat.ts",
+    "02:streaming": "tsx 02_streaming_chat.ts",
+    "03:structured": "tsx 03_structured_output.ts",
+    "04:tools": "tsx 04_tool_calling.ts",
+    "05:completion": "tsx 05_text_completion.ts",
+    "06:error": "tsx 06_expected_error.ts",
+    "examples": "tsx run_all.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@respan/instrumentation-writer": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-writer",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "writer-sdk": "^2.3.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29"
+  }
+}
