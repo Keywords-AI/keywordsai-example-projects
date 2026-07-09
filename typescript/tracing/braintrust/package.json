@@ -1,0 +1,28 @@
+{
+  "name": "respan-braintrust-tracing-examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "example:llm": "tsx 01_llm_chat.ts",
+    "example:task-tool": "tsx 02_task_and_tool.ts",
+    "example:merge-error": "tsx 03_merge_and_error.ts",
+    "examples": "npm run example:llm && npm run example:task-tool && npm run example:merge-error",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@respan/instrumentation-braintrust": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-braintrust",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "braintrust": "^3.17.0",
+    "dotenv": "^17.2.3",
+    "openai": "^6.9.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3"
+  }
+}

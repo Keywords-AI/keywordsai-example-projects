@@ -1,0 +1,28 @@
+{
+  "name": "respan-arize-typescript-example",
+  "version": "0.1.0",
+  "description": "TypeScript Arize Phoenix tracing examples for Respan",
+  "type": "module",
+  "scripts": {
+    "01:trace-helpers": "tsx 01_trace_helpers.ts",
+    "02:manual-llm": "tsx 02_manual_llm_attributes.ts",
+    "03:retrieval-redaction": "tsx 03_retrieval_embedding_redaction.ts",
+    "04:decorators": "tsx 04_observe_decorator.ts",
+    "all": "tsx 01_trace_helpers.ts && tsx 02_manual_llm_attributes.ts && tsx 03_retrieval_embedding_redaction.ts && tsx 04_observe_decorator.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@arizeai/phoenix-otel": "^1.0.2",
+    "@respan/instrumentation-arize": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-arize",
+    "@respan/instrumentation-openinference": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-openinference",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}
