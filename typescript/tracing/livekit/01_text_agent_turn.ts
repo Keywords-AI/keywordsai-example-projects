@@ -43,7 +43,6 @@ export async function textAgentTurnExample(): Promise<void> {
       events: summarizeRunEvents(result),
     });
   } finally {
-    await respan.flush();
   }
 }
 

@@ -277,7 +277,6 @@ export async function runADKExample(params: {
       },
     );
   } finally {
-    await respan.flush();
   }
 
   return { events, output, respan };

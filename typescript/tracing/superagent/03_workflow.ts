@@ -57,7 +57,6 @@ export async function workflowExample(): Promise<void> {
 
     logExampleResult(workflowName, result);
   } finally {
-    await respan.flush();
   }
 }
 

@@ -30,7 +30,6 @@ export async function customToolsExample(): Promise<void> {
     });
     logExampleResult(workflowName, { runId: result.runId, status: result.waitResult.status, result: result.waitResult.result });
   } finally {
-    await respan.flush();
   }
 }
 

@@ -229,7 +229,6 @@ export async function runWithExampleTrace<T>(
 }
 
 export async function flushAndShutdown(respan: Respan): Promise<void> {
-  await respan.flush();
 }
 
 export function logExampleResult(

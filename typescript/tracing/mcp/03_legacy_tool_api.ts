@@ -40,7 +40,6 @@ export async function legacyToolApiExample(): Promise<void> {
       content: result.echo.content,
     });
   } finally {
-    await respan.flush();
   }
 }
 
