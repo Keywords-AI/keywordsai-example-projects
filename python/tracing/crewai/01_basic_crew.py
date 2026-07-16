@@ -1,13 +1,16 @@
 """Basic CrewAI run with Respan tracing and gateway routing."""
 
-from respan import workflow
-
-from _shared import build_llm, create_respan, print_result, result_text, run_with_attributes
+from _shared import (
+    build_llm,
+    create_respan,
+    print_result,
+    result_text,
+    run_with_attributes,
+)
 
 WORKFLOW_NAME = "crewai_01_basic_crew"
 
 
-@workflow(name=WORKFLOW_NAME)
 def run_basic_crew(context) -> str:
     from crewai import Agent, Crew, Process, Task
 
@@ -20,11 +23,13 @@ def run_basic_crew(context) -> str:
         verbose=False,
     )
     task = Task(
+        name="Explain CrewAI tracing",
         description="Explain how CrewAI and Respan work together for tracing.",
         expected_output="One concise paragraph for Python developers.",
         agent=researcher,
     )
     crew = Crew(
+        name=WORKFLOW_NAME,
         agents=[researcher],
         tasks=[task],
         process=Process.sequential,

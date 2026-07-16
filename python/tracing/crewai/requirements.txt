@@ -1,5 +1,5 @@
-crewai>=0.80.0
+crewai>=1.10.1
 python-dotenv>=1.0.0
 respan-ai>=2.5.0
-respan-instrumentation-crewai>=0.1.0
+respan-instrumentation-crewai>=0.2.0
 anthropic>=0.73.0

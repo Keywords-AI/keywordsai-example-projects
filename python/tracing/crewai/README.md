@@ -1,9 +1,10 @@
 # CrewAI Respan Integration Examples
 
-These examples demonstrate CrewAI tracing with `respan-instrumentation-crewai`.
-They initialize Respan before importing CrewAI, route OpenAI-compatible LLM calls
-through the Respan gateway, and attach stable workflow metadata so each run is
-easy to find in Respan.
+These examples use Respan's first-party CrewAI event listener. Initializing Respan
+before importing CrewAI is enough to emit the official CrewAI lifecycle as canonical
+workflow, task, agent, tool, and chat spans. No decorators or intermediary tracing bridge
+are required. LLM calls route through the Respan gateway, and stable run metadata
+makes every trace easy to find in Respan.
 
 ## Setup
 
@@ -46,7 +47,9 @@ python run_all.py
 ```
 
 Each script prints its workflow name and `RESPAN_EXAMPLE_RUN_ID`. Use those
-values to find the corresponding spans in Respan.
+values to find the corresponding trace in Respan. The expected tree is
+`workflow -> task -> agent -> chat`, with tool spans under the agent when used;
+the chat span includes the provider, model, prompt, completion, and token usage.
 
 ## Further reading
 

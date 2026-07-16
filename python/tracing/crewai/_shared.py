@@ -60,7 +60,9 @@ def load_gateway_settings() -> GatewaySettings:
         return GatewaySettings(
             api_key=api_key,
             base_url=base_url,
-            model=os.getenv("CREWAI_RESPAN_MODEL", os.getenv("RESPAN_MODEL", "gpt-4o-mini")),
+            model=os.getenv(
+                "CREWAI_RESPAN_MODEL", os.getenv("RESPAN_MODEL", "gpt-4o-mini")
+            ),
             provider=provider,
             llm_api_key=api_key,
         )

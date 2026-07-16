@@ -1,13 +1,16 @@
 """CrewAI example that attaches user, thread, and metadata attributes."""
 
-from respan import workflow
-
-from _shared import build_llm, create_respan, print_result, result_text, run_with_attributes
+from _shared import (
+    build_llm,
+    create_respan,
+    print_result,
+    result_text,
+    run_with_attributes,
+)
 
 WORKFLOW_NAME = "crewai_03_attributes"
 
 
-@workflow(name=WORKFLOW_NAME)
 def run_attribute_crew(context) -> str:
     from crewai import Agent, Crew, Process, Task
 
@@ -20,6 +23,7 @@ def run_attribute_crew(context) -> str:
         verbose=False,
     )
     task = Task(
+        name="Triage support request",
         description=(
             "A customer says: 'The dashboard loads slowly after I add a new "
             "integration.' Classify the issue and suggest one next action."
@@ -28,6 +32,7 @@ def run_attribute_crew(context) -> str:
         agent=analyst,
     )
     crew = Crew(
+        name=WORKFLOW_NAME,
         agents=[analyst],
         tasks=[task],
         process=Process.sequential,
