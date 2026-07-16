@@ -43,12 +43,13 @@ from respan_exporter_openai_agents import RespanTraceProcessor
 load_dotenv(find_dotenv(), override=True)
 
 # ── Configuration ──────────────────────────────────────────────────────────
-RESPAN_BASE_URL = os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api")
+RESPAN_BASE_URL = os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api").rstrip("/")
 RESPAN_API_KEY = os.getenv("RESPAN_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 RESPAN_MODEL = os.getenv("RESPAN_MODEL", "gpt-4o")
 
 # ── Gateway: route all OpenAI calls through Respan ─────────────────────────
-client = AsyncOpenAI(api_key=RESPAN_API_KEY, base_url=RESPAN_BASE_URL)
+client = AsyncOpenAI(api_key=OPENAI_API_KEY)
 set_default_openai_client(client)
 
 # ── Tracing: export spans to Respan ────────────────────────────────────────
@@ -552,7 +553,7 @@ async def main():
     print("  COMPLEX EDGE-CASE TRACING EXAMPLE")
     print("  All span types + robustness challenges")
     print("=" * 60)
-    print(f"  Base URL:  {RESPAN_BASE_URL}")
+    print("  Base URL:  OpenAI default Responses API")
     print(f"  API key:   {RESPAN_API_KEY[:8] if RESPAN_API_KEY else '(not set)'}...")
     print("=" * 60)
 

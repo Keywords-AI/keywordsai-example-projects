@@ -5,7 +5,7 @@ Uses exporter.query() which handles hooks + tracking automatically.
 One line to instrument, zero boilerplate.
 
 Setup:
-    pip install claude-agent-sdk respan-exporter-anthropic-agents python-dotenv
+    pip install claude-agent-sdk opentelemetry-claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
 
 Run:
     python basic/wrapped_query_test.py
