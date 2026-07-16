@@ -161,7 +161,6 @@ export async function runStrandsExample<T>(params: {
       async () => await respan.withWorkflow({ name: params.workflowName }, params.fn),
     );
   } finally {
-    await respan.flush();
   }
 }
 

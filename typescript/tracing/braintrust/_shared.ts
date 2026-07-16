@@ -133,7 +133,6 @@ export async function runWithBraintrustWorkflow<T>(
       () => respan.withWorkflow({ name: entityWorkflowName }, fn),
     );
   } finally {
-    await respan.flush();
   }
 }
 

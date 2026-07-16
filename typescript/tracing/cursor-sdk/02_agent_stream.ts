@@ -25,7 +25,6 @@ export async function agentStreamExample(): Promise<void> {
     });
     logExampleResult(workflowName, { eventTypes: result.eventTypes, status: result.waitResult.status, result: result.waitResult.result });
   } finally {
-    await respan.flush();
   }
 }
 

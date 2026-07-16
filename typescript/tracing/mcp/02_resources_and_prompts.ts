@@ -37,7 +37,6 @@ export async function resourcesAndPromptsExample(): Promise<void> {
       firstResourceText: result.contents.contents[0] && "text" in result.contents.contents[0] ? result.contents.contents[0].text : undefined,
     });
   } finally {
-    await respan.flush();
   }
 }
 

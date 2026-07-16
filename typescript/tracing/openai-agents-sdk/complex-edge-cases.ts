@@ -448,7 +448,6 @@ async function main() {
     await runScenario("Near-instant span", scenarioZeroDurationSpans);
   });
 
-  await respan.flush();
 
   console.log(`trace id: ${traceId}`);
   console.log("view trace: https://platform.respan.ai/platform/traces");

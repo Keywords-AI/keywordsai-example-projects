@@ -32,7 +32,6 @@ export async function guardExample(): Promise<void> {
       usage: result.usage,
     });
   } finally {
-    await respan.flush();
   }
 }
 
