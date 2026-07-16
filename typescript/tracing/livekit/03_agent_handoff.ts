@@ -55,7 +55,6 @@ export async function agentHandoffExample(): Promise<void> {
       events: summarizeRunEvents(result),
     });
   } finally {
-    await respan.flush();
   }
 }
 

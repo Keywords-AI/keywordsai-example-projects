@@ -20,7 +20,6 @@ export async function agentPromptExample(): Promise<void> {
     });
     logExampleResult(workflowName, { status: result.status, result: result.result, model: result.model });
   } finally {
-    await respan.flush();
   }
 }
 

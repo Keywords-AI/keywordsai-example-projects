@@ -8,7 +8,7 @@ Runnable examples showing how to trace Claude Agent SDK queries with Respan.
 cd python/tracing/claude-agent-sdk
 
 # Install dependencies
-pip install claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
+pip install claude-agent-sdk opentelemetry-claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
 
 # Copy and fill in your keys
 cp .env.example .env

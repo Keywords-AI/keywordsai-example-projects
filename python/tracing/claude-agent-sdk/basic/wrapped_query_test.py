@@ -5,7 +5,7 @@ Respan auto-patches query() via ClaudeAgentSDKInstrumentor.
 One line to instrument, zero boilerplate per call.
 
 Setup:
-    pip install claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
+    pip install claude-agent-sdk opentelemetry-claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
 
 Run:
     python basic/wrapped_query_test.py

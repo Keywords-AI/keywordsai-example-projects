@@ -124,7 +124,6 @@ export async function runWithFlueTrace<T>(
       () => respan.withWorkflow({ name: entityWorkflowName }, fn),
     );
   } finally {
-    await respan.flush();
   }
 }
 

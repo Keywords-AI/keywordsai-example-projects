@@ -53,7 +53,6 @@ export async function toolCallExample(): Promise<void> {
       events: summarizeRunEvents(result),
     });
   } finally {
-    await respan.flush();
   }
 }
 

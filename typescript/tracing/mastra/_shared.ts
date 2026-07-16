@@ -164,7 +164,6 @@ export async function runWithRespanWorkflow<T>(
       () => respan.withWorkflow({ name: mastraWorkflowName }, fn),
     );
   } finally {
-    await respan.flush();
   }
 }
 

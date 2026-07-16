@@ -39,7 +39,6 @@ export async function redactExample(): Promise<void> {
       usage: result.usage,
     });
   } finally {
-    await respan.flush();
   }
 }
 

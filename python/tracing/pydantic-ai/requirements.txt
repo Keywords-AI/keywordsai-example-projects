@@ -1,4 +1,4 @@
-pydantic-ai>=0.2.0
+pydantic-ai>=2.0.0
 respan-ai
 respan-instrumentation-pydantic-ai
 python-dotenv

@@ -31,7 +31,6 @@ export async function clientToolCallExample(): Promise<void> {
       content: result.summary.content,
     });
   } finally {
-    await respan.flush();
   }
 }
 
