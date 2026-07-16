@@ -30,12 +30,13 @@ if (!apiKey) {
 setDefaultOpenAIClient(new OpenAI({ apiKey, baseURL }) as any);
 setOpenAIAPI("chat_completions");
 
+process.env.RESPAN_SPAN_NAME_STYLE = "semantic";
+
 const respan = new Respan({
   apiKey,
   baseURL,
   appName: "openai-agents-semantic-edge-case",
   instrumentations: [new OpenAIAgentsInstrumentor()],
-  spanNameStyle: "semantic",
   traceContent: true,
   silenceInitializationMessage: true,
 });
