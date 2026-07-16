@@ -1,8 +1,12 @@
 """CrewAI tool-use example with Respan tracing."""
 
-from respan import workflow
-
-from _shared import build_llm, create_respan, print_result, result_text, run_with_attributes
+from _shared import (
+    build_llm,
+    create_respan,
+    print_result,
+    result_text,
+    run_with_attributes,
+)
 
 WORKFLOW_NAME = "crewai_02_tool_use"
 
@@ -27,7 +31,6 @@ def lookup_city_population(city: str) -> str:
     return populations.get(city, "unknown population")
 
 
-@workflow(name=WORKFLOW_NAME)
 def run_tool_crew(context) -> str:
     from crewai import Agent, Crew, Process, Task
     from crewai.tools import tool
@@ -45,6 +48,7 @@ def run_tool_crew(context) -> str:
         verbose=False,
     )
     task = Task(
+        name="Research Paris",
         description=(
             "Research the weather and population for Paris, then summarize the "
             "result in two short bullets. Use the provided tools."
@@ -53,6 +57,7 @@ def run_tool_crew(context) -> str:
         agent=researcher,
     )
     crew = Crew(
+        name=WORKFLOW_NAME,
         agents=[researcher],
         tasks=[task],
         process=Process.sequential,
