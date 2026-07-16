@@ -1,0 +1,27 @@
+{
+  "name": "respan-vercel-ai-sdk-examples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "text": "node 01_generate_text.mjs",
+    "tools": "node 02_tool_call.mjs",
+    "embed": "node 03_embed.mjs",
+    "stream": "node 04_stream_text.mjs",
+    "object": "node 05_generate_object.mjs",
+    "embed-many": "node 06_embed_many.mjs",
+    "agent": "node 07_tool_loop_agent.mjs",
+    "all": "npm run text && npm run tools && npm run embed && npm run stream && npm run object && npm run embed-many && npm run agent"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "4.0.7",
+    "@ai-sdk/otel": "1.0.15",
+    "@respan/instrumentation-vercel": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-vercel",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "ai": "7.0.15",
+    "dotenv": "^16.4.7",
+    "zod": "^4.1.8"
+  }
+}

@@ -1,19 +1,27 @@
 {
-  "name": "openai-agents-typescript-respan-example",
+  "name": "respan-openai-agents-sdk-examples",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Respan semantic tracing example for the OpenAI Agents SDK",
   "scripts": {
+    "basic": "tsx 01_gateway_basic.ts",
+    "tools": "tsx 02_gateway_tool.ts",
+    "agent-tool": "tsx 03_gateway_agent_as_tool.ts",
+    "handoff": "tsx 04_gateway_handoff.ts",
+    "guardrails": "tsx 05_gateway_guardrails.ts",
+    "structured-session": "tsx 06_gateway_structured_session.ts",
+    "streaming-lifecycle": "tsx 07_gateway_streaming_lifecycle.ts",
+    "all": "npm run basic && npm run tools && npm run agent-tool && npm run handoff && npm run guardrails && npm run structured-session && npm run streaming-lifecycle",
+    "typecheck": "tsc --noEmit",
     "complex": "tsx complex-edge-cases.ts",
     "build-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@openai/agents": "^0.8.1",
-    "@respan/instrumentation-openai-agents": "file:../../../../../../../tmp/respan-openai-agents-semantic-packs/respan-instrumentation-openai-agents-1.0.6.tgz",
-    "@respan/respan": "file:../../../../../../../tmp/respan-openai-agents-semantic-packs/respan-respan-2.1.0.tgz",
-    "@respan/respan-sdk": "file:../../../../../../../tmp/respan-openai-agents-semantic-packs/respan-respan-sdk-1.1.7.tgz",
-    "@respan/tracing": "file:../../../../../../../tmp/respan-openai-agents-semantic-packs/respan-tracing-1.1.6.tgz",
+    "@openai/agents": "0.12.0",
+    "@respan/instrumentation-openai-agents": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-openai-agents",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
     "dotenv": "^16.5.0",
     "openai": "^5.19.1",
     "zod": "^4.1.12"
@@ -22,5 +30,6 @@
     "@types/node": "^22.15.29",
     "tsx": "^4.20.3",
     "typescript": "^5.7.3"
-  }
+  },
+  "description": "Gateway-first and semantic tracing examples for the OpenAI Agents SDK"
 }
