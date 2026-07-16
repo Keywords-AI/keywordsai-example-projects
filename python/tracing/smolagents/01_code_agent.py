@@ -44,7 +44,6 @@ def run_code_agent() -> str:
     try:
         return execute_code_agent_workflow()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

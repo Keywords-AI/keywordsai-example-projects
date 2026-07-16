@@ -62,7 +62,6 @@ async def main():
     try:
         await main_workflow()
     finally:
-        telemetry.flush()
         await asyncio.sleep(1)
 
 

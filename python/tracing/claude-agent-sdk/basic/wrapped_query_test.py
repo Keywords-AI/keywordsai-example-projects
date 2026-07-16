@@ -1,8 +1,8 @@
 """
-Wrapped Query — the simplest integration pattern.
+Auto-Instrumented Query — the simplest integration pattern.
 
-Uses exporter.query() which handles hooks + tracking automatically.
-One line to instrument, zero boilerplate.
+Respan auto-patches query() via ClaudeAgentSDKInstrumentor.
+One line to instrument, zero boilerplate per call.
 
 Setup:
     pip install claude-agent-sdk opentelemetry-claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
@@ -14,31 +14,17 @@ Run:
     pytest basic/wrapped_query_test.py -v
 """
 
-from dotenv import load_dotenv
-
-load_dotenv(override=True)
-
 import asyncio
-import os
 
 import pytest
 from claude_agent_sdk import ClaudeAgentOptions
 
-from respan_exporter_anthropic_agents import RespanAnthropicAgentsExporter
 from _sdk_runtime import query_for_result
-
-API_KEY = os.getenv("RESPAN_API_KEY")
-BASE_URL = os.getenv("RESPAN_BASE_URL")
-
-exporter = RespanAnthropicAgentsExporter(
-    api_key=API_KEY,
-    base_url=BASE_URL,
-)
 
 
 @pytest.mark.asyncio
 async def test_wrapped_query():
-    """Use exporter.query() for automatic tracing — simplest pattern."""
+    """Use auto-instrumented query() for automatic tracing — simplest pattern."""
 
     message_types = []
 
@@ -48,7 +34,6 @@ async def test_wrapped_query():
         print(f"  {msg_type}")
 
     result = await query_for_result(
-        exporter=exporter,
         prompt="Name three primary colors. One word each, comma separated.",
         options=ClaudeAgentOptions(
             permission_mode="bypassPermissions",
@@ -59,8 +44,16 @@ async def test_wrapped_query():
 
     print(f"\nMessage flow: {' -> '.join(message_types)}")
     print(f"Result: subtype={result.subtype}, turns={result.num_turns}")
-    print("All traces exported automatically via exporter.query()")
+    print("All traces exported automatically via auto-instrumented query()")
 
 
 if __name__ == "__main__":
+    from dotenv import load_dotenv
+
+    load_dotenv(override=True)
+
+    from respan import Respan
+    from respan_instrumentation_claude_agent_sdk import ClaudeAgentSDKInstrumentor
+
+    respan = Respan(instrumentations=[ClaudeAgentSDKInstrumentor()])
     asyncio.run(test_wrapped_query())

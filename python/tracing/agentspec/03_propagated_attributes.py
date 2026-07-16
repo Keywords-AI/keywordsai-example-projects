@@ -61,7 +61,6 @@ def run_propagated_attributes() -> str:
         return output
     finally:
         respan.shutdown()
-        respan.flush()
 
 
 if __name__ == "__main__":

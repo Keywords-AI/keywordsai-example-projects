@@ -25,7 +25,6 @@ def tool_use() -> None:
     respan, _ = create_respan(app_name="agno-05-tool-use")
     output = run_tool_use()
     print_result("Agent output", output)
-    respan.flush()
 
 
 if __name__ == "__main__":

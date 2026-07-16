@@ -65,7 +65,6 @@ def run_async_streaming() -> None:
     try:
         text, mode = asyncio.run(_run_async_streaming(custom_identifier))
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, mode, text)

@@ -147,7 +147,6 @@ async def main():
     try:
         await span_operations_updates()
     finally:
-        telemetry.flush()
         await asyncio.sleep(1)
 
 

@@ -5,7 +5,7 @@ Runnable examples showing how to trace Claude Agent SDK queries with Respan.
 ## Setup
 
 ```bash
-cd python/tracing/anthropic-agents-sdk
+cd python/tracing/claude-agent-sdk
 
 # Install dependencies
 pip install claude-agent-sdk opentelemetry-claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
@@ -20,15 +20,15 @@ cp .env.example .env
 
 | File | Description |
 |------|-------------|
-| `basic/hello_world_test.py` | Simplest example — ask Claude a question, see the trace |
-| `basic/wrapped_query_test.py` | One-liner integration using `exporter.query()` |
+| `basic/hello_world_test.py` | Simplest example: ask Claude a question and see the trace |
+| `basic/wrapped_query_test.py` | Auto-instrumented `query()` helper pattern |
 
 ### Tools
 
 | File | Description |
 |------|-------------|
-| `tools/tool_use_test.py` | Agent with tools (Read, Glob, Grep) — tool spans in trace |
-| `tools/multi_tool_test.py` | Multi-turn agent using several tools in sequence |
+| `tools/tool_use_test.py` | Agent with tools (Read, Glob, Grep) and tool spans |
+| `tools/multi_tool_test.py` | Agent using several tools in sequence |
 
 ### Streaming
 
@@ -42,11 +42,15 @@ cp .env.example .env
 |------|-------------|
 | `sessions/multi_turn_test.py` | Multiple queries with session tracking |
 
-### Gateway
+## Run All Examples With Fake SDK Messages
 
-Gateway examples have been moved to `python/gateway/anthropic-agents/`.
+This runner does not require `ANTHROPIC_API_KEY`; it patches the SDK query stream to verify Respan instrumentation.
 
-## Running with pytest
+```bash
+python _run_all_examples.py
+```
+
+## Running With Pytest
 
 ```bash
 pip install pytest pytest-asyncio
@@ -58,7 +62,5 @@ pytest basic/ tools/ streaming/ sessions/ -v
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `RESPAN_API_KEY` | Yes | Your Respan API key |
-| `ANTHROPIC_API_KEY` | Yes | Your Anthropic API key |
+| `ANTHROPIC_API_KEY` | Yes for live SDK calls | Your Anthropic API key |
 | `RESPAN_BASE_URL` | No | Override ingest URL (default: `https://api.respan.ai/api`) |
-| `RESPAN_GATEWAY_BASE_URL` | No | Gateway URL; examples send Claude calls to `<value>/anthropic` |
-| `RESPAN_GATEWAY_API_KEY` | No | Gateway key; falls back to `RESPAN_API_KEY` |

@@ -99,7 +99,6 @@ async def main():
         print(f"OpenAI: {result['openai']}")
         print(f"Anthropic: {result['anthropic']}")
     finally:
-        keywords_ai.flush()
         await asyncio.sleep(2)
 
     print("Done.")

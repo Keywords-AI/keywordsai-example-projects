@@ -23,15 +23,12 @@ def main() -> None:
         instrumentations=[PydanticAIInstrumentor()],
     )
 
-    try:
-        agent = Agent(
-            model=build_openai_chat_model(config, model_name=anthropic_model),
-            system_prompt="You are a helpful assistant. Keep answers brief.",
-        )
-        result = agent.run_sync("What is the largest ocean on Earth?")
-        print("Agent Output:", result.output)
-    finally:
-        respan.flush()
+    agent = Agent(
+        model=build_openai_chat_model(config, model_name=anthropic_model),
+        system_prompt="You are a helpful assistant. Keep answers brief.",
+    )
+    result = agent.run_sync("What is the largest ocean on Earth?")
+    print("Agent Output:", result.output)
 
 
 if __name__ == "__main__":

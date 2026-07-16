@@ -9,7 +9,7 @@ python/
   tracing/
     respan-tracing-sdk/   # Core respan-tracing SDK examples (basic usage, span operations, multi-provider)
     openai-agents-sdk/    # OpenAI Agents SDK with Respan tracing (basic, patterns, handoffs, tools, research bot)
-    anthropic-agents-sdk/ # Anthropic Agents SDK with Respan tracing
+    claude-agent-sdk/     # Claude Agent SDK with Respan tracing
     dspy/                 # DSPy native instrumentation examples
     langfuse/             # Langfuse integration example
     instructor/           # Instructor library example
@@ -25,7 +25,7 @@ typescript/
   tracing/
     respan-tracing-sdk/   # Core @respan/tracing SDK examples (basic, advanced, span management, multi-provider)
       nextjs-openai/      # Next.js + OpenAI with @respan/tracing directly
-    anthropic-agents-sdk/ # Anthropic Agents SDK with Respan tracing
+    claude-agent-sdk/     # Claude Agent SDK with Respan tracing
     vercel-tracing/       # Vercel AI SDK + Next.js with @respan/exporter-vercel
     mastra/               # Mastra framework with @respan/exporter-vercel
   gateway/

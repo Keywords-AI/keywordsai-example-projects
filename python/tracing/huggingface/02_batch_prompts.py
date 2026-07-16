@@ -41,7 +41,6 @@ def run() -> list[dict[str, str]]:
         print_result("batch_generation", result)
         return result
     finally:
-        respan.flush()
         respan.shutdown()
 
 

@@ -42,7 +42,6 @@ async def main() -> None:
     try:
         await run_respan_attributes()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

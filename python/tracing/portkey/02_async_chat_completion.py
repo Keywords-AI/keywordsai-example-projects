@@ -44,7 +44,6 @@ async def run_async_chat_completion() -> None:
             text = await _async_chat_completion_workflow(client)
     finally:
         await client.close()
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

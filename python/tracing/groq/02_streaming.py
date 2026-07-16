@@ -48,7 +48,6 @@ def run_streaming() -> None:
             print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
             text = _streaming_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

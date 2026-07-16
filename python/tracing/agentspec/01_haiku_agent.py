@@ -47,7 +47,6 @@ def run_haiku_agent() -> str:
         return output
     finally:
         respan.shutdown()
-        respan.flush()
 
 
 if __name__ == "__main__":

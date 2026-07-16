@@ -63,7 +63,6 @@ def run_async_model_calls() -> None:
     try:
         output = asyncio.run(_run_async_model_calls(custom_identifier))
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_lookup(EXAMPLE_NAME, custom_identifier, output)

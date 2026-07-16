@@ -42,7 +42,6 @@ async def main() -> None:
     try:
         await run_tool_use()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

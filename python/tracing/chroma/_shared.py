@@ -132,7 +132,4 @@ def print_result(label: str, value: Any) -> None:
 
 
 def finish_respan(respan: Respan) -> None:
-    try:
-        respan.flush()
-    finally:
-        respan.shutdown()
+    respan.shutdown()

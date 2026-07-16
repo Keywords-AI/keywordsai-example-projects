@@ -72,7 +72,6 @@ def run_tool_calling() -> None:
             print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
             text = _tool_calling_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

@@ -43,7 +43,6 @@ def main() -> None:
     print_result("Crew output", output)
     print_result("Workflow name", WORKFLOW_NAME)
     print_result("Example run id", context.run_id)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

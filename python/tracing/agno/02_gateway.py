@@ -20,7 +20,6 @@ def gateway() -> None:
     output = run_gateway()
     print_result("Model", settings.model)
     print_result("Agent output", output)
-    respan.flush()
 
 
 if __name__ == "__main__":

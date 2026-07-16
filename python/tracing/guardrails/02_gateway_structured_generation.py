@@ -54,7 +54,6 @@ def run_gateway_structured_generation() -> None:
     print("Raw output:", result.raw_llm_output)
     print("Validation passed:", result.validation_passed)
     print("Validated output:", result.validated_output)
-    respan.flush()
 
 
 if __name__ == "__main__":

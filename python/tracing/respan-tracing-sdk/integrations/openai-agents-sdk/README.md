@@ -120,11 +120,8 @@ async def run():
     result = await Runner.run(agent, "prompt")
     return result.final_output
 
-# 4. Flush on exit
-try:
-    await run()
-finally:
-    telemetry.flush()
+# 4. Run the workflow
+await run()
 ```
 
 Auto-instrumentation captures all LLM calls made by the agents. Decorators add structured hierarchy (workflow > task > auto-instrumented LLM spans).

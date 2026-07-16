@@ -42,7 +42,6 @@ def run_async_generate_content() -> None:
     try:
         text = asyncio.run(_run_async_generate_content(custom_identifier))
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, text)

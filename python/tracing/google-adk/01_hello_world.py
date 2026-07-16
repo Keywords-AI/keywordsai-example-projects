@@ -33,7 +33,6 @@ async def main() -> None:
     try:
         await run_hello_world()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

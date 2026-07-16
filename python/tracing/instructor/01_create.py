@@ -46,7 +46,6 @@ def run_create_example() -> None:
         invoice = extract_invoice(client)
 
     print(dict(invoice))
-    telemetry.flush()
 
 
 if __name__ == "__main__":

@@ -29,7 +29,6 @@ async def main() -> None:
     try:
         print(await run())
     finally:
-        respan.flush()
         respan.shutdown()
 
 

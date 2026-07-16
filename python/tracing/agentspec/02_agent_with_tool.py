@@ -67,7 +67,6 @@ def run_agent_with_tool() -> str:
         return output
     finally:
         respan.shutdown()
-        respan.flush()
 
 
 if __name__ == "__main__":

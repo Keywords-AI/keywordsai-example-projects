@@ -3,7 +3,7 @@
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 
-from _shared import flush, init_telemetry, tracing_config
+from _shared import init_telemetry, tracing_config
 
 
 class FailingRetriever(BaseRetriever):
@@ -15,13 +15,8 @@ def retriever_error() -> None:
     telemetry = init_telemetry("langchain-retriever-error")
     retriever = FailingRetriever()
     try:
-        try:
-            retriever.invoke("missing", config=tracing_config("retriever_error"))
-        except RuntimeError as exc:
-            print(f"caught: {exc}")
-    finally:
-        flush(telemetry)
-
-
+        retriever.invoke("missing", config=tracing_config("retriever_error"))
+    except RuntimeError as exc:
+        print(f"caught: {exc}")
 if __name__ == "__main__":
     retriever_error()

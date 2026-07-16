@@ -54,7 +54,6 @@ async def main() -> None:
         except RuntimeError as exc:
             print(f"Caught expected failure: {exc}")
     finally:
-        respan.flush()
         respan.shutdown()
 
 

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "anthropic-agents-python-example"
+name = "claude-agent-sdk-python-example"
 version = "0.1.0"
 description = "Example scripts for Respan + Claude Agent SDK integration"
 authors = ["Respan <team@respan.ai>"]
@@ -9,8 +9,8 @@ readme = "README.md"
 python = ">=3.11,<3.14"
 claude-agent-sdk = ">=0.2.110"
 opentelemetry-claude-agent-sdk = ">=0.1.4"
-respan-ai = ">=2.6.0"
-respan-instrumentation-claude-agent-sdk = ">=0.1.0"
+respan-ai = ">=4.1.0"
+respan-instrumentation-claude-agent-sdk = ">=0.1.2"
 python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]

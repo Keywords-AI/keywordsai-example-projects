@@ -35,7 +35,6 @@ async def main() -> None:
     try:
         await run_chat_completion()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

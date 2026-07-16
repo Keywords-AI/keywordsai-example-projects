@@ -33,7 +33,6 @@ def run_tool_call_example() -> None:
         span.set_output({"status": status})
 
     print_result("Status", status)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

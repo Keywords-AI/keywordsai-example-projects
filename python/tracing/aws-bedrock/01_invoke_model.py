@@ -42,7 +42,4 @@ def run_invoke_model() -> str:
 
 if __name__ == "__main__":
     respan = create_respan()
-    try:
-        print(run_invoke_model())
-    finally:
-        respan.flush()
+    print(run_invoke_model())

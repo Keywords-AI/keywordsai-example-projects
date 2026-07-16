@@ -30,7 +30,6 @@ def respan_params() -> None:
         output = run_params_agent()
 
     print_result("Agent output", output)
-    respan.flush()
 
 
 if __name__ == "__main__":

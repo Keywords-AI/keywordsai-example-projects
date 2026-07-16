@@ -63,7 +63,6 @@ def finish_respan(respan: Any, *, emit_summary_span: bool = True) -> None:
         except Exception as exc:
             print(f"Failed to emit example run span: {exc}")
     _finish_example_workflow()
-    respan.flush()
     shutdown = getattr(respan, "shutdown", None)
     if shutdown is not None:
         shutdown()

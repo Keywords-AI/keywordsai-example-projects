@@ -33,7 +33,6 @@ def team() -> None:
     respan, _ = create_respan(app_name="agno-06-team")
     output = run_team()
     print_result("Team output", output)
-    respan.flush()
 
 
 if __name__ == "__main__":

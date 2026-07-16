@@ -152,4 +152,4 @@ def print_json(label: str, value: Any) -> None:
 
 
 def finish_respan(respan: Respan) -> None:
-    respan.telemetry.flush()
+    pass

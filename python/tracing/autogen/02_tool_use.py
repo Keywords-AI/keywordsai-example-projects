@@ -77,11 +77,6 @@ async def main() -> None:
         instrumentations=[AutoGenInstrumentor()],
         metadata={"example": "autogen-tool-use", "script": SCRIPT_NAME},
     )
-    try:
-        await run_tool_agent()
-    finally:
-        respan.flush()
-
-
+    await run_tool_agent()
 if __name__ == "__main__":
     asyncio.run(main())

@@ -185,7 +185,6 @@ def run_invoke_endpoint_chat_tools() -> None:
             print_run_header(EXAMPLE_NAME, custom_identifier)
             result = _invoke_chat_tools_workflow(client)
     finally:
-        respan.flush()
         respan.shutdown()
 
     print_result(EXAMPLE_NAME, custom_identifier, result)

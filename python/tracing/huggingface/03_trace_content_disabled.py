@@ -39,7 +39,6 @@ def run() -> list[dict[str, str]]:
         print_result("redacted_generation", result)
         return result
     finally:
-        respan.flush()
         respan.shutdown()
 
 

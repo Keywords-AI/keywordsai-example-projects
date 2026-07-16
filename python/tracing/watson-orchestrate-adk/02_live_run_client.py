@@ -35,7 +35,6 @@ def main() -> None:
     try:
         run_live_agent()
     finally:
-        respan.flush()
         respan.shutdown()
 
 

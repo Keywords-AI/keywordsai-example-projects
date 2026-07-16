@@ -298,7 +298,6 @@ class DifyExampleRuntime(AbstractContextManager):
         if self._workflow_context is not None:
             self._workflow_context.__exit__(exc_type, exc, tb)
         if self.respan is not None:
-            self.respan.flush()
             shutdown = getattr(self.respan, "shutdown", None)
             if callable(shutdown):
                 shutdown()

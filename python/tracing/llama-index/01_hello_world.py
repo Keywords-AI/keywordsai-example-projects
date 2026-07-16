@@ -17,7 +17,6 @@ def run_completion() -> None:
 
     print_result("Completion", response)
     print_result("Example run id", context.run_id)
-    context.respan.flush()
 
 
 if __name__ == "__main__":

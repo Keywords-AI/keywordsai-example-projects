@@ -4,7 +4,7 @@ from langchain.agents import create_agent
 from langchain_core.tools import tool
 from langgraph.config import get_stream_writer
 
-from _shared import fake_tool_calling_model, flush, init_telemetry, tracing_config
+from _shared import fake_tool_calling_model, init_telemetry, tracing_config
 
 
 @tool
@@ -24,19 +24,14 @@ def agent_stream_custom() -> None:
         final_text="Denver is sunny.",
     )
     agent = create_agent(model=model, tools=[progress_weather])
-    try:
-        chunks = list(
-            agent.stream(
-                {"messages": [{"role": "user", "content": "Weather in Denver?"}]},
-                config=tracing_config("agent_stream_custom"),
-                stream_mode="custom",
-                version="v2",
-            )
+    chunks = list(
+        agent.stream(
+            {"messages": [{"role": "user", "content": "Weather in Denver?"}]},
+            config=tracing_config("agent_stream_custom"),
+            stream_mode="custom",
+            version="v2",
         )
-        print(chunks)
-    finally:
-        flush(telemetry)
-
-
+    )
+    print(chunks)
 if __name__ == "__main__":
     agent_stream_custom()

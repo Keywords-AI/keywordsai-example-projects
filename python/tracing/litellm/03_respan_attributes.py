@@ -38,16 +38,11 @@ def litellm_respan_attributes() -> str:
 
 def main() -> None:
     respan = create_respan("litellm-respan-attributes")
-    try:
-        output = run_with_example_attributes(
-            respan,
-            workflow_name=WORKFLOW_NAME,
-            action=litellm_respan_attributes,
-        )
-        print(output)
-    finally:
-        respan.telemetry.flush()
-
-
+    output = run_with_example_attributes(
+        respan,
+        workflow_name=WORKFLOW_NAME,
+        action=litellm_respan_attributes,
+    )
+    print(output)
 if __name__ == "__main__":
     main()

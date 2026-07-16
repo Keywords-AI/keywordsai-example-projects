@@ -53,7 +53,6 @@ def run_create_iterable_example() -> None:
         action_items = extract_action_items(client)
 
     print([dict(item) for item in action_items])
-    telemetry.flush()
 
 
 if __name__ == "__main__":

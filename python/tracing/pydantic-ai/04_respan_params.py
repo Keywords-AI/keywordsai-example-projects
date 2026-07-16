@@ -41,12 +41,7 @@ def main() -> None:
         instrumentations=[PydanticAIInstrumentor()],
     )
 
-    try:
-        output = customer_query("Hello, who are you?")
-        print("Output:", output)
-    finally:
-        respan.flush()
-
-
+    output = customer_query("Hello, who are you?")
+    print("Output:", output)
 if __name__ == "__main__":
     main()

@@ -22,15 +22,12 @@ def main() -> None:
         ],
     )
 
-    try:
-        agent = Agent(
-            model=build_openai_chat_model(config),
-            system_prompt="You are a helpful assistant.",
-        )
-        result = agent.run_sync("What is the capital of France?")
-        print("Agent Output:", result.output)
-    finally:
-        respan.flush()
+    agent = Agent(
+        model=build_openai_chat_model(config),
+        system_prompt="You are a helpful assistant.",
+    )
+    result = agent.run_sync("What is the capital of France?")
+    print("Agent Output:", result.output)
 
 
 if __name__ == "__main__":

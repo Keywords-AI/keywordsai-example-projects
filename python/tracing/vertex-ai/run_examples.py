@@ -24,11 +24,6 @@ def main() -> None:
     for filename in EXAMPLE_FILES:
         module = _load_module(base_dir / filename)
         respan = module.Respan(instrumentations=[module.VertexAIInstrumentor()])
-        try:
-            module.run_example()
-        finally:
-            respan.flush()
-
-
+        module.run_example()
 if __name__ == "__main__":
     main()
