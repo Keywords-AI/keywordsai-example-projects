@@ -1,0 +1,8 @@
+python-dotenv
+anthropic
+openai
+google-genai
+together
+mistralai>=2.0.0
+openinference-instrumentation-mistralai>=2.0.0
+litellm

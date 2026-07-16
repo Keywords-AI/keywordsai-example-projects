@@ -1,0 +1,26 @@
+{
+  "name": "respan-vertexai-typescript-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01:generate": "tsx 01_generate_content.ts",
+    "02:stream": "tsx 02_generate_content_stream.ts",
+    "03:chat-tool": "tsx 03_chat_tool_call.ts",
+    "04:error": "tsx 04_error_capture.ts",
+    "all": "tsx 01_generate_content.ts && tsx 02_generate_content_stream.ts && tsx 03_chat_tool_call.ts && tsx 04_error_capture.ts"
+  },
+  "dependencies": {
+    "@google-cloud/vertexai": "^1.12.0",
+    "@respan/instrumentation-vertexai": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-vertexai",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}

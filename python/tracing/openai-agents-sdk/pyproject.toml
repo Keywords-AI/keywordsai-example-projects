@@ -1,17 +1,20 @@
 [tool.poetry]
 name = "openai-agents-python-example"
 version = "0.1.0"
-description = ""
-authors = ["Raymond Huang <raymond@respan.ai>"]
+description = "Example scripts for Respan + OpenAI Agents SDK integration"
+authors = ["Respan <team@respan.ai>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
-respan-exporter-openai-agents = "^0.1.3"
-
+python = ">=3.11,<3.14"
+openai-agents = ">=0.17.7"
+respan-ai = ">=2.6.0"
+respan-instrumentation-openai-agents = ">=1.1.1"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
+pytest-asyncio = "^0.24.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,0 +1,28 @@
+{
+  "name": "respan-livekit-typescript-example",
+  "version": "0.1.0",
+  "description": "TypeScript LiveKit Agents tracing examples for Respan",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01:text-turn": "tsx 01_text_agent_turn.ts",
+    "02:tool-call": "tsx 02_tool_call.ts",
+    "03:handoff": "tsx 03_agent_handoff.ts",
+    "all": "tsx 01_text_agent_turn.ts && tsx 02_tool_call.ts && tsx 03_agent_handoff.ts"
+  },
+  "dependencies": {
+    "@livekit/agents": "^1.4.8",
+    "@livekit/rtc-node": "^0.13.29",
+    "@respan/instrumentation-livekit": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-livekit",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1"
+  }
+}

@@ -20,3 +20,7 @@ Examples:
 - `05_gateway_guardrails.ts`: input and output guardrail execution.
 - `06_gateway_structured_session.ts`: Zod structured output plus `MemorySession`.
 - `07_gateway_streaming_lifecycle.ts`: streaming run events and lifecycle hooks.
+
+## Semantic edge-case example
+
+`complex-edge-cases.ts` exercises nested tools, handoffs, guardrails, structured output, errors, and large payloads through the same Respan gateway setup. Run it with `npm run complex`.

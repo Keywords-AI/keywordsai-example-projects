@@ -1,0 +1,27 @@
+{
+  "name": "respan-aws-bedrock-typescript-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "01:converse": "tsx 01_converse.ts",
+    "02:invoke": "tsx 02_invoke_model.ts",
+    "03:streaming": "tsx 03_streaming.ts",
+    "04:error": "tsx 04_expected_error.ts",
+    "examples": "tsx run_all.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1075.0",
+    "@respan/instrumentation-aws-bedrock": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-aws-bedrock",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29"
+  }
+}

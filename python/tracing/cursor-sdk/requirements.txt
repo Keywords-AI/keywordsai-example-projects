@@ -1,0 +1,3 @@
+python-dotenv>=1.0.1
+respan-ai
+respan-instrumentation-cursor-sdk

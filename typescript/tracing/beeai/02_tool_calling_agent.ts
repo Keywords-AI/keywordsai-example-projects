@@ -36,7 +36,6 @@ export async function runToolCallingAgent(): Promise<void> {
     console.log(`Model: ${env.model}`);
     console.log(`Answer: ${answer}`);
   } finally {
-    await respan.flush();
   }
 }
 

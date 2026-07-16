@@ -4,7 +4,7 @@ Hello World — Anthropic Agent SDK + Respan tracing.
 The simplest possible example: ask Claude a question, see the trace in Respan.
 
 Setup:
-    pip install claude-agent-sdk respan-exporter-anthropic-agents python-dotenv
+    pip install claude-agent-sdk opentelemetry-claude-agent-sdk respan-ai respan-instrumentation-claude-agent-sdk python-dotenv
 
 Run:
     python basic/hello_world_test.py
