@@ -26,6 +26,7 @@ typescript/
     respan-tracing-sdk/   # Core @respan/tracing SDK examples (basic, advanced, span management, multi-provider)
       nextjs-openai/      # Next.js + OpenAI with @respan/tracing directly
     claude-agent-sdk/     # Claude Agent SDK with Respan tracing
+    eve/                  # Eve agent framework with Respan tracing
     vercel-tracing/       # Vercel AI SDK + Next.js with @respan/exporter-vercel
     mastra/               # Mastra framework with @respan/exporter-vercel
   gateway/
