@@ -186,10 +186,22 @@ Those numbers came from one corpus (a linear algebra textbook, plus the sample
 biology PDFs in this directory). Your own books will score differently, so treat
 them as a worked example of the loop, not a target to hit.
 
-Graders live in *your* Respan workspace, so their ids can't ship here. Run the
-**`/setup-respan`** skill to provision them and fill in `.env`. The skill lives
-in `.claude/skills/` in this directory, so open `fullstack/textbook-tutor` as
-your working directory in Claude Code, otherwise it won't be discovered.
+Graders live in *your* Respan workspace, so their ids can't ship here: they
+don't exist until the graders do. Provision them with
+
+```bash
+python -m scripts.setup_respan            # dry run, says what it would create
+python -m scripts.setup_respan --apply    # create them, write the ids into .env
+```
+
+It creates the five graders from `graders.json`, wraps each in a deployed
+pipeline, and writes both id families into `.env`. Matched by name and safe to
+re-run: anything already there is reused, so it won't grow a second set.
+
+Claude Code users can instead run the **`/setup-respan`** skill, which does the
+same thing and also installs the Respan MCP server. It lives in `.claude/skills/`
+here, so open `fullstack/textbook-tutor` as your working directory or it won't
+be discovered.
 
 ## Layout
 
