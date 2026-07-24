@@ -115,7 +115,7 @@ def test_span_not_ingested_yet_is_pending(monkeypatch):
 
 
 def test_unprovisioned_workspace_is_unconfigured(monkeypatch):
-    # Distinct from pending: retrying never helps until /setup-respan runs.
+    # Distinct from pending: retrying never helps until provisioning runs.
     monkeypatch.setattr(config, "EXPERIMENTS_CONFIGURED", False)
     assert experiments.evaluate_answer("log-1", "q")["status"] == "unconfigured"
 

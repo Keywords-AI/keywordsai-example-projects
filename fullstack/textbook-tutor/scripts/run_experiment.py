@@ -3,7 +3,7 @@
 The app does not score its own answers. A score for one live answer, computed in
 a browser and stored nowhere, is a number with nothing to compare it to. An
 experiment is the opposite: the same fixed question set, the same graders, run
-again after every change, so "did that help?" has an answer.
+again after every change, so "did that help?" has an answer. See PROJECT_LOG §26.
 
 What it does:
 
@@ -162,7 +162,8 @@ def main(argv=None) -> int:
 
     if not args.dry_run and not config.EXPERIMENTS_CONFIGURED:
         print("Not configured. Needs RESPAN_API_KEY and the five EVAL_PIPELINE_* ids "
-              "in .env — run /setup-respan to provision them.", file=sys.stderr)
+              "in .env — run `python -m scripts.setup_respan --apply` to provision "
+              "them.", file=sys.stderr)
         return 1
 
     items = load_questions(args.subject)

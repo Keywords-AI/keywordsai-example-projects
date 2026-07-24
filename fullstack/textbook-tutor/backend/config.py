@@ -130,14 +130,15 @@ CAPTION_MODEL = os.environ.get("CAPTION_MODEL", "claude-haiku-4-5")
 
 # --- Respan evaluation pipelines (workspace-specific) ---
 # The five deployed graders live in YOUR Respan workspace, so their ids can't be
-# baked into the repo — they'd point at someone else's org. `/setup-respan`
-# provisions them and writes these values into .env.
+# baked into the repo — they'd point at someone else's org.
+# `python -m scripts.setup_respan --apply` provisions them and writes these
+# values into .env.
 #
 # These are pipeline **family** ids (`workflow_id`), not grader ids and NOT the
 # `id` that list_evaluation_pipelines returns — that one is the primary key of a
 # single *version*, so pinning it silently freezes the grader at the version it
 # had when you copied it. Committing a new version mints a new PK, deploys fine,
-# and every run keeps scoring with the old logic.
+# and every run keeps scoring with the old logic. See PROJECT_LOG §28.
 #
 # `experiments.pipeline_versions()` resolves these families to whatever version
 # is current at run time.
@@ -169,7 +170,7 @@ REWRITE_MODEL = os.environ.get("REWRITE_MODEL", "claude-haiku-4-5")
 # 8/14, not the original 3/10: the top-k sweep (scripts/topk_experiment.py) showed
 # recall on Axler climbing 0.78 -> 0.94 going 3 -> 8, with generation graders flat.
 # MAX raised to 14 so multi-book subjects aren't trimmed back below the per-book
-# budget.
+# budget. See PROJECT_LOG §31.
 TOP_K_PER_BOOK = int(os.environ.get("TOP_K_PER_BOOK", "8"))
 MAX_CONTEXT_CHUNKS = int(os.environ.get("MAX_CONTEXT_CHUNKS", "14"))
 

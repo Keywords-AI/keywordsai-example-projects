@@ -1,8 +1,9 @@
 """Provision the five RAG graders in a Respan workspace, without Claude Code.
 
-`/setup-respan` does this too, but only for people running Claude Code. This is
-the same job as a plain command, so the README can say "set your key, run one
-thing" and mean it for everybody:
+Grader ids are workspace-specific, so they can't ship in the repo: the objects
+have to exist before the ids do. This is that provisioning step as a plain
+command, so the README can say "set your key, run one thing" and mean it for
+everybody, Claude Code or not:
 
     python -m scripts.setup_respan            # dry run: say what would happen
     python -m scripts.setup_respan --apply    # create what's missing, write .env
@@ -17,7 +18,7 @@ Provisioning is five steps per grader, and only four of them are ordinary REST:
     create evaluator   POST /evaluators/
     commit it          POST /evaluators/{id}/versions/
     wrap in pipeline   POST /workflows/                 <-- see _pipeline_tasks
-    commit it          POST /workflows/{id}/versions/
+    commit it          POST /workflows/{id}/commits/     <-- NOT /versions/
     deploy it          POST /workflows/{id}/deployments/
 
 Committing is not optional: `create` leaves a draft, and a grader only ever runs
@@ -32,7 +33,7 @@ import urllib.error
 
 from backend import config, experiments
 
-GRADERS_FILE = config.BASE_DIR / ".claude" / "skills" / "setup-respan" / "graders.json"
+GRADERS_FILE = config.BASE_DIR / "evals" / "graders.json"
 ENV_FILE = config.BASE_DIR / ".env"
 
 # Both id families end up in .env, and they are NOT interchangeable.

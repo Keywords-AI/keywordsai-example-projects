@@ -5,7 +5,7 @@
  * then shows the result here. So the number on screen and the number on the
  * Experiments page are the same number, and it is directly comparable to the
  * regression baseline from `scripts/run_experiment.py` — both grade the exact
- * prompt the model saw.
+ * prompt the model saw. See PROJECT_LOG §26.
  *
  * The earlier version of this panel called `/evaluators/{id}/run/`, which
  * computes a score, bills for it, and persists nothing.
@@ -121,7 +121,7 @@ async function runEval(idx) {
       // Log ingestion is async — right after an answer the span isn't there yet.
       $("scoreBody").innerHTML = '<div class="evd">The span isn\'t logged yet. Try again in a moment.</div>';
     } else if (res.status === "unconfigured") {
-      $("scoreBody").innerHTML = '<div class="evd">No graders in this workspace. Run <code>/setup-respan</code>, then restart the server.</div>';
+      $("scoreBody").innerHTML = '<div class="evd">No graders in this workspace. Run <code>python -m scripts.setup_respan --apply</code>, then restart the server.</div>';
     } else {
       $("scoreBody").innerHTML = `<div class="evd">Couldn't grade this answer${res.detail ? " — " + escapeHtml(res.detail) : ""}.</div>`;
     }

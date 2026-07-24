@@ -194,14 +194,13 @@ python -m scripts.setup_respan            # dry run, says what it would create
 python -m scripts.setup_respan --apply    # create them, write the ids into .env
 ```
 
-It creates the five graders from `graders.json`, wraps each in a deployed
+It creates the five graders from `evals/graders.json`, wraps each in a deployed
 pipeline, and writes both id families into `.env`. Matched by name and safe to
 re-run: anything already there is reused, so it won't grow a second set.
 
-Claude Code users can instead run the **`/setup-respan`** skill, which does the
-same thing and also installs the Respan MCP server. It lives in `.claude/skills/`
-here, so open `fullstack/textbook-tutor` as your working directory or it won't
-be discovered.
+`evals/graders.json` is the authoritative definition of each grader, so a grader
+improved on the platform will drift from it. `python -m scripts.check_graders`
+reports that drift and `--sync` pulls the live version back into the file.
 
 ## Layout
 
@@ -275,8 +274,8 @@ python -m scripts.repair_duplicate_books          # dry run
 python -m scripts.repair_duplicate_books --apply  # collapse duplicates
 ```
 
-After changing a grader on the platform, resync the copy `/setup-respan`
-provisions from, or the next fresh setup gets the old one:
+After changing a grader on the platform, resync `evals/graders.json`, or the
+next fresh setup provisions the old one:
 
 ```bash
 python -m scripts.check_graders          # exits 1 on drift

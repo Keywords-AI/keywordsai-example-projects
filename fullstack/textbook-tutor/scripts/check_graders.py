@@ -1,7 +1,7 @@
 """Is `graders.json` still what this workspace actually runs?
 
-`/setup-respan` provisions a new workspace from
-`.claude/skills/setup-respan/graders.json`. Every time a grader is improved on
+`scripts/setup_respan.py` provisions a new workspace from
+`evals/graders.json`. Every time a grader is improved on
 the platform, that file goes stale, and the next person to run the skill gets
 the old, worse grader with no sign anything is wrong. That has happened three
 times: groundedness, citation validity, then context completeness.
@@ -21,9 +21,9 @@ import sys
 
 from backend import config, experiments
 
-GRADERS_FILE = config.BASE_DIR / ".claude" / "skills" / "setup-respan" / "graders.json"
+GRADERS_FILE = config.BASE_DIR / "evals" / "graders.json"
 
-# The grader (not pipeline) ids, which /setup-respan also records in .env.
+# The grader (not pipeline) ids, which scripts/setup_respan.py also records.
 ENV_KEYS = {
     "context_relevance": "EVAL_ID_CONTEXT_RELEVANCE",
     "context_completeness": "EVAL_ID_CONTEXT_COMPLETENESS",
@@ -95,7 +95,7 @@ def main(argv=None) -> int:
         print(f"\nsynced {len(drifted)} grader(s) into {GRADERS_FILE.name}. Commit it.")
         return 0
     if drifted:
-        print(f"\n{len(drifted)} grader(s) have drifted. A fresh /setup-respan would "
+        print(f"\n{len(drifted)} grader(s) have drifted. A fresh setup would "
               f"provision the old ones.\nRun with --sync to update the file.",
               file=sys.stderr)
         return 1

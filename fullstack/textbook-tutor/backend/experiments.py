@@ -9,7 +9,7 @@ so a per-answer score is directly comparable to the baseline.
 Why an experiment rather than a direct grader call: `POST /evaluators/{id}/run/`
 answers with `{"id": "", "environment": "test"}`. It computes a score, bills for
 it, and stores nothing, so the number exists nowhere but the caller's memory. An
-experiment persists, and shows up on the Experiments page.
+experiment persists, and shows up on the Experiments page. See PROJECT_LOG §26.
 """
 import json
 import time
@@ -86,7 +86,7 @@ def pipeline_versions(families: list[str]) -> list[str]:
     new one. Pinning the PK therefore freezes the grader: you can edit it, commit
     it and deploy it, watch `deployed_version` go up, and still have every run
     scored by the version whose id you wrote down. Which is exactly what happened
-    to the groundedness and citation fixes.
+    to the groundedness and citation fixes — see PROJECT_LOG §28.
 
     So the config pins the stable family id and this resolves it per run.
     Unresolvable families are dropped rather than passed through: a stale id is
@@ -121,7 +121,7 @@ def add_rows(dataset_id: str, rows: list[dict]) -> int:
     `/logs/bulk/` takes the `{"logs": [...]}` array; the singular `/logs/`
     endpoint takes ONE bare `{input, output, ...}` object. Sending the array to
     the singular endpoint yields a row with no `input`, and the graders then
-    score an empty string.
+    score an empty string. See PROJECT_LOG §26.
 
     The insert is asynchronous, so the count is read back rather than assumed —
     grading one row and reporting it as twelve would be worse than failing.
@@ -148,7 +148,7 @@ def grade_dataset(name: str, description: str, dataset_id: str, rows: int,
     that read the output then score a JSON blob, which is why well-grounded
     answers came back 0.00 and why the affected grader changed between identical
     runs. Verified: groundedness averaged 0.65 with 0.00s when bundled, and 1.00
-    across the same 12 rows when run alone.
+    across the same 12 rows when run alone. See PROJECT_LOG §28.
 
     One experiment per grader, run concurrently over a shared dataset. Same
     number of grader calls, five experiment wrappers instead of one.
@@ -246,7 +246,7 @@ def averages_by(found: list[dict], meta_for, bucket) -> dict[str, dict[str, list
     ceiling and drown out the hard ones, so a retrieval change barely moves the
     mean even when it clearly helped the hard slice. `meta_for(span)` returns the
     row metadata for a graded span (or None to drop it); `bucket(meta)` names the
-    slice.
+    slice. See PROJECT_LOG on why the eval set was hardened.
     """
     out: dict[str, dict[str, list[float]]] = {}
     for span in found:
@@ -286,7 +286,8 @@ def evaluate_answer(log_id: str, label: str, on_progress=None) -> dict:
     if not pipelines:
         return {"status": "error", "scores": {},
                 "detail": "no graders resolved — check RESPAN_API_KEY and the "
-                          "EVAL_PIPELINE_* ids in .env, then run /setup-respan"}
+                          "EVAL_PIPELINE_* ids in .env, then run "
+                          "`python -m scripts.setup_respan --apply`"}
 
     step("reading the span")
     io = fetch_answer_io(log_id)
