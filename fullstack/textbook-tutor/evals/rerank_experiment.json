@@ -1,0 +1,71 @@
+{
+  "subject": "Linear Algebra",
+  "generated_at": "2026-07-23T00:20:52.898691+00:00",
+  "n_cases": 59,
+  "seed": 13,
+  "production_k": 8,
+  "rerank_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+  "rerank_candidates": 20,
+  "vector": {
+    "recall_at_k": {
+      "1": 0.5254237288135594,
+      "3": 0.7457627118644068,
+      "5": 0.7966101694915254,
+      "8": 0.8813559322033898,
+      "10": 0.8813559322033898,
+      "20": 0.9152542372881356
+    },
+    "mrr": 0.6399
+  },
+  "reranked": {
+    "recall_at_k": {
+      "1": 0.4406779661016949,
+      "3": 0.6440677966101694,
+      "5": 0.711864406779661,
+      "8": 0.847457627118644,
+      "10": 0.864406779661017,
+      "20": 0.9152542372881356
+    },
+    "mrr": 0.5657
+  },
+  "rescued_at_prod_k": [
+    {
+      "page": 231,
+      "q": "Why does the operator D defined on the space of trigonometric polynomials satisfy the property that its adjoint equals the negative of itself?",
+      "v_rank": 12,
+      "r_rank": 5
+    },
+    {
+      "page": 94,
+      "q": "Why would a matrix representation of a linear map have a special form where the only nonzero entries are 1's along the diagonal up to the rank of the map?",
+      "v_rank": 12,
+      "r_rank": 3
+    }
+  ],
+  "regressed_at_prod_k": [
+    {
+      "page": 151,
+      "q": "Why does the same linear transformation on \u211d\u00b2 have no eigenvalues, but when you consider it as operating on \u2102\u00b2 it does have eigenvalues?",
+      "v_rank": 3,
+      "r_rank": 10
+    },
+    {
+      "page": 313,
+      "q": "How does the matrix representation of a linear transformation change when you switch from one basis to another?",
+      "v_rank": 3,
+      "r_rank": 15
+    },
+    {
+      "page": 133,
+      "q": "Why does the textbook use the letter F to represent either the real numbers or complex numbers?",
+      "v_rank": 5,
+      "r_rank": 13
+    },
+    {
+      "page": 221,
+      "q": "Why does the complex conjugate appear when you take the adjoint of a scalar multiple of an operator?",
+      "v_rank": 8,
+      "r_rank": 20
+    }
+  ]
+}

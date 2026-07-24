@@ -1,0 +1,65 @@
+/* Design tokens, colour scheme, and base document styles.
+   Monochrome Geist palette, zero border-radius, hairline borders. */
+
+/* Theme is resolved in JS (stored choice, else the OS preference) and written to
+   <html data-theme>, before first paint. That keeps one dark palette here rather
+   than duplicating it across a media query and an attribute selector, which is
+   the usual way these two drift apart. */
+:root,
+:root[data-theme="light"] {
+  --bg: #ffffff; --fg: #171717; --muted: #737373;
+  --border: #e5e5e5; --secondary: #f5f5f5; --dot: #16a34a;
+  --ok: #16a34a; --bad: #dc2626;
+  --sans: "Geist", system-ui, Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0a0a0a; --fg: #ededed; --muted: #a3a3a3;
+  --border: #262626; --secondary: #1a1a1a; --dot: #22c55e;
+  --ok: #22c55e; --bad: #f87171;
+}
+
+/* Tell the browser which built-in scheme is active, so form controls, the
+   caret and the native scrollbar gutter match the theme. */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+* { box-sizing: border-box; border-color: var(--border); scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+/* Themed scrollbars — the default light bar is jarring in dark mode. */
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border: 3px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* The app is a fixed viewport shell: the document itself never scrolls, only
+   the panes inside it (thread, sidebar, inspect). `overflow: hidden` makes that
+   a hard guarantee rather than a happy accident, and `overscroll-behavior: none`
+   stops the trackpad rubber-banding the whole page on macOS, which reads as a
+   scrollable page even when nothing overflows. */
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--sans); font-size: 14px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  display: flex; flex-direction: column;
+}
+
+/* shared controls */
+.btn { font-family: var(--mono); font-size: 12px; color: var(--fg); border: 1px solid var(--border); background: var(--bg); padding: 7px 12px; cursor: pointer; }
+.btn:hover { border-color: var(--fg); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.icon-btn { font-family: var(--mono); font-size: 15px; line-height: 1; color: var(--fg); border: 1px solid var(--border); background: var(--bg); width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+.icon-btn:hover { border-color: var(--fg); }
+input.f, select.f { font-family: var(--sans); font-size: 13px; color: var(--fg); background: var(--bg); border: 1px solid var(--border); padding: 8px 10px; }
+select.f { cursor: pointer; }
+input.f:focus, select.f:focus, textarea:focus { outline: none; border-color: var(--fg); }
+.row { display: flex; gap: 8px; }
+.status { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.chip { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; }
+
+/* animated ellipsis for pending states */
+.dots::after { content: ""; animation: d 1.2s steps(4, end) infinite; }
+@keyframes d { 0% { content: "" } 25% { content: "." } 50% { content: ".." } 75% { content: "..." } }

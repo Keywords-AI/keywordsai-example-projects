@@ -1,0 +1,76 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R 6 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 869 >>
+stream
+BT
+/F1 13 Tf
+72 750 Td
+17 TL
+(Chapter 3: Photosynthesis) Tj
+T* () Tj
+T* (Photosynthesis is the process by which green plants convert light) Tj
+T* (energy into chemical energy stored in glucose. It takes place in the) Tj
+T* (chloroplast, an organelle that contains the green pigment chlorophyll.) Tj
+T* () Tj
+T* (Photosynthesis occurs in two stages. The first stage is the) Tj
+T* (light-dependent reactions, which take place in the thylakoid membrane.) Tj
+T* (Here, chlorophyll absorbs light and water is split in a step called) Tj
+T* (photolysis, releasing oxygen as a by-product and producing ATP and) Tj
+T* (NADPH.) Tj
+T* () Tj
+T* (The second stage is the Calvin cycle, also called the light-independent) Tj
+T* (reactions, which takes place in the stroma. The Calvin cycle uses the) Tj
+T* (ATP and NADPH from the first stage to fix carbon dioxide into glucose.) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 556 >>
+stream
+BT
+/F1 13 Tf
+72 750 Td
+17 TL
+(Chapter 3: Photosynthesis \(continued\)) Tj
+T* () Tj
+T* (The overall reaction can be summarised by the equation:) Tj
+T* (six carbon dioxide plus six water, in the presence of light, yields) Tj
+T* (one glucose plus six oxygen.) Tj
+T* () Tj
+T* (Three main factors affect the rate of photosynthesis: light intensity,) Tj
+T* (carbon dioxide concentration, and temperature. When one of these is in) Tj
+T* (short supply it becomes the limiting factor, capping the overall rate) Tj
+T* (no matter how favourable the others are.) Tj
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000191 00000 n 
+0000000317 00000 n 
+0000001237 00000 n 
+0000001363 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+1970
+%%EOF

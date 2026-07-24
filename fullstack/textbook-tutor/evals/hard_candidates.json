@@ -1,0 +1,136 @@
+{
+  "subject": "Linear Algebra",
+  "generated_at": "2026-07-23T00:39:18.711324+00:00",
+  "gen_model": "claude-sonnet-5",
+  "verify_model": "claude-sonnet-5",
+  "candidates": [
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I prove that if T is an invertible operator on V, defining an inner product using T guarantees positivity, and does this relationship work both ways?",
+      "gold_page": 247,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do you determine from the proof exactly when the Triangle Inequality becomes an equality instead of a strict inequality?",
+      "gold_page": 188,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How can I show that every invertible operator on a complex vector space must have a cube root?",
+      "gold_page": 275,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I find the minimal polynomial of T\u207b\u00b9 if I already know that the minimal polynomial of T is 4 + 5z \u2212 6z\u00b2 \u2212 7z\u00b3 + 2z\u2074 + z\u2075?",
+      "gold_page": 283,
+      "difficulty": "medium",
+      "gold_rank": 12
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I show that a real vector space V has even dimension exactly when there exists some operator T on V satisfying T\u00b2 = -I?",
+      "gold_page": 301,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "What does it mean for T to be an isomorphism from V/(null T) onto range T, and how do the earlier parts of the proof establish this?",
+      "gold_page": 114,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does representing the identity operator with respect to two different bases result in a matrix that's invertible, and how does the proof establish that these two matrices are inverses of each other?",
+      "gold_page": 312,
+      "difficulty": "medium",
+      "gold_rank": 2
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does the proof of the Pythagorean theorem only give a true \"if and only if\" converse in real inner product spaces and not necessarily in complex ones?",
+      "gold_page": 185,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does the invariance of U under T matter for showing that the quotient operator is well defined?",
+      "gold_page": 153,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does the vector u given by the formula involving \u03c6(e\u2081)e\u2081+\u00b7\u00b7\u00b7+\u03c6(e\u2099)e\u2099 not actually depend on which orthonormal basis is used to compute it?",
+      "gold_page": 204,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does the same differentiation map count as surjective when it's viewed as mapping into P\u2084(R) but not when it's viewed as mapping into P\u2085(R)?",
+      "gold_page": 78,
+      "difficulty": "medium",
+      "gold_rank": 4
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How does the proof show that the constants \u03bb\u2081, ..., \u03bb\u2098 in the factorization are unique except for their order?",
+      "gold_page": 141,
+      "difficulty": "medium",
+      "gold_rank": 2
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I know that I'm never dividing by zero when computing each e_j in this procedure?",
+      "gold_page": 198,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How does the proof use the fact that T is injective to guarantee that the quotient q and remainder r in the division algorithm are unique?",
+      "gold_page": 137,
+      "difficulty": "medium",
+      "gold_rank": 3
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I show that a linear map from a finite-dimensional space to a finite-dimensional space W is the zero map if and only if its dual map is zero?",
+      "gold_page": 130,
+      "difficulty": "medium",
+      "gold_rank": 1
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does an operator need to map each subspace U\u2c7c into itself in order for the direct sum decomposition approach to be useful for studying T?",
+      "gold_page": 148,
+      "difficulty": "medium",
+      "gold_rank": 2
+    }
+  ]
+}
