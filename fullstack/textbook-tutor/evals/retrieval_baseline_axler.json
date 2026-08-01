@@ -1,0 +1,292 @@
+{
+  "subject": "Linear Algebra",
+  "generated_at": "2026-07-22T23:43:14.683247+00:00",
+  "question_model": "claude-haiku-4-5",
+  "config": {
+    "TOP_K_PER_BOOK": 3,
+    "MAX_CONTEXT_CHUNKS": 10,
+    "CHUNK_SIZE": 800,
+    "CHUNK_OVERLAP": 150,
+    "EMBED_MODEL": "BAAI/bge-small-en-v1.5",
+    "LLAMAPARSE": true
+  },
+  "n_requested": 50,
+  "n_graded": 49,
+  "n_skipped": 1,
+  "eligible_chunks": 351,
+  "recall_at_k": {
+    "1": 0.5714285714285714,
+    "3": 0.7551020408163265,
+    "5": 0.7959183673469388,
+    "10": 0.8979591836734694,
+    "20": 0.9387755102040817
+  },
+  "production_k": 3,
+  "recall_at_production_k": 0.7551020408163265,
+  "mrr": 0.6724,
+  "median_rank_when_found": 1,
+  "misses": [
+    {
+      "question": "How can you tell if two finite-dimensional vector spaces are the same in the sense that one is just a relabeling of the other?",
+      "gold_page": 98,
+      "rank": null
+    },
+    {
+      "question": "Why does the proof show that at least one of the factors (T \u2212 \u03bb\u2c7cI) must fail to be injective?",
+      "gold_page": 161,
+      "rank": null
+    },
+    {
+      "question": "Why do we get different results when we apply the differentiation map and then multiply by x\u00b2 versus multiplying by x\u00b2 first and then differentiating?",
+      "gold_page": 72,
+      "rank": null
+    }
+  ],
+  "records": [
+    {
+      "question": "Why is the absolute value of a complex number always nonnegative?",
+      "gold_page": 134,
+      "rank": 1
+    },
+    {
+      "question": "Why is the null space of an operator T not always useful for finding invariant subspaces other than the trivial ones {0} and V?",
+      "gold_page": 149,
+      "rank": 3
+    },
+    {
+      "question": "What page would I go to if I wanted to learn about the Riesz Representation Theorem?",
+      "gold_page": 352,
+      "rank": 2
+    },
+    {
+      "question": "How can you tell if two finite-dimensional vector spaces are the same in the sense that one is just a relabeling of the other?",
+      "gold_page": 98,
+      "rank": null
+    },
+    {
+      "question": "How is the determinant of a product of two operators related to the determinants of the individual operators?",
+      "gold_page": 335,
+      "rank": 2
+    },
+    {
+      "question": "Why does the annihilator of U consist of the dual basis vectors corresponding to the coordinates that are zero in every vector of U?",
+      "gold_page": 121,
+      "rank": 1
+    },
+    {
+      "question": "How do you determine which entries go into the matrix representation of a function's derivative, and where exactly do they get placed?",
+      "gold_page": 343,
+      "rank": 3
+    },
+    {
+      "question": "Why does whether a linear map is surjective depend on what vector space we consider it to be mapping into?",
+      "gold_page": 78,
+      "rank": 6
+    },
+    {
+      "question": "How do you check that elements of a dual basis are linearly independent?",
+      "gold_page": 118,
+      "rank": 1
+    },
+    {
+      "question": "Why does swapping two columns in a matrix change the sign of its determinant?",
+      "gold_page": 330,
+      "rank": 1
+    },
+    {
+      "question": "Why is it that once you know where a linear map sends each basis vector of the domain, the entire map is completely determined?",
+      "gold_page": 70,
+      "rank": 1
+    },
+    {
+      "question": "Why can't two subspaces of the same vector space be completely separate from each other the way two regular subsets can be?",
+      "gold_page": 41,
+      "rank": 1
+    },
+    {
+      "question": "Why doesn't the multiplication by \u22121 operator on the real vector space R have a square root?",
+      "gold_page": 274,
+      "rank": 1
+    },
+    {
+      "question": "Why do we need to show that the definitions of addition and scalar multiplication on V/U don't depend on which representative we choose from an equivalence class?",
+      "gold_page": 112,
+      "rank": 1
+    },
+    {
+      "question": "Why does the same linear transformation on \u211d\u00b2 have no eigenvalues, but when you consider it as an operator on \u2102\u00b2 it has eigenvalues?",
+      "gold_page": 151,
+      "rank": 5
+    },
+    {
+      "question": "How do you prove that complex number multiplication is commutative?",
+      "gold_page": 20,
+      "rank": 1
+    },
+    {
+      "question": "How can you use the orthogonal complement and the relationship between a linear map and its adjoint to find the null space of the adjoint operator?",
+      "gold_page": 222,
+      "rank": 1
+    },
+    {
+      "question": "What are the two properties that a function has to satisfy in order to be considered a linear map?",
+      "gold_page": 68,
+      "rank": 8
+    },
+    {
+      "question": "Why does the matrix representation of a linear transformation change when you switch to a different basis, and what's the formula that tells you how it changes?",
+      "gold_page": 313,
+      "rank": 3
+    },
+    {
+      "question": "Why does this textbook delay covering determinants until later in the course instead of presenting them early like most other linear algebra books?",
+      "gold_page": 12,
+      "rank": 3
+    },
+    {
+      "question": "Why can't a polynomial like x\u00b2 + bx + c be factored into real linear factors if b\u00b2 is less than 4c?",
+      "gold_page": 143,
+      "rank": 1
+    },
+    {
+      "question": "Why is the zero polynomial assigned a degree of negative infinity instead of just saying it has no degree?",
+      "gold_page": 48,
+      "rank": 7
+    },
+    {
+      "question": "Why can't a nonzero polynomial equal zero for every input value in its field?",
+      "gold_page": 136,
+      "rank": 3
+    },
+    {
+      "question": "Why is it useful to find an orthonormal basis of eigenvectors for an operator instead of just any basis of eigenvectors?",
+      "gold_page": 232,
+      "rank": 1
+    },
+    {
+      "question": "Why are eigenvalues guaranteed to be real numbers when you're working with a self-adjoint operator?",
+      "gold_page": 225,
+      "rank": 2
+    },
+    {
+      "question": "Why does having only one of these two properties\u2014either a function preserves scalar multiplication or it preserves addition\u2014not guarantee that a function is actually a linear map?",
+      "gold_page": 74,
+      "rank": 1
+    },
+    {
+      "question": "What does the letter F stand for in this chapter?",
+      "gold_page": 133,
+      "rank": 1
+    },
+    {
+      "question": "How is the norm of a vector defined in terms of an inner product?",
+      "gold_page": 183,
+      "rank": 5
+    },
+    {
+      "question": "Why does the dimension of a subspace plus the dimension of its annihilator equal the dimension of the whole space?",
+      "gold_page": 122,
+      "rank": 1
+    },
+    {
+      "question": "Why might singular values be more useful than eigenvalues for understanding how an operator behaves?",
+      "gold_page": 251,
+      "rank": 1
+    },
+    {
+      "question": "How can you tell whether an operator is diagonalizable just by looking at its minimal polynomial?",
+      "gold_page": 283,
+      "rank": 7
+    },
+    {
+      "question": "How can we use what we learned about operators on complex vector spaces to understand operators on real vector spaces?",
+      "gold_page": 290,
+      "rank": 1
+    },
+    {
+      "question": "Why does the conjugate of a scalar come out when you take the adjoint of a scalar multiple of an operator?",
+      "gold_page": 221,
+      "rank": 13
+    },
+    {
+      "question": "Why do we need to include a factor of sin \u03c6 when we convert a triple integral from Cartesian coordinates to spherical coordinates?",
+      "gold_page": 345,
+      "rank": 1
+    },
+    {
+      "question": "How can you tell from the proof whether the Cauchy\u2013Schwarz inequality becomes an equality, and what does that tell you about the relationship between the two vectors?",
+      "gold_page": 187,
+      "rank": 1
+    },
+    {
+      "question": "How does swapping two numbers in a permutation affect whether the permutation has a positive or negative sign?",
+      "gold_page": 328,
+      "rank": 1
+    },
+    {
+      "question": "Why does the proof show that at least one of the factors (T \u2212 \u03bb\u2c7cI) must fail to be injective?",
+      "gold_page": 161,
+      "rank": null
+    },
+    {
+      "question": "Why does the sign of the determinant of an invertible linear operator depend on how many times the operator reverses direction?",
+      "gold_page": 337,
+      "rank": 1
+    },
+    {
+      "question": "How do we know that all the c's equal zero from the equation relating the w's and u's?",
+      "gold_page": 64,
+      "rank": 1
+    },
+    {
+      "question": "Why do we need to study inner products if we've already learned about vector spaces?",
+      "gold_page": 178,
+      "rank": 1
+    },
+    {
+      "question": "Why does a normal operator on a real inner product space have to have either one-dimensional or two-dimensional invariant subspaces?",
+      "gold_page": 306,
+      "rank": 2
+    },
+    {
+      "question": "How does the permutation (2, 3, 1, 5, 6, 7, 4, 9, 8) relate to the permutation (1, 2, 3, 4, 5, 6, 7, 8, 9) in terms of how it's constructed?",
+      "gold_page": 326,
+      "rank": 1
+    },
+    {
+      "question": "How can you tell whether the operator T defined by Tv = \u27e8v, u\u27e9x is self-adjoint when working over the real numbers?",
+      "gold_page": 231,
+      "rank": 17
+    },
+    {
+      "question": "Why does the nilpotent operator in the second example require multiple vectors to form a basis chain, whereas the operator in the first example can be built from just one vector?",
+      "gold_page": 285,
+      "rank": 1
+    },
+    {
+      "question": "Why do we count eigenvalues multiple times when computing the trace of an operator?",
+      "gold_page": 314,
+      "rank": 1
+    },
+    {
+      "question": "Why do we get different results when we apply the differentiation map and then multiply by x\u00b2 versus multiplying by x\u00b2 first and then differentiating?",
+      "gold_page": 72,
+      "rank": null
+    },
+    {
+      "question": "What's the difference between a normal operator and a self-adjoint operator?",
+      "gold_page": 227,
+      "rank": 1
+    },
+    {
+      "question": "Why are eigenvectors of a normal operator that correspond to different eigenvalues perpendicular to each other?",
+      "gold_page": 229,
+      "rank": 1
+    },
+    {
+      "question": "Why does the characteristic polynomial of an operator have a degree equal to the dimension of the vector space?",
+      "gold_page": 276,
+      "rank": 6
+    }
+  ]
+}

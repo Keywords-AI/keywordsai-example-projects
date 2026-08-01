@@ -1,0 +1,114 @@
+[
+  {
+    "key": "context_relevance",
+    "name": "RAG · context relevance",
+    "description": "Retrieve step (numerical 0-1): fraction of retrieved excerpts that are relevant to the question. Counted, not judged by impression, so it varies continuously.",
+    "type": "llm",
+    "score_value_type": "numerical",
+    "score_config": {
+      "max_score": 1.0,
+      "min_score": 0.0
+    },
+    "passing_conditions": {
+      "primary_score": {
+        "value": 0.7,
+        "operator": "gte"
+      }
+    },
+    "llm_config": {
+      "model": "openai/gpt-4o",
+      "temperature": 0.0,
+      "evaluator_definition": "You are checking the RETRIEVAL step of a RAG study-tutor pipeline.\n\nThe request (retrieved course materials + the student's question):\n{{input}}\n\nThe tutor's answer (context only - do not grade it):\n{{output}}\n\nDecide how RELEVANT the retrieved materials are to the student's question.\n\nCompute the score by counting, not by impression:\n1. C = the total number of retrieved excerpts in the request.\n2. R = how many of those C excerpts contain information that helps answer the question.\n3. score = R / C, rounded to two decimal places.\n\nThe result is arithmetic, so it will usually NOT be a round number. Scores such as 0.83, 0.62 and 0.17 are normal and expected. Do NOT round to 0.25, 0.5 or 0.75.\n\nReply with ONLY the final number, to two decimal places.",
+      "scoring_rubric": "score = R / C to 2dp, where C = retrieved excerpts and R = those relevant to the question. Intermediate values such as 0.83 or 0.62 are expected; do not round to quarters."
+    }
+  },
+  {
+    "key": "context_completeness",
+    "name": "RAG · context completeness",
+    "description": "Retrieve step (numerical 0-1): fraction of the facts a complete answer needs that are present in the retrieved materials. Counted, so it varies continuously.",
+    "type": "llm",
+    "score_value_type": "numerical",
+    "score_config": {
+      "max_score": 1.0,
+      "min_score": 0.0
+    },
+    "passing_conditions": {
+      "primary_score": {
+        "value": 0.7,
+        "operator": "gte"
+      }
+    },
+    "llm_config": {
+      "model": "openai/gpt-4o",
+      "temperature": 0.0,
+      "scoring_rubric": "score = P / A to 2dp, where A = the facts a complete response to what was ASKED FOR requires, and P = those present in the retrieved materials. What was asked for may be an answer to a question or a lecture teaching a concept; read the request to see which. Intermediate values such as 0.83 or 0.62 are expected; do not round to quarters.",
+      "evaluator_definition": "You are checking the RETRIEVAL step of a RAG study-tutor pipeline.\n\nThe request (retrieved course materials + what the student asked for):\n{{input}}\n\nThe tutor's response (context only - do not grade it):\n{{output}}\n\nDecide whether the retrieved materials contain ENOUGH information to fully satisfy what was asked for.\n\nFirst read the request to see what was asked for. It ends in one of two ways:\n- \"Question: ...\"  the student wants that question answered.\n- \"Teach the concept behind this question: ...\"  the student wants a short\n  lecture on the underlying concept. Completeness then means enough to TEACH it:\n  the definition, the properties or steps that characterise it, and an example\n  or application if teaching it normally needs one. A set of excerpts that would\n  answer the narrow question but could not support a lecture is incomplete.\n\nCompute the score by counting, not by impression:\n1. A = the number of distinct facts or sub-parts a complete response to what was\n   asked for requires.\n2. P = how many of those A are actually present in the retrieved materials.\n3. score = P / A, rounded to two decimal places.\n\nJudge only the MATERIALS, never the response. If the materials contain something\nthe tutor failed to use, it still counts toward P.\n\nThe result is arithmetic, so it will usually NOT be a round number. Scores such\nas 0.83, 0.62 and 0.17 are normal and expected. Do NOT round to 0.25, 0.5 or 0.75.\n\nReply with ONLY the final number, to two decimal places."
+    }
+  },
+  {
+    "key": "groundedness",
+    "name": "RAG · groundedness",
+    "description": "Generate step (numerical 0-1): fraction of the answer's factual claims supported by the retrieved materials. Score is counted, not judged by impression, so it varies continuously.",
+    "type": "llm",
+    "score_value_type": "numerical",
+    "score_config": {
+      "max_score": 1.0,
+      "min_score": 0.0
+    },
+    "passing_conditions": {
+      "primary_score": {
+        "value": 0.7,
+        "operator": "gte"
+      }
+    },
+    "llm_config": {
+      "model": "openai/gpt-4o",
+      "temperature": 0.0,
+      "scoring_rubric": "score = (N - U) / N to 2dp, where N = distinct factual claims IN THE ANSWER and U = those not supported by any excerpt. N is a property of the answer, never of how many excerpts were retrieved. Unused or irrelevant excerpts do not lower the score. Correct refusal = 1.00.",
+      "evaluator_definition": "You are checking the GENERATION step of a RAG study-tutor pipeline.\n\nThe request (retrieved course materials + the student's question):\n{{input}}\n\nThe tutor's answer:\n{{output}}\n\nDecide how well THE ANSWER is supported by the retrieved materials.\n\nCompute the score by counting, not by impression:\n1. N = the number of distinct factual claims THE ANSWER makes. Read the answer and count its claims. N comes from the answer alone.\n2. U = how many of those N claims are NOT supported by the excerpts (contradicted, embellished, or drawn from outside knowledge).\n3. score = (N - U) / N, rounded to two decimal places.\n\nCRITICAL — what does NOT affect this score:\n- How many excerpts were retrieved. N is never the number of excerpts.\n- Whether some excerpts are irrelevant, unused, or off-topic. An answer that correctly draws on ONE excerpt and ignores the other four is fully grounded: score 1.00. Retrieval quality is measured elsewhere; do not penalise the answer for it.\n- Whether the answer is complete. Missing material is not an unsupported claim.\n\nWhat counts as supported:\n- A claim is supported if ANY ONE excerpt supports it.\n- Faithful paraphrase, reordering, summarising and formatting are supported. The answer need not quote.\n- Restating the question, headings, and teaching scaffolding are not factual claims; do not count them in N.\n- A correct refusal — the answer says the materials do not cover the question, and asserts nothing further — scores 1.00.\n\nWorked example: an answer makes 8 claims, all traceable to a single excerpt on page 70, while two other retrieved excerpts are irrelevant. Then N = 8, U = 0, score = 1.00.\n\nThe result is arithmetic, so it will usually NOT be a round number. Scores such as 0.88, 0.62 and 0.17 are normal.\n\nReply with ONLY the final number, to two decimal places."
+    }
+  },
+  {
+    "key": "context_utilization",
+    "name": "RAG · context utilization",
+    "description": "Generate step (numerical 0-1): fraction of the answer's claims that are drawn from the retrieved materials rather than general knowledge. Counted, so it varies continuously.",
+    "type": "llm",
+    "score_value_type": "numerical",
+    "score_config": {
+      "max_score": 1.0,
+      "min_score": 0.0
+    },
+    "passing_conditions": {
+      "primary_score": {
+        "value": 0.7,
+        "operator": "gte"
+      }
+    },
+    "llm_config": {
+      "model": "openai/gpt-4o",
+      "temperature": 0.0,
+      "evaluator_definition": "You are checking the GENERATION step of a RAG study-tutor pipeline.\n\nThe request (retrieved course materials + the student's question):\n{{input}}\n\nThe tutor's answer:\n{{output}}\n\nDecide how much the answer actually USES the retrieved materials rather than answering from general knowledge.\n\nCompute the score by counting, not by impression:\n1. N = the total number of distinct factual claims the answer makes.\n2. D = how many of those N claims are drawn from the retrieved materials.\n3. score = D / N, rounded to two decimal places.\n\nSpecial case: a correct refusal - the answer states the materials do not cover the question and makes no claims of its own - scores exactly 1.00.\n\nThe result is arithmetic, so it will usually NOT be a round number. Scores such as 0.83, 0.62 and 0.17 are normal and expected. Do NOT round to 0.25, 0.5 or 0.75.\n\nReply with ONLY the final number, to two decimal places.",
+      "scoring_rubric": "score = D / N to 2dp, where N = distinct factual claims in the answer and D = those drawn from the materials. Correct refusal = 1.00. Intermediate values such as 0.83 or 0.62 are expected; do not round to quarters."
+    }
+  },
+  {
+    "key": "citation_validity",
+    "name": "RAG · citation validity",
+    "description": "Generate step (numerical 0-1): fraction of [Title, p. N] citations in the answer that appear in the retrieved materials.",
+    "type": "code",
+    "score_value_type": "numerical",
+    "score_config": {
+      "max_score": 1.0,
+      "min_score": 0.0
+    },
+    "passing_conditions": {
+      "primary_score": {
+        "value": 1,
+        "operator": "gte"
+      }
+    },
+    "code_config": {
+      "eval_code_snippet": "import re\n\n\ndef main(eval_inputs):\n    \"\"\"Fraction of the answer's [Title, p. N] citations that match a retrieved excerpt.\n\n    Checks the PAGE as well as the title. Title-only matching passed anything\n    that named a real book, including a page that was never retrieved and\n    malformed pages like \"32/p. 70\" — which is exactly the failure this is\n    supposed to catch.\n    \"\"\"\n    out = str(eval_inputs.get('output', '') or '')\n    inp = str(eval_inputs.get('input', '') or '')\n\n    # What retrieval actually supplied, from the [Title, p. N] excerpt headers.\n    available = set()\n    for title, page in re.findall(r'\\[([^\\]]+?),\\s*p\\.\\s*([^\\]]+?)\\]', inp):\n        available.add((title.strip(), page.strip()))\n    if not available:\n        return 1.0          # no excerpt headers to check against\n\n    cited = []\n    for group in re.findall(r'\\[([^\\]]+)\\]', out):\n        for piece in group.split(';'):\n            m = re.match(r'\\s*(.+?),\\s*p\\.\\s*(.+?)\\s*$', piece)\n            if m:\n                cited.append((m.group(1).strip(), m.group(2).strip()))\n    if not cited:\n        return 1.0          # a refusal asserts nothing, so it mis-cites nothing\n\n    def valid(title, page):\n        if (title, page) in available:\n            return True\n        # \"1-2\" or \"1, 2\" is fine when every page in it was retrieved.\n        parts = [p.strip() for p in re.split(r'[-–,]', page) if p.strip()]\n        return len(parts) > 1 and all((title, p) in available for p in parts)\n\n    # Counted per citation instance, not deduplicated by title: one bad citation\n    # among ten good ones should read as 0.9, not as 0.5.\n    return round(sum(1 for t, p in cited if valid(t, p)) / len(cited), 2)\n"
+    }
+  }
+]

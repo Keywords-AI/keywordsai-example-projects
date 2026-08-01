@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ask the Textbook — Respan Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <!-- Resolve the theme before the stylesheets paint: a dark-mode user who
+       chose light would otherwise see a white flash on every load. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        if (!t) t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/static/styles/tokens.css" />
+  <link rel="stylesheet" href="/static/styles/app.css" />
+  <!-- KaTeX is a global, loaded before the modules that call it. -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script type="module" src="/static/js/main.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand-name">Ask the Textbook</span>
+    <span class="brand-tag">Subjects · Chats · RAG Trace</span>
+    <span class="gw"><span class="dot"></span>Respan Gateway</span>
+    <button class="theme-toggle" id="themeToggle" type="button" title="Switch theme"></button>
+  </header>
+
+  <div class="app">
+    <aside class="sidebar">
+      <!-- Pick what + creates: a loose chat, or a subject to file chats under. -->
+      <div class="side-head">
+        <div class="seg" id="newKind">
+          <button class="seg-btn active" data-kind="chat" type="button">Chat</button>
+          <button class="seg-btn" data-kind="subject" type="button">Subject</button>
+        </div>
+        <button class="icon-btn" id="newBtn" title="New chat">+</button>
+      </div>
+      <div class="new-form" id="newForm">
+        <input class="f" id="newName" placeholder="Subject name" />
+        <!-- Options are filled from /api/config so the server owns the list. -->
+        <select class="f" id="newInstr" title="Default teaching style for chats in this subject"></select>
+        <div class="row"><button class="btn btn-primary" id="createBtn">Create</button><button class="btn" id="cancelBtn">Cancel</button></div>
+      </div>
+      <div class="subject-list" id="subjectList"></div>
+    </aside>
+
+    <div class="main">
+      <div class="main-head" id="mainHead"><span class="status">Add a subject, then start a chat.</span></div>
+      <div class="materials" id="materials" hidden></div>
+      <main class="pane"><div class="thread" id="thread"></div></main>
+      <footer>
+        <div class="attach-bar" id="attachBar" hidden></div>
+        <div class="composer">
+          <!-- What to ask for. Options come from /api/config so the server owns
+               the list. Attaching an image overrides this and solves instead. -->
+          <div class="seg mode-seg" id="modeSeg"></div>
+          <label class="btn attach" id="attachBtn" title="Attach a photo of an exercise to solve">Image<input id="qimg" type="file" accept="image/*" hidden /></label>
+          <textarea id="q" rows="1" placeholder="Start a chat to ask a question…" disabled></textarea>
+          <button class="btn btn-primary send" id="send" disabled>Ask</button>
+        </div>
+      </footer>
+    </div>
+
+    <aside class="inspect" id="inspect" hidden>
+      <div class="insp-head"><span>Inspect · RAG trace</span><span class="insp-close" id="inspClose">✕</span></div>
+      <div class="insp-body" id="inspBody"></div>
+    </aside>
+  </div>
+</body>
+</html>

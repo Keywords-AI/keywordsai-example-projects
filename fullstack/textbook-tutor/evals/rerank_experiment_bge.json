@@ -1,0 +1,59 @@
+{
+  "subject": "Linear Algebra",
+  "generated_at": "2026-07-23T00:25:12.936169+00:00",
+  "n_cases": 59,
+  "seed": 13,
+  "production_k": 8,
+  "rerank_model": "BAAI/bge-reranker-base",
+  "rerank_candidates": 20,
+  "vector": {
+    "recall_at_k": {
+      "1": 0.576271186440678,
+      "3": 0.7796610169491526,
+      "5": 0.847457627118644,
+      "8": 0.9322033898305084,
+      "10": 0.9491525423728814,
+      "20": 0.9661016949152542
+    },
+    "mrr": 0.695
+  },
+  "reranked": {
+    "recall_at_k": {
+      "1": 0.5084745762711864,
+      "3": 0.7966101694915254,
+      "5": 0.864406779661017,
+      "8": 0.8983050847457628,
+      "10": 0.8983050847457628,
+      "20": 0.9661016949152542
+    },
+    "mrr": 0.663
+  },
+  "rescued_at_prod_k": [
+    {
+      "page": 151,
+      "q": "Why does the same linear transformation have no eigenvalues when defined over the real numbers, but has eigenvalues when defined over the complex numbers?",
+      "v_rank": 10,
+      "r_rank": 1
+    }
+  ],
+  "regressed_at_prod_k": [
+    {
+      "page": 70,
+      "q": "If I want to create a linear map from one vector space to another using a basis, do I have complete freedom in choosing where to send the basis vectors, or are there restrictions?",
+      "v_rank": 2,
+      "r_rank": 13
+    },
+    {
+      "page": 283,
+      "q": "How can you tell whether an operator is diagonalizable just by looking at its minimal polynomial?",
+      "v_rank": 7,
+      "r_rank": 11
+    },
+    {
+      "page": 231,
+      "q": "Why is the differentiation operator on the space of trigonometric polynomials normal even though it's not self-adjoint?",
+      "v_rank": 7,
+      "r_rank": 16
+    }
+  ]
+}

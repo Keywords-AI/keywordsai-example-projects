@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+anthropic
+llama-index-core
+llama-index-readers-file
+llama-index-embeddings-huggingface
+llama-index-vector-stores-chroma
+llama-parse
+chromadb
+pypdf
+rank-bm25
+sentence-transformers

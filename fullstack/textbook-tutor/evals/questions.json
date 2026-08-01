@@ -1,0 +1,189 @@
+{
+  "_comment": [
+    "The regression question set. Keep it fixed: an experiment is only useful",
+    "if two runs asked the same things, so change this file deliberately and",
+    "expect scores before and after not to be comparable when you do.",
+    "",
+    "HARDENED 2026-07-22: the Linear Algebra 'answerable' entries were replaced",
+    "with specific, proof-level questions built and verified by scripts/build_eval_set.py",
+    "(generate from a real chunk -> a second model confirms it is answerable ONLY",
+    "from that passage -> confirm the chunk is retrievable). The old set was generic",
+    "definitions the book covers redundantly, so top_k=3 and top_k=8 scored the same;",
+    "these need a specific page, so retrieval changes finally register. Baselines from",
+    "before this date are NOT comparable. One easy control ('What is a vector?') is kept",
+    "as a high-score anchor.",
+    "",
+    "`gold_page` (answerable-hard only) is the page the question was written from, for",
+    "gold-aware retrieval checks; graders don't read it. `difficulty` flows into the",
+    "experiment row metadata, so scores can be sliced easy vs medium on the platform.",
+    "",
+    "`subject` matches a subject name in storage/subjects.json (case-insensitive).",
+    "A question whose subject isn't present is skipped and reported.",
+    "",
+    "Aim for a spread the graders can actually separate:",
+    "  - answerable      the books cover it; expect high scores across the board",
+    "  - partial         the books cover part of it; completeness should drop",
+    "  - out-of-corpus   the books don't cover it; the tutor must refuse, which",
+    "                    is a PASS for groundedness and a low context relevance",
+    "",
+    "`mode` is \"qa\" when absent. Lecture entries grade the same way but retrieve",
+    "a continuous run of the book, so their context relevance is expected to be",
+    "lower: neighbours are pulled in for continuity, not because they match."
+  ],
+  "questions": [
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "What is a vector?",
+      "difficulty": "easy"
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I prove that if T is an invertible operator on V, defining an inner product using T guarantees positivity, and does this relationship work both ways?",
+      "difficulty": "medium",
+      "gold_page": 247
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How can I show that every invertible operator on a complex vector space must have a cube root?",
+      "difficulty": "medium",
+      "gold_page": 275
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I find the minimal polynomial of T⁻¹ if I already know that the minimal polynomial of T is 4 + 5z − 6z² − 7z³ + 2z⁴ + z⁵?",
+      "difficulty": "medium",
+      "gold_page": 283
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I show that a real vector space V has even dimension exactly when there exists some operator T on V satisfying T² = -I?",
+      "difficulty": "medium",
+      "gold_page": 301
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does the proof of the Pythagorean theorem only give a true \"if and only if\" converse in real inner product spaces and not necessarily in complex ones?",
+      "difficulty": "medium",
+      "gold_page": 185
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does the vector u given by the formula involving φ(e₁)e₁+···+φ(eₙ)eₙ not actually depend on which orthonormal basis is used to compute it?",
+      "difficulty": "medium",
+      "gold_page": 204
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does the same differentiation map count as surjective when it's viewed as mapping into P₄(R) but not when it's viewed as mapping into P₅(R)?",
+      "difficulty": "medium",
+      "gold_page": 78
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How does the proof show that the constants λ₁, ..., λₘ in the factorization are unique except for their order?",
+      "difficulty": "medium",
+      "gold_page": 141
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How does the proof use the fact that T is injective to guarantee that the quotient q and remainder r in the division algorithm are unique?",
+      "difficulty": "medium",
+      "gold_page": 137
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does representing the identity operator with respect to two different bases result in a matrix that's invertible, and how does the proof establish that these two matrices are inverses of each other?",
+      "difficulty": "medium",
+      "gold_page": 312
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "Why does an operator need to map each subspace Uⱼ into itself in order for the direct sum decomposition approach to be useful for studying T?",
+      "difficulty": "medium",
+      "gold_page": 148
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "answerable",
+      "question": "How do I show that a linear map from a finite-dimensional space to a finite-dimensional space W is the zero map if and only if its dual map is zero?",
+      "difficulty": "medium",
+      "gold_page": 130
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "partial",
+      "question": "Define a vector space and list all of its axioms."
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "partial",
+      "question": "What is the span of a list of vectors, and when is a list linearly independent?"
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "out-of-corpus",
+      "question": "How do I compute a singular value decomposition numerically in Python?"
+    },
+    {
+      "subject": "Linear Algebra",
+      "kind": "out-of-corpus",
+      "question": "Who won the 2018 World Cup?"
+    },
+    {
+      "subject": "AP Biology",
+      "kind": "answerable",
+      "question": "What happens during the Calvin cycle?"
+    },
+    {
+      "subject": "AP Biology",
+      "kind": "answerable",
+      "question": "What do the light reactions of photosynthesis produce?"
+    },
+    {
+      "subject": "AP Biology",
+      "kind": "partial",
+      "question": "Compare photosynthesis and cellular respiration in detail."
+    },
+    {
+      "subject": "AP Biology",
+      "kind": "out-of-corpus",
+      "question": "What is the standard dosage of amoxicillin for an adult?"
+    },
+    {
+      "subject": "Linear Algebra",
+      "mode": "lecture",
+      "kind": "answerable",
+      "question": "What is a linear map?"
+    },
+    {
+      "subject": "Linear Algebra",
+      "mode": "lecture",
+      "kind": "answerable",
+      "question": "How does the matrix of a linear map get built?"
+    },
+    {
+      "subject": "Linear Algebra",
+      "mode": "lecture",
+      "kind": "partial",
+      "question": "Teach me vector spaces from the beginning."
+    },
+    {
+      "subject": "Linear Algebra",
+      "mode": "lecture",
+      "kind": "out-of-corpus",
+      "question": "Teach me the singular value decomposition."
+    }
+  ]
+}

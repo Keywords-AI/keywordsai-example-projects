@@ -1,0 +1,182 @@
+/* Component styles, in page order: topbar, sidebar, main, thread, inspect,
+   composer. Tokens and shared controls live in tokens.css. */
+
+/* --- topbar --- */
+.topbar { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.brand-name { font-family: var(--mono); font-weight: 600; font-size: 13px; }
+.brand-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border); padding: 2px 6px; }
+.gw { margin-left: 16px; font-family: var(--mono); font-size: 11px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 7px; height: 7px; border-radius: 999px; background: var(--dot); }
+/* margin-left:auto pins it to the far right of the topbar. */
+.theme-toggle { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; color: var(--muted); background: var(--bg); border: 1px solid var(--border); cursor: pointer; }
+.theme-toggle:hover { color: var(--fg); border-color: var(--fg); }
+.theme-toggle svg { display: block; }
+
+.app { flex: 1; display: flex; min-height: 0; }
+
+/* --- sidebar --- */
+.sidebar { width: 236px; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+.side-head { display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 12px 12px 8px; }
+/* Segmented Chat/Subject switch — decides what + creates. */
+.seg { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.seg-btn { font: inherit; letter-spacing: inherit; text-transform: inherit; color: var(--muted); background: none; border: 0; padding: 3px 8px; cursor: pointer; }
+.seg-btn + .seg-btn { border-left: 1px solid var(--border); }
+.seg-btn:hover { background: var(--secondary); }
+.seg-btn.active { background: var(--fg); color: var(--bg); }
+.new-form { display: none; flex-direction: column; gap: 8px; padding: 4px 12px 10px; border-bottom: 1px solid var(--border); }
+.new-form.open { display: flex; }
+.subject-list { flex: 1; min-height: 0; overflow-y: auto; }
+/* A subject is a divider; its chats are the rows underneath. */
+.subject, .unfiled { border-bottom: 1px solid var(--border); }
+.subject-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 6px; }
+.subject-name { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; }
+.subject-name:hover { text-decoration: underline; }
+/* "Unfiled" is not a real subject — nothing to rename or delete. */
+.subject-name.plain { cursor: default; color: var(--muted); }
+.subject-name.plain:hover { text-decoration: none; }
+.subject-books { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.icon-btn.tiny { margin-left: auto; width: 18px; height: 18px; font-size: 13px; }
+/* Line-art trash, styled like the theme toggle rather than as an emoji. */
+.icon-btn.trash { display: inline-flex; align-items: center; justify-content: center; padding: 0; color: var(--muted); opacity: 0.7; }
+.icon-btn.trash:hover { color: var(--fg); border-color: var(--fg); }
+.icon-btn.trash svg { display: block; }
+.subject:hover .icon-btn.trash, .icon-btn.trash:focus-visible { opacity: 1; }
+.chat-row { padding: 7px 12px 8px 18px; cursor: grab; border-left: 2px solid transparent; }
+.chat-row:hover { background: var(--secondary); }
+.chat-row.active { background: var(--secondary); border-left-color: var(--fg); }
+.chat-row.dragging { opacity: 0.4; }
+/* Where a dragged chat would land. */
+.dropzone.drop-over { background: var(--secondary); box-shadow: inset 2px 0 0 var(--fg); }
+.chat-title { font-size: 13px; line-height: 1.3; }
+/* The teaching style, fixed for the life of the chat. */
+.chat-meta { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+.chat-empty { font-family: var(--mono); font-size: 10px; color: var(--muted); padding: 2px 12px 9px 18px; }
+.side-empty { padding: 14px; color: var(--muted); font-family: var(--mono); font-size: 11px; }
+
+/* --- main column --- */
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.main-head { border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 53px; }
+.main-title { font-family: var(--mono); font-size: 14px; font-weight: 600; cursor: pointer; }
+.main-title:hover { text-decoration: underline; }
+.style-chip { font-size: 10px; }
+.subject-of { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.books { display: flex; gap: 6px; flex-wrap: wrap; }
+.book-chip { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--border); padding: 2px 8px; }
+.head-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.model-pick { font-family: var(--mono); font-size: 11px; padding: 5px 8px; }
+.del { font-family: var(--mono); font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+.del:hover { color: var(--fg); }
+
+/* materials ("Manage") panel */
+.materials { border-bottom: 1px solid var(--border); background: var(--secondary); padding: 6px 20px; }
+.mat-row { display: flex; align-items: center; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.mat-row:last-child { border-bottom: none; }
+.mat-title { font-size: 13px; font-weight: 500; }
+.mat-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.mat-ren { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted); cursor: pointer; border: 1px solid var(--border); background: var(--bg); padding: 3px 9px; }
+.mat-del { font-family: var(--mono); font-size: 11px; color: var(--muted); cursor: pointer; border: 1px solid var(--border); background: var(--bg); padding: 3px 9px; }
+.mat-ren:hover, .mat-del:hover { border-color: var(--fg); color: var(--fg); }
+.mat-empty { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 7px 0; }
+
+/* --- conversation thread --- */
+/* min-height:0 is load-bearing: without it a flex child won't shrink below
+   its content, so a wrapped header would push the thread past the viewport
+   instead of shortening the scroll area. */
+main.pane { flex: 1; min-height: 0; overflow-y: auto; }
+.thread { max-width: 760px; margin: 0 auto; padding: 22px 20px 8px; }
+.turn { margin-bottom: 20px; }
+.role { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+.msg { border: 1px solid var(--border); background: var(--bg); padding: 14px 16px; }
+/* Raw text as it streams in; swapped for rendered markdown when complete. */
+.msg.streaming { white-space: pre-wrap; }
+.turn.user .msg { background: var(--secondary); white-space: pre-wrap; }
+.cites { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.inspect-btn { font-family: var(--mono); font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 6px 0 0; text-decoration: underline; }
+.inspect-btn:hover { color: var(--fg); }
+.empty { text-align: center; color: var(--muted); font-family: var(--mono); font-size: 12px; line-height: 2; margin-top: 64px; }
+
+/* rendered markdown answers */
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md h2 { font-size: 15px; font-weight: 600; margin: 16px 0 8px; }
+.md h3 { font-size: 13px; font-weight: 600; margin: 14px 0 6px; }
+.md h4 { font-size: 12px; font-weight: 600; margin: 12px 0 6px; }
+.md p { margin: 8px 0; }
+.md ul, .md ol { margin: 8px 0; padding-left: 20px; }
+.md li { margin: 3px 0; }
+.md strong { font-weight: 600; }
+.md em { font-style: italic; }
+.md hr { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+.md blockquote { margin: 10px 0; padding: 2px 0 2px 12px; border-left: 2px solid var(--border); color: var(--muted); }
+.md blockquote p { margin: 4px 0; }
+/* Wide tables scroll inside their own box rather than stretching the thread. */
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+.md table { border-collapse: collapse; font-size: 13px; width: 100%; }
+.md th, .md td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+.md th { background: var(--secondary); font-weight: 600; }
+.md code { font-family: var(--mono); font-size: 12px; background: var(--secondary); padding: 1px 5px; border: 1px solid var(--border); }
+.cite { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--border); padding: 0 5px; white-space: nowrap; }
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 2px 0; margin: 8px 0; }
+
+/* --- inspect panel --- */
+.inspect { width: 344px; border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+.inspect[hidden] { display: none; }   /* beats the flex display above */
+.insp-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.insp-close { cursor: pointer; font-size: 14px; }
+.insp-close:hover { color: var(--fg); }
+.insp-body { flex: 1; min-height: 0; overflow-y: auto; padding: 14px; }
+.insp-q { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+.insp-note { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 12px; }
+/* The span id — the join key between this answer and its log on the platform. */
+.insp-span { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 12px; }
+.insp-span code { font-size: 10px; user-select: all; }
+.step { border: 1px solid var(--border); margin-bottom: 12px; }
+.step-head { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--secondary); }
+.step-body { padding: 8px 10px; font-size: 12px; }
+.chunk { font-family: var(--mono); font-size: 11px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+.chunk:last-child { border-bottom: none; }
+.chunk .snip { color: var(--muted); font-family: var(--sans); font-size: 11px; margin-top: 2px; line-height: 1.4; }
+
+/* evaluator rows */
+.evalrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-top: 1px solid var(--border); font-size: 12px; }
+.evd { font-size: 11px; color: var(--muted); padding: 0 10px 8px; }
+.lever { font-family: var(--mono); font-size: 11px; color: var(--fg); padding: 0 10px 9px; }
+.chip.s-pass { color: var(--ok); border-color: var(--ok); }
+.chip.s-fail { color: var(--bad); border-color: var(--bad); }
+.eval-btn { width: 100%; margin-top: 2px; }
+.insp-note a { color: var(--fg); text-decoration: underline; cursor: pointer; }
+
+/* --- modals ---
+   In-app replacements for window.prompt/confirm, so dialogs look like the app
+   rather than like Chrome. Same monochrome, hairline, zero-radius language. */
+.modal-back { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 50; }
+.modal { width: 100%; max-width: 400px; max-height: 82vh; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--fg); }
+.modal-head { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.modal-hint { font-size: 12px; color: var(--muted); padding: 12px 14px 0; line-height: 1.5; }
+.modal-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.modal-body.options { padding: 6px 0; gap: 0; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--border); }
+.modal .f { width: 100%; }
+
+/* One click picks an option — no separate confirm step. */
+.opt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; text-align: left; padding: 9px 14px; background: none; border: none; border-left: 2px solid transparent; color: var(--fg); cursor: pointer; font-family: inherit; }
+.opt:hover, .opt:focus { background: var(--secondary); outline: none; }
+.opt.current { border-left-color: var(--fg); }
+.opt-label { font-size: 13px; }
+.opt-note { font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.4; }
+.btn.danger { background: var(--bad); border-color: var(--bad); color: var(--bg); }
+
+/* --- composer --- */
+footer { border-top: 1px solid var(--border); padding: 14px 20px; flex-shrink: 0; }
+.composer { max-width: 760px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-end; }
+/* Ask / Lecture, in the composer rather than the header: it is a property of
+   the question being asked, not of the chat. */
+.mode-seg { flex-shrink: 0; align-self: stretch; }
+.mode-seg .seg-btn { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; text-transform: none; padding: 0 10px; }
+.attach { height: 40px; display: flex; align-items: center; white-space: nowrap; }
+.attach-bar { max-width: 760px; margin: 0 auto 8px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.attach-bar img { height: 36px; width: 36px; object-fit: cover; border: 1px solid var(--border); }
+.attach-bar .x { cursor: pointer; border: 1px solid var(--border); padding: 2px 8px; color: var(--fg); }
+.q-img { max-width: 240px; max-height: 240px; display: block; margin-bottom: 6px; border: 1px solid var(--border); }
+textarea { flex: 1; resize: none; font-family: var(--sans); font-size: 14px; color: var(--fg); background: var(--bg); border: 1px solid var(--border); padding: 10px 12px; max-height: 160px; line-height: 1.5; }
+.send { height: 40px; padding: 0 18px; }

@@ -1,0 +1,101 @@
+{
+  "subject": "Linear Algebra",
+  "generated_at": "2026-07-23T00:14:10.019745+00:00",
+  "n_cases": 59,
+  "seed": 13,
+  "production_k": 8,
+  "rrf_k": 60,
+  "hybrid_candidates": 20,
+  "vector": {
+    "recall_at_k": {
+      "1": 0.5254237288135594,
+      "3": 0.6949152542372882,
+      "5": 0.8135593220338984,
+      "8": 0.8813559322033898,
+      "10": 0.9322033898305084,
+      "20": 0.9830508474576272
+    },
+    "mrr": 0.6452
+  },
+  "hybrid": {
+    "recall_at_k": {
+      "1": 0.4576271186440678,
+      "3": 0.6271186440677966,
+      "5": 0.6949152542372882,
+      "8": 0.7966101694915254,
+      "10": 0.8983050847457628,
+      "20": 0.9491525423728814
+    },
+    "mrr": 0.5825
+  },
+  "rescued_at_prod_k": [
+    {
+      "page": 232,
+      "q": "What's the difference between a normal operator and a self-adjoint operator in terms of when you can find an orthonormal basis that diagonalizes them?",
+      "v_rank": 9,
+      "h_rank": 6
+    },
+    {
+      "page": 161,
+      "q": "Why does the proof show that not all of the coefficients a\u2081 through a\u2099 can equal zero?",
+      "v_rank": null,
+      "h_rank": 7
+    },
+    {
+      "page": 131,
+      "q": "How can you tell if a linear operator is invertible by looking at the columns or rows of its matrix representation?",
+      "v_rank": 10,
+      "h_rank": 3
+    }
+  ],
+  "regressed_at_prod_k": [
+    {
+      "page": 352,
+      "q": "What are the different types of products covered in this book, and where can I find information about each one?",
+      "v_rank": 4,
+      "h_rank": 9
+    },
+    {
+      "page": 313,
+      "q": "How do you find the matrix representation of an identity transformation when you're switching from one basis to another?",
+      "v_rank": 5,
+      "h_rank": 10
+    },
+    {
+      "page": 74,
+      "q": "Why can't you just define a linear map on a subspace of a vector space and expect it to work the same way on the whole vector space?",
+      "v_rank": 2,
+      "h_rank": 9
+    },
+    {
+      "page": 133,
+      "q": "Why does the chapter use the letter F to represent either the real numbers or complex numbers?",
+      "v_rank": 3,
+      "h_rank": 9
+    },
+    {
+      "page": 64,
+      "q": "How does showing that the combination of the w's belongs to the intersection of the two subspaces help us conclude that all the c coefficients must be zero?",
+      "v_rank": 5,
+      "h_rank": 11
+    },
+    {
+      "page": 285,
+      "q": "Why does the nilpotent operator in the second example require multiple starting vectors to form a basis, whereas the first example only needs one?",
+      "v_rank": 1,
+      "h_rank": 9
+    },
+    {
+      "page": 227,
+      "q": "What's the difference between a normal operator and a self-adjoint operator?",
+      "v_rank": 1,
+      "h_rank": 14
+    },
+    {
+      "page": 229,
+      "q": "Why are eigenvectors of a normal operator that belong to different eigenvalues perpendicular to each other?",
+      "v_rank": 1,
+      "h_rank": 10
+    }
+  ]
+}

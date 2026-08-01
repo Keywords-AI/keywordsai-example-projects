@@ -34,6 +34,9 @@ typescript/
 
 fullstack/
   vercel-ai-fastapi/      # Next.js frontend + FastAPI backend with Respan tracing
+  textbook-tutor/         # RAG study tutor: FastAPI + Chroma + LlamaIndex, gateway
+                          # logging with no SDK, and experiments grading retrieval
+                          # and generation over a fixed question set
 
 platform/
   demo-setup-python/      # Python scripts for demo account setup (logging, datasets, evaluators, prompts)
