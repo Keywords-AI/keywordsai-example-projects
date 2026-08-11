@@ -4,6 +4,11 @@ Runnable examples for tracing BeeAI Framework with `@respan/instrumentation-beea
 
 The scripts load environment variables from the repository root `.env` file, then route BeeAI OpenAI adapter calls through the Respan OpenAI-compatible gateway.
 
+The runtime passes both the application-loaded `beeai-framework` module and its
+top-level `BeeAIInstrumentation` constructor to `BeeAIInstrumentor`. Keeping
+those in the same dependency realm prevents linked workspace installs from
+failing the upstream serializer's `instanceof ChatModel` checks.
+
 ## Setup
 
 ```bash

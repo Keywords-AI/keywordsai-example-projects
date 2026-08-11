@@ -31,4 +31,5 @@ Individual scripts:
 - `02_tool_call.ts`: traces LiveKit function tool execution and the follow-up model turn.
 - `03_agent_handoff.ts`: traces a LiveKit agent handoff through a function tool.
 
-Each script prints a workflow name and run id that can be used to find the trace in Respan.
+Each script uses a deterministic fake model/provider label and prints a JSON
+workflow result plus a run id that can be used to find the trace in Respan.

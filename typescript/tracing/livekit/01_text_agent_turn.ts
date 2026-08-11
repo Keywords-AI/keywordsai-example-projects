@@ -2,6 +2,7 @@ import { voice } from "@livekit/agents";
 import {
   closeSession,
   createRespan,
+  ExampleFakeLLM,
   logExampleResult,
   runWithExampleTrace,
   summarizeRunEvents,
@@ -14,9 +15,9 @@ export async function textAgentTurnExample(): Promise<void> {
   await respan.initialize();
 
   try {
-    const result = await runWithExampleTrace(respan, workflowName, async () => {
+    const events = await runWithExampleTrace(respan, workflowName, async () => {
       const session = new voice.AgentSession({
-        llm: new voice.testing.FakeLLM([
+        llm: new ExampleFakeLLM([
           {
             input: "Give me a short welcome for a travel concierge.",
             content: "Welcome. I can help plan a focused city itinerary.",
@@ -31,18 +32,20 @@ export async function textAgentTurnExample(): Promise<void> {
 
       try {
         await session.start({ agent, record: false });
-        return await session
+        const result = await session
           .run({ userInput: "Give me a short welcome for a travel concierge." })
           .wait();
+        return summarizeRunEvents(result);
       } finally {
         await closeSession(session);
       }
     });
 
     logExampleResult(workflowName, {
-      events: summarizeRunEvents(result),
+      events,
     });
   } finally {
+    await respan.shutdown();
   }
 }
 
