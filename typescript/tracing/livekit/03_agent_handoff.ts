@@ -2,6 +2,7 @@ import { llm, voice } from "@livekit/agents";
 import {
   closeSession,
   createRespan,
+  ExampleFakeLLM,
   logExampleResult,
   runWithExampleTrace,
   summarizeRunEvents,
@@ -14,14 +15,14 @@ export async function agentHandoffExample(): Promise<void> {
   await respan.initialize();
 
   try {
-    const result = await runWithExampleTrace(respan, workflowName, async () => {
+    const events = await runWithExampleTrace(respan, workflowName, async () => {
       const billingAgent = new voice.Agent({
         id: "billing_specialist",
         instructions: "Handle billing questions with a concise next step.",
       });
 
       const session = new voice.AgentSession({
-        llm: new voice.testing.FakeLLM([
+        llm: new ExampleFakeLLM([
           {
             input: "Please route me to billing.",
             toolCalls: [{ name: "handoff_to_billing", args: {} }],
@@ -45,16 +46,18 @@ export async function agentHandoffExample(): Promise<void> {
 
       try {
         await session.start({ agent: triageAgent, record: false });
-        return await session.run({ userInput: "Please route me to billing." }).wait();
+        const result = await session.run({ userInput: "Please route me to billing." }).wait();
+        return summarizeRunEvents(result);
       } finally {
         await closeSession(session);
       }
     });
 
     logExampleResult(workflowName, {
-      events: summarizeRunEvents(result),
+      events,
     });
   } finally {
+    await respan.shutdown();
   }
 }
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   closeSession,
   createRespan,
+  ExampleFakeLLM,
   logExampleResult,
   runWithExampleTrace,
   summarizeRunEvents,
@@ -15,9 +16,9 @@ export async function toolCallExample(): Promise<void> {
   await respan.initialize();
 
   try {
-    const result = await runWithExampleTrace(respan, workflowName, async () => {
+    const events = await runWithExampleTrace(respan, workflowName, async () => {
       const session = new voice.AgentSession({
-        llm: new voice.testing.FakeLLM([
+        llm: new ExampleFakeLLM([
           {
             input: "What is the weather in Tokyo?",
             toolCalls: [{ name: "get_weather", args: { city: "Tokyo" } }],
@@ -43,16 +44,18 @@ export async function toolCallExample(): Promise<void> {
 
       try {
         await session.start({ agent, record: false });
-        return await session.run({ userInput: "What is the weather in Tokyo?" }).wait();
+        const result = await session.run({ userInput: "What is the weather in Tokyo?" }).wait();
+        return summarizeRunEvents(result);
       } finally {
         await closeSession(session);
       }
     });
 
     logExampleResult(workflowName, {
-      events: summarizeRunEvents(result),
+      events,
     });
   } finally {
+    await respan.shutdown();
   }
 }
 

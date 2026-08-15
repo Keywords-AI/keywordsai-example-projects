@@ -71,27 +71,15 @@ export async function runVercelCase(caseId, fn) {
     apiKey: respanApiKey,
     baseURL: respanBaseURL,
     appName: `vercel-ai-sdk-${caseId}`,
-    instrumentations: [new VercelAIInstrumentor()],
+    // This example registers one configured AI SDK 7 OpenTelemetry adapter
+    // below, so disable the instrumentor's optional default adapter.
+    instrumentations: [new VercelAIInstrumentor({ autoRegisterAISDKTelemetry: false })],
     traceContent: true,
     silenceInitializationMessage: true,
   });
 
-  const telemetry = (scenario, metadata = {}) => ({
+  const telemetry = (scenario) => ({
     functionId: `vercel_ai_sdk_${caseId}_${scenario}`,
-    metadata: {
-      run_id: runId,
-      scenario,
-      example: "vercel-ai-sdk",
-      customer_params: JSON.stringify({
-        customer_identifier: `customer-${runId}`,
-        email: "vercel-ai-sdk@example.com",
-        name: "Vercel AI SDK Example",
-      }),
-      thread_identifier: `thread-${runId}`,
-      session_identifier: `session-${runId}`,
-      trace_group_identifier: `trace-group-${runId}`,
-      ...metadata,
-    },
   });
 
   console.log(`run_id: ${runId}`);
@@ -101,16 +89,25 @@ export async function runVercelCase(caseId, fn) {
   await respan.initialize();
   ensureTelemetryRegistered();
   try {
-    await respan.withWorkflow(
+    await respan.propagateAttributes(
       {
-        name: `vercel_ai_sdk_${caseId}.workflow`,
-        associationProperties: {
+        custom_identifier: runId,
+        customer_identifier: `customer-${runId}`,
+        customer_email: "vercel-ai-sdk@example.com",
+        customer_name: "Vercel AI SDK Example",
+        thread_identifier: `thread-${runId}`,
+        session_identifier: `session-${runId}`,
+        trace_group_identifier: `trace-group-${runId}`,
+        metadata: {
           run_id: runId,
           case_id: caseId,
           example: "vercel-ai-sdk",
         },
       },
-      async () => await fn({ gateway, modelName, embeddingModelName, telemetry, runId }),
+      async () => await respan.withWorkflow(
+        { name: `vercel_ai_sdk_${caseId}.workflow` },
+        async () => await fn({ gateway, modelName, embeddingModelName, telemetry, runId }),
+      ),
     );
   } finally {
     await respan.shutdown();

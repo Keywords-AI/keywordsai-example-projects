@@ -1,4 +1,5 @@
 import * as beeaiFramework from "beeai-framework";
+import { BeeAIInstrumentation as OpenInferenceBeeAIInstrumentation } from "@arizeai/openinference-instrumentation-beeai";
 import { BeeAIInstrumentor } from "@respan/instrumentation-beeai";
 import { Respan } from "@respan/respan";
 import { loadBeeAIExampleEnv, type BeeAIExampleEnv } from "./_env.js";
@@ -17,7 +18,12 @@ export async function createBeeAIRespanRuntime(): Promise<BeeAIRespanRuntime> {
     apiKey: env.respanApiKey,
     baseURL: env.respanBaseURL,
     appName: "beeai-typescript-examples",
-    instrumentations: [new BeeAIInstrumentor({ sdkModule: beeaiFramework })],
+    instrumentations: [
+      new BeeAIInstrumentor({
+        sdkModule: beeaiFramework,
+        instrumentationClass: OpenInferenceBeeAIInstrumentation,
+      }),
+    ],
     silenceInitializationMessage: true,
   });
   await respan.initialize();

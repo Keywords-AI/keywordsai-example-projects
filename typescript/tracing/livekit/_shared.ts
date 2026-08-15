@@ -12,6 +12,17 @@ LiveKit.initializeLogger({ pretty: false, level: "silent" });
 
 export const RUN_ID = process.env.RESPAN_EXAMPLE_RUN_ID || `livekit-ts-${Date.now()}`;
 
+/** Stable model/provider labels keep example traces deterministic. */
+export class ExampleFakeLLM extends LiveKit.voice.testing.FakeLLM {
+  override get model(): string {
+    return "livekit-fake-llm";
+  }
+
+  override get provider(): string {
+    return "livekit";
+  }
+}
+
 export function createRespan(appName: string): Respan {
   if (!process.env.RESPAN_API_KEY) {
     throw new Error("Set RESPAN_API_KEY in the respan-example-projects repo root .env file.");
