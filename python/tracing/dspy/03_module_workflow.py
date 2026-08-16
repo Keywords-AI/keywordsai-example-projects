@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import dspy
 
-from _shared import create_respan, print_result, traced_example
+from _shared import managed_example, print_result, traced_example
 
 
 class ContextBuilder(dspy.Signature):
@@ -35,25 +35,25 @@ class SupportAnswerer(dspy.Module):
 
 
 def run_module_workflow_example() -> None:
-    context = create_respan(
+    with managed_example(
         app_name="dspy-03-module-workflow",
         example_name="03_module_workflow",
         temperature=0.1,
-    )
-    answerer = SupportAnswerer()
-    question = "Why is a single trace tree useful for DSPy programs?"
+    ) as context:
+        answerer = SupportAnswerer()
+        question = "Why is a single trace tree useful for DSPy programs?"
 
-    with traced_example(context, input_data={"question": question}) as span:
-        prediction = answerer(question=question)
-        span.set_output(
-            {
-                "context": prediction.context,
-                "answer": prediction.answer,
-            }
-        )
+        with traced_example(context, input_data={"question": question}) as span:
+            prediction = answerer(question=question)
+            span.set_output(
+                {
+                    "context": prediction.context,
+                    "answer": prediction.answer,
+                }
+            )
 
-    print_result("Context", prediction.context)
-    print_result("Answer", prediction.answer)
+        print_result("Context", prediction.context)
+        print_result("Answer", prediction.answer)
 
 
 if __name__ == "__main__":

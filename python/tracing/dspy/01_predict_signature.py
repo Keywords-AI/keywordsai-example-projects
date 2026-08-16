@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import dspy
 
-from _shared import create_respan, print_result, traced_example
+from _shared import managed_example, print_result, traced_example
 
 
 class BasicQuestion(dspy.Signature):
@@ -15,19 +15,19 @@ class BasicQuestion(dspy.Signature):
 
 
 def run_predict_signature_example() -> None:
-    context = create_respan(
+    with managed_example(
         app_name="dspy-01-predict-signature",
         example_name="01_predict_signature",
         temperature=0.1,
-    )
-    predict = dspy.Predict(BasicQuestion)
-    question = "What does DSPy help developers build?"
+    ) as context:
+        predict = dspy.Predict(BasicQuestion)
+        question = "What does DSPy help developers build?"
 
-    with traced_example(context, input_data={"question": question}) as span:
-        prediction = predict(question=question)
-        span.set_output({"answer": prediction.answer})
+        with traced_example(context, input_data={"question": question}) as span:
+            prediction = predict(question=question)
+            span.set_output({"answer": prediction.answer})
 
-    print_result("Answer", prediction.answer)
+        print_result("Answer", prediction.answer)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import dspy
 
-from _shared import create_respan, print_result, traced_example
+from _shared import managed_example, print_result, traced_example
 
 
 class IncidentSummary(dspy.Signature):
@@ -15,27 +15,27 @@ class IncidentSummary(dspy.Signature):
 
 
 def run_chain_of_thought_example() -> None:
-    context = create_respan(
+    with managed_example(
         app_name="dspy-02-chain-of-thought",
         example_name="02_chain_of_thought",
         temperature=0.1,
-    )
-    summarize = dspy.ChainOfThought(IncidentSummary)
-    incident = (
-        "A support bot produced slow responses after a prompt update. "
-        "The trace shows longer retrieval time and two extra LLM calls."
-    )
-
-    with traced_example(context, input_data={"incident": incident}) as span:
-        prediction = summarize(incident=incident)
-        span.set_output(
-            {
-                "reasoning": prediction.reasoning,
-                "summary": prediction.summary,
-            }
+    ) as context:
+        summarize = dspy.ChainOfThought(IncidentSummary)
+        incident = (
+            "A support bot produced slow responses after a prompt update. "
+            "The trace shows longer retrieval time and two extra LLM calls."
         )
 
-    print_result("Summary", prediction.summary)
+        with traced_example(context, input_data={"incident": incident}) as span:
+            prediction = summarize(incident=incident)
+            span.set_output(
+                {
+                    "reasoning": prediction.reasoning,
+                    "summary": prediction.summary,
+                }
+            )
+
+        print_result("Summary", prediction.summary)
 
 
 if __name__ == "__main__":

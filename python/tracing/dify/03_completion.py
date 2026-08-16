@@ -15,7 +15,9 @@ def main() -> None:
         )
         response.raise_for_status()
         result = response.json()
-        print_result("completion", {"workflow": workflow_name, "answer": result.get("answer")})
+        summary = {"workflow": workflow_name, "answer": result.get("answer")}
+        runtime.set_result(summary)
+        print_result("completion", summary)
 
 
 if __name__ == "__main__":

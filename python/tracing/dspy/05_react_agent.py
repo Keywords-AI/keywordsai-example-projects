@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import dspy
 
-from _shared import create_respan, print_result, traced_example
+from _shared import managed_example, print_result, traced_example
 
 
 class CityQuestion(dspy.Signature):
@@ -24,22 +24,22 @@ def lookup_city_fact(city: str) -> str:
 
 
 def run_react_agent_example() -> None:
-    context = create_respan(
+    with managed_example(
         app_name="dspy-05-react-agent",
         example_name="05_react_agent",
         temperature=0.0,
-    )
-    agent = dspy.ReAct(CityQuestion, tools=[lookup_city_fact], max_iters=3)
-    question = (
-        "Use lookup_city_fact for Tokyo, then answer with the fact in "
-        "one sentence."
-    )
+    ) as context:
+        agent = dspy.ReAct(CityQuestion, tools=[lookup_city_fact], max_iters=3)
+        question = (
+            "Use lookup_city_fact for Tokyo, then answer with the fact in "
+            "one sentence."
+        )
 
-    with traced_example(context, input_data={"question": question}) as span:
-        prediction = agent(question=question)
-        span.set_output({"answer": prediction.answer})
+        with traced_example(context, input_data={"question": question}) as span:
+            prediction = agent(question=question)
+            span.set_output({"answer": prediction.answer})
 
-    print_result("Answer", prediction.answer)
+        print_result("Answer", prediction.answer)
 
 
 if __name__ == "__main__":

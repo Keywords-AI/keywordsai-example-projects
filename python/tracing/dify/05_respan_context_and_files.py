@@ -45,14 +45,13 @@ def main() -> None:
             )
             response.raise_for_status()
 
-        print_result(
-            "context_and_files",
-            {
-                "workflow": workflow_name,
-                "upload_id": upload_id,
-                "answer": response.json().get("answer"),
-            },
-        )
+        summary = {
+            "workflow": workflow_name,
+            "upload_id": upload_id,
+            "answer": response.json().get("answer"),
+        }
+        runtime.set_result(summary)
+        print_result("context_and_files", summary)
 
 
 if __name__ == "__main__":
