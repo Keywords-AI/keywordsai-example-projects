@@ -42,11 +42,16 @@ def cohere_embed_rerank() -> dict[str, object]:
 
 
 def main() -> None:
-    output = run_with_example_attributes(
-        respan,
-        workflow_name=WORKFLOW_NAME,
-        action=cohere_embed_rerank,
-    )
-    print(output)
+    try:
+        output = run_with_example_attributes(
+            respan,
+            workflow_name=WORKFLOW_NAME,
+            action=cohere_embed_rerank,
+        )
+        print(output)
+    finally:
+        respan.shutdown()
+
+
 if __name__ == "__main__":
     main()
