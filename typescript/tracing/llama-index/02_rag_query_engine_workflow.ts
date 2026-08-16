@@ -1,12 +1,15 @@
 import { Document, Settings, VectorStoreIndex } from "llamaindex";
 import { DeterministicEmbedding } from "./_deterministic_embedding.js";
-import { createOpenAI, runNamedWorkflow } from "./_runtime.js";
+import { TracedMockLLM } from "./_deterministic_llm.js";
+import { runNamedWorkflow } from "./_runtime.js";
 
 export const WORKFLOW_NAME = "llama_index_ts_rag_query_engine";
 
 async function main(): Promise<void> {
   const answer = await runNamedWorkflow(WORKFLOW_NAME, async () => {
-    Settings.llm = createOpenAI();
+    Settings.llm = new TracedMockLLM({
+      responseMessage: "Inspect the workflow, retrieval task, and chat span in Respan.",
+    });
     Settings.embedModel = new DeterministicEmbedding();
 
     const documents = [

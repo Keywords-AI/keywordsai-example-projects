@@ -1,13 +1,18 @@
-import "dotenv/config";
-
 import { Document } from "@langchain/core/documents";
 import { BaseRetriever } from "@langchain/core/retrievers";
 import type { RunnableConfig } from "@langchain/core/runnables";
 import { FakeLLM, FakeListChatModel } from "@langchain/core/utils/testing";
 import { LangChainInstrumentor } from "@respan/instrumentation-langchain";
 import { Respan } from "@respan/respan";
+import dotenv from "dotenv";
+import { fileURLToPath } from "node:url";
 import { tool } from "langchain";
 import { z } from "zod";
+
+dotenv.config({
+  path: fileURLToPath(new URL("../../../.env", import.meta.url)),
+  quiet: true,
+});
 
 export interface ExampleRuntime {
   enabled: boolean;
@@ -43,7 +48,11 @@ export function tracingConfig(
   const config: RunnableConfig = {
     runName: name,
     tags: ["respan-langchain-example", name],
-    metadata: { example: name, ...metadata },
+    metadata: {
+      example: name,
+      custom_identifier: process.env.RESPAN_EXAMPLE_RUN_ID,
+      ...metadata,
+    },
   };
   return runtime.instrumentor ? runtime.instrumentor.addCallback(config) : config;
 }

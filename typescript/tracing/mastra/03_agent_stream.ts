@@ -1,17 +1,19 @@
 import { Agent } from "@mastra/core/agent";
-import { createGatewayModel, createRuntime, EXAMPLE_RUN_ID, getTraceWorkflowName, runWithRespanWorkflow } from "./_shared.js";
+import { createDeterministicModel, createRuntime, EXAMPLE_RUN_ID, getTraceWorkflowName, runWithRespanWorkflow } from "./_shared.js";
 
 const workflowName = "Mastra Streaming Example";
 const streamingAgent = new Agent({
   id: "mastra-streaming-agent",
   name: "Mastra Streaming Agent",
   instructions: "Describe Respan as an AI tracing and observability product for Mastra TypeScript applications. Reply in exactly two short sentences.",
-  model: createGatewayModel(),
+  model: createDeterministicModel(
+    "Respan traces Mastra AI applications. It shows agent, model, and tool spans.",
+  ),
 });
 
 const { mastra, respan } = createRuntime({ streamingAgent });
 
-const text = await runWithRespanWorkflow(respan, workflowName, async () => {
+const text = await runWithRespanWorkflow(mastra, respan, workflowName, async () => {
   const agent = mastra.getAgent("streamingAgent");
   const stream = await agent.stream("Describe Respan tracing for a Mastra TypeScript agent application.");
   let output = "";

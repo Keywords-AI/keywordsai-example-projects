@@ -1,7 +1,11 @@
-import { createOpenAI } from "@ai-sdk/openai";
 import type { Agent } from "@mastra/core/agent";
 import { Mastra } from "@mastra/core/mastra";
 import { SpanType } from "@mastra/core/observability";
+import type { AnyWorkflow } from "@mastra/core/workflows";
+import {
+  createMockModel,
+  MastraLanguageModelV2Mock,
+} from "@mastra/core/test-utils/llm-mock";
 import { Observability, SamplingStrategyType } from "@mastra/observability";
 import { MastraInstrumentor } from "@respan/instrumentation-mastra";
 import { Respan } from "@respan/respan";
@@ -9,8 +13,6 @@ import dotenv from "dotenv";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-
-const DEFAULT_BASE_URL = "https://api.respan.ai/api";
 
 export const EXAMPLE_RUN_ID =
   process.env.RESPAN_EXAMPLE_RUN_ID ?? `mastra-ts-${Date.now()}`;
@@ -87,25 +89,58 @@ export function requireEnv(name: string): string {
   return value;
 }
 
-export function createGatewayModel() {
-  loadRootEnv();
-  const respanApiKey = requireEnv("RESPAN_API_KEY");
-  const baseURL = process.env.RESPAN_BASE_URL ?? DEFAULT_BASE_URL;
-
-  process.env.OPENAI_API_KEY ||= respanApiKey;
-  process.env.OPENAI_BASE_URL ||= baseURL;
-
-  const openai = createOpenAI({
-    apiKey: respanApiKey,
-    baseURL,
-  });
-
-  return openai(process.env.MASTRA_EXAMPLE_MODEL ?? "gpt-4.1-nano");
+export function createDeterministicModel(text: string) {
+  return createMockModel({ mockText: text });
 }
 
-export function createRuntime<TAgents extends Record<string, Agent<any>>>(
+export function createToolCallModel() {
+  let callCount = 0;
+  return new MastraLanguageModelV2Mock({
+    provider: "respan-example",
+    modelId: "deterministic-tool-model",
+    doGenerate: async () => {
+      callCount += 1;
+      return {
+        rawCall: { rawPrompt: null, rawSettings: {} },
+        finishReason: callCount === 1 ? "tool-calls" : "stop",
+        usage: { inputTokens: 10, outputTokens: 6, totalTokens: 16 },
+        content: callCount === 1
+          ? [{
+              type: "tool-call",
+              toolCallId: "call_weather_tokyo",
+              toolName: "getWeather",
+              input: JSON.stringify({ city: "Tokyo" }),
+            }]
+          : [{ type: "text", text: "Tokyo is sunny and 72 F." }],
+        warnings: [],
+      };
+    },
+  });
+}
+
+export function createFailingModel() {
+  const fail = async () => {
+    throw new Error("Intentional deterministic provider failure");
+  };
+  return new MastraLanguageModelV2Mock({
+    provider: "respan-example",
+    modelId: "deterministic-failure-model",
+    doGenerate: fail,
+    doStream: fail,
+  });
+}
+
+export function createRuntime<
+  TAgents extends Record<string, Agent<any>>,
+  TWorkflows extends Record<string, AnyWorkflow> = Record<string, AnyWorkflow>,
+>(
   agents: TAgents,
-): { mastra: Mastra<TAgents>; respan: Respan; instrumentor: MastraInstrumentor } {
+  workflows?: TWorkflows,
+): {
+  mastra: Mastra<TAgents, TWorkflows>;
+  respan: Respan;
+  instrumentor: MastraInstrumentor;
+} {
   loadRootEnv();
   suppressExampleRespanLogs();
   const instrumentor = new MastraInstrumentor();
@@ -119,6 +154,7 @@ export function createRuntime<TAgents extends Record<string, Agent<any>>>(
 
   const mastra = new Mastra({
     agents,
+    workflows,
     observability: new Observability({
       configs: {
         default: {
@@ -144,6 +180,7 @@ export function getTraceWorkflowName(workflowName: string): string {
 }
 
 export async function runWithRespanWorkflow<T>(
+  mastra: Mastra<any>,
   respan: Respan,
   workflowName: string,
   fn: () => Promise<T>,
@@ -164,6 +201,11 @@ export async function runWithRespanWorkflow<T>(
       () => respan.withWorkflow({ name: mastraWorkflowName }, fn),
     );
   } finally {
+    try {
+      await mastra.shutdown();
+    } finally {
+      await respan.shutdown();
+    }
   }
 }
 

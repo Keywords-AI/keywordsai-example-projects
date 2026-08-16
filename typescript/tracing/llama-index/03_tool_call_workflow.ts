@@ -1,5 +1,6 @@
 import { Settings, tool } from "llamaindex";
-import { createOpenAI, runNamedWorkflow } from "./_runtime.js";
+import { TracedMockLLM } from "./_deterministic_llm.js";
+import { runNamedWorkflow } from "./_runtime.js";
 
 export const WORKFLOW_NAME = "llama_index_ts_tool_call";
 
@@ -28,13 +29,15 @@ const weatherTool = tool(
 
 async function main(): Promise<void> {
   const { result, finalAnswer } = await runNamedWorkflow(WORKFLOW_NAME, async () => {
-    const llm = createOpenAI({
-      additionalChatOptions: {
-        tool_choice: {
-          type: "function",
-          function: { name: "lookup_city_weather" },
-        },
-      } as any,
+    const llm = new TracedMockLLM({
+      responseMessage: "Calling the requested weather tool.",
+      mockToolCallResponse: {
+        toolCalls: [{
+          id: "call_weather_tokyo",
+          name: "lookup_city_weather",
+          input: { city: "Tokyo" },
+        }],
+      },
     });
     Settings.llm = llm;
 
@@ -60,7 +63,9 @@ async function main(): Promise<void> {
       | undefined;
     const toolResult = toolResultOptions?.toolResult?.result;
 
-    const finalLlm = createOpenAI();
+    const finalLlm = new TracedMockLLM({
+      responseMessage: "Tokyo weather: clear skies, 22 C.",
+    });
     Settings.llm = finalLlm;
 
     const finalAnswer = await finalLlm.complete({

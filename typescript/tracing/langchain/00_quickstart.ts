@@ -1,9 +1,14 @@
-import "dotenv/config";
-
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { FakeListChatModel } from "@langchain/core/utils/testing";
 import { LangChainInstrumentor } from "@respan/instrumentation-langchain";
 import { Respan } from "@respan/respan";
+import dotenv from "dotenv";
+import { fileURLToPath } from "node:url";
+
+dotenv.config({
+  path: fileURLToPath(new URL("../../../.env", import.meta.url)),
+  quiet: true,
+});
 
 export async function langchainInstrumentationQuickstart(): Promise<void> {
   const apiKey = process.env.RESPAN_API_KEY;
@@ -31,12 +36,18 @@ export async function langchainInstrumentationQuickstart(): Promise<void> {
     ? langchain.addCallback({
         runName: "quickstart",
         tags: ["respan-langchain-example", "quickstart"],
-        metadata: { example: "quickstart" },
+        metadata: {
+          example: "quickstart",
+          custom_identifier: process.env.RESPAN_EXAMPLE_RUN_ID,
+        },
       })
     : {
         runName: "quickstart",
         tags: ["respan-langchain-example", "quickstart"],
-        metadata: { example: "quickstart" },
+        metadata: {
+          example: "quickstart",
+          custom_identifier: process.env.RESPAN_EXAMPLE_RUN_ID,
+        },
       };
 
   try {

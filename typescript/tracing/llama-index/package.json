@@ -7,10 +7,12 @@
     "01:basic": "tsx 01_basic_llm_workflow.ts",
     "02:rag": "tsx 02_rag_query_engine_workflow.ts",
     "03:tools": "tsx 03_tool_call_workflow.ts",
-    "all": "npm run 01:basic && npm run 02:rag && npm run 03:tools",
+    "04:failure": "tsx 04_llm_failure_workflow.ts",
+    "all": "npm run 01:basic && npm run 02:rag && npm run 03:tools && npm run 04:failure",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@llamaindex/core": "0.6.22",
     "@llamaindex/openai": "0.4.22",
     "@respan/instrumentation-llama-index": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-llama-index",
     "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
