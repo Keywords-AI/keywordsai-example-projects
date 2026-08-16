@@ -5,14 +5,16 @@ from __future__ import annotations
 import json
 import os
 from collections.abc import Callable, Sequence
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
-from respan import Respan
+from respan import Respan, propagate_attributes
 from respan_instrumentation_agentscope import AgentScopeInstrumentor
 
+from agentscope.formatter import OpenAIChatFormatter
 from agentscope.message import TextBlock, ToolCallBlock
 from agentscope.model import ChatResponse, ChatUsage
 
@@ -22,6 +24,7 @@ load_dotenv(REPO_ROOT / ".env", override=True)
 DEFAULT_RESPAN_BASE_URL = "https://api.respan.ai/api"
 DEFAULT_CUSTOMER_IDENTIFIER = "agentscope-example-user"
 DEFAULT_RUN_ID = datetime.now(timezone.utc).strftime("agentscope-%Y%m%d-%H%M%S")
+DEFAULT_GROUP_IDENTIFIER = "otel2-python-agent-frameworks"
 
 
 def _required_env(name: str) -> str:
@@ -38,13 +41,15 @@ def build_respan(
     models: Sequence[Any] | None = None,
 ) -> Respan:
     run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID", DEFAULT_RUN_ID)
-    instrumentations = [AgentScopeInstrumentor()]
-    instrumentations.extend(AgentScopeInstrumentor(model=model) for model in models or [])
+    group_identifier = os.getenv(
+        "RESPAN_EXAMPLE_GROUP_ID",
+        DEFAULT_GROUP_IDENTIFIER,
+    )
     return Respan(
         api_key=_required_env("RESPAN_API_KEY"),
         base_url=os.getenv("RESPAN_BASE_URL", DEFAULT_RESPAN_BASE_URL),
         app_name=f"agentscope-{example_name}",
-        instrumentations=instrumentations,
+        instrumentations=[AgentScopeInstrumentor(models=models)],
         customer_identifier=os.getenv(
             "RESPAN_EXAMPLE_CUSTOMER_IDENTIFIER",
             DEFAULT_CUSTOMER_IDENTIFIER,
@@ -55,8 +60,23 @@ def build_respan(
             "run_id": run_id,
             "workflow_name": workflow_name,
         },
+        thread_identifier=f"{group_identifier}:{example_name}",
         environment="examples",
     )
+
+
+@contextmanager
+def example_scope(example_name: str):
+    run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID", DEFAULT_RUN_ID)
+    group_identifier = os.getenv(
+        "RESPAN_EXAMPLE_GROUP_ID",
+        DEFAULT_GROUP_IDENTIFIER,
+    )
+    with propagate_attributes(
+        trace_group_identifier=group_identifier,
+        custom_identifier=f"{run_id}:{example_name}",
+    ):
+        yield
 
 
 def usage(input_tokens: int = 10, output_tokens: int = 6) -> ChatUsage:
@@ -106,6 +126,7 @@ class ScriptedChatModel:
         responses: list[ChatResponse | Callable[[list[Any], list[dict] | None], ChatResponse]],
     ) -> None:
         self.model = model
+        self.formatter = OpenAIChatFormatter()
         self._responses = list(responses)
 
     async def __call__(

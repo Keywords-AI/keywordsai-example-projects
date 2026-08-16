@@ -7,7 +7,7 @@ import asyncio
 from agentscope.agent import Agent
 from agentscope.message import UserMsg
 
-from _shared import build_respan, text_response, ScriptedChatModel
+from _shared import build_respan, example_scope, text_response, ScriptedChatModel
 
 
 async def main() -> None:
@@ -24,19 +24,20 @@ async def main() -> None:
         models=[model],
     )
 
-    try:
-        direct_response = await model([UserMsg(name="user", content="Ping the model.")])
-        print(direct_response.content[0].text)
+    with example_scope("agent-and-model"):
+        try:
+            direct_response = await model([UserMsg(name="user", content="Ping the model.")])
+            print(direct_response.content[0].text)
 
-        agent = Agent(
-            name="PlanningAgent",
-            system_prompt="Return concise planning updates.",
-            model=model,
-        )
-        result = await agent.reply(UserMsg(name="user", content="Draft a tiny plan."))
-        print(result.get_text_content())
-    finally:
-        respan.shutdown()
+            agent = Agent(
+                name="PlanningAgent",
+                system_prompt="Return concise planning updates.",
+                model=model,
+            )
+            result = await agent.reply(UserMsg(name="user", content="Draft a tiny plan."))
+            print(result.get_text_content())
+        finally:
+            respan.shutdown()
 
 
 if __name__ == "__main__":

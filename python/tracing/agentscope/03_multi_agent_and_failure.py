@@ -7,7 +7,13 @@ import asyncio
 from agentscope.agent import Agent
 from agentscope.message import UserMsg
 
-from _shared import build_respan, text_response, FailingChatModel, ScriptedChatModel
+from _shared import (
+    build_respan,
+    example_scope,
+    text_response,
+    FailingChatModel,
+    ScriptedChatModel,
+)
 
 
 async def main() -> None:
@@ -23,38 +29,45 @@ async def main() -> None:
     respan = build_respan(
         example_name="multi-agent-and-failure",
         workflow_name="agentscope_multi_agent_and_failure",
-        models=[writer_model, failing_model],
+        models=[writer_model, reviewer_model, failing_model],
     )
 
-    try:
-        writer = Agent(
-            name="WriterAgent",
-            system_prompt="Write one-sentence drafts.",
-            model=writer_model,
-        )
-        reviewer = Agent(
-            name="ReviewerAgent",
-            system_prompt="Review the latest observed draft.",
-            model=reviewer_model,
-        )
-
-        draft = await writer.reply(UserMsg(name="user", content="Write a tracing note."))
-        await reviewer.observe(draft)
-        review = await reviewer.reply(UserMsg(name="user", content="Review the draft."))
-        print(draft.get_text_content())
-        print(review.get_text_content())
-
-        failing_agent = Agent(
-            name="FailingAgent",
-            system_prompt="Always fails for instrumentation coverage.",
-            model=failing_model,
-        )
+    with example_scope("multi-agent-and-failure"):
         try:
-            await failing_agent.reply(UserMsg(name="user", content="Trigger failure."))
-        except RuntimeError as exc:
-            print(f"Caught expected failure: {exc}")
-    finally:
-        respan.shutdown()
+            writer = Agent(
+                name="WriterAgent",
+                system_prompt="Write one-sentence drafts.",
+                model=writer_model,
+            )
+            reviewer = Agent(
+                name="ReviewerAgent",
+                system_prompt="Review the latest observed draft.",
+                model=reviewer_model,
+            )
+
+            draft = await writer.reply(
+                UserMsg(name="user", content="Write a tracing note.")
+            )
+            await reviewer.observe(draft)
+            review = await reviewer.reply(
+                UserMsg(name="user", content="Review the draft.")
+            )
+            print(draft.get_text_content())
+            print(review.get_text_content())
+
+            failing_agent = Agent(
+                name="FailingAgent",
+                system_prompt="Always fails for instrumentation coverage.",
+                model=failing_model,
+            )
+            try:
+                await failing_agent.reply(
+                    UserMsg(name="user", content="Trigger failure.")
+                )
+            except RuntimeError as exc:
+                print(f"Caught expected failure: {exc}")
+        finally:
+            respan.shutdown()
 
 
 if __name__ == "__main__":

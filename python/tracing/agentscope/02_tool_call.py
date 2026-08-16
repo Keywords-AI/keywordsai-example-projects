@@ -9,7 +9,13 @@ from agentscope.message import TextBlock, UserMsg
 from agentscope.permission import PermissionBehavior, PermissionDecision
 from agentscope.tool import ToolBase, ToolChunk, Toolkit
 
-from _shared import build_respan, text_response, tool_call_response, ScriptedChatModel
+from _shared import (
+    build_respan,
+    example_scope,
+    text_response,
+    tool_call_response,
+    ScriptedChatModel,
+)
 
 
 class WeatherTool(ToolBase):
@@ -53,18 +59,21 @@ async def main() -> None:
         models=[model],
     )
 
-    try:
-        agent = Agent(
-            name="WeatherAgent",
-            system_prompt="Use tools when weather data is needed.",
-            model=model,
-            toolkit=Toolkit(tools=[WeatherTool()]),
-        )
+    with example_scope("tool-call"):
+        try:
+            agent = Agent(
+                name="WeatherAgent",
+                system_prompt="Use tools when weather data is needed.",
+                model=model,
+                toolkit=Toolkit(tools=[WeatherTool()]),
+            )
 
-        result = await agent.reply(UserMsg(name="user", content="What is Tokyo weather?"))
-        print(result.get_text_content())
-    finally:
-        respan.shutdown()
+            result = await agent.reply(
+                UserMsg(name="user", content="What is Tokyo weather?")
+            )
+            print(result.get_text_content())
+        finally:
+            respan.shutdown()
 
 
 if __name__ == "__main__":
