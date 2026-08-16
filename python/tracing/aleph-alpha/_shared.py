@@ -61,6 +61,10 @@ def make_custom_identifier(example_name: str) -> str:
     return f"aleph-alpha-{example_name}-{uuid4().hex[:8]}"
 
 
+def example_run_id(fallback: str) -> str:
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID") or fallback
+
+
 def make_respan(example_name: str) -> Respan:
     return Respan(
         api_key=require_respan_api_key(),
@@ -75,13 +79,14 @@ def make_respan(example_name: str) -> Respan:
 @contextmanager
 def example_attributes(example_name: str, custom_identifier: str | None = None):
     custom_identifier = custom_identifier or make_custom_identifier(example_name)
+    run_id = example_run_id(custom_identifier)
     current_workflow_name = workflow_name(example_name)
     with propagate_attributes(
         custom_identifier=custom_identifier,
         trace_group_identifier=current_workflow_name,
         metadata={
             "example": example_name,
-            "run_id": custom_identifier,
+            "run_id": run_id,
             "workflow_name": current_workflow_name,
         },
     ):

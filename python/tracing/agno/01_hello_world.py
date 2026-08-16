@@ -2,7 +2,7 @@
 
 from respan import workflow
 
-from _shared import build_agent, create_respan, print_result
+from _shared import build_agent, create_respan, example_attributes, print_result
 
 
 @workflow(name="agno_01_hello_world")
@@ -17,7 +17,11 @@ def run_hello_world() -> str:
 
 def hello_world() -> None:
     respan, _ = create_respan(app_name="agno-01-hello-world")
-    output = run_hello_world()
+    try:
+        with example_attributes(respan, "agno_01_hello_world"):
+            output = run_hello_world()
+    finally:
+        respan.shutdown()
     print_result("Agent output", output)
 
 

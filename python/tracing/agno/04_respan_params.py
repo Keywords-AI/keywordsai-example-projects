@@ -2,7 +2,7 @@
 
 from respan import workflow
 
-from _shared import build_agent, create_respan, print_result
+from _shared import build_agent, create_respan, example_attributes, print_result
 
 
 @workflow(name="agno_04_respan_params")
@@ -23,11 +23,15 @@ def respan_params() -> None:
         metadata={"plan": "premium", "example": "agno"},
     )
 
-    with respan.propagate_attributes(
-        custom_identifier="agno-run-001",
-        metadata={"request_type": "demo"},
-    ):
-        output = run_params_agent()
+    try:
+        with example_attributes(respan, "agno_04_respan_params"):
+            with respan.propagate_attributes(
+                custom_identifier="agno-run-001",
+                metadata={"request_type": "demo"},
+            ):
+                output = run_params_agent()
+    finally:
+        respan.shutdown()
 
     print_result("Agent output", output)
 

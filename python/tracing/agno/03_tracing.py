@@ -2,7 +2,7 @@
 
 from respan import task, workflow
 
-from _shared import build_agent, create_respan, print_result
+from _shared import build_agent, create_respan, example_attributes, print_result
 
 
 @task(name="draft_prompt")
@@ -23,7 +23,11 @@ def run_checklist_workflow(topic: str) -> str:
 
 def tracing() -> None:
     respan, _ = create_respan(app_name="agno-03-tracing")
-    output = run_checklist_workflow(topic="reviewing an SDK integration")
+    try:
+        with example_attributes(respan, "agno_03_tracing_workflow"):
+            output = run_checklist_workflow(topic="reviewing an SDK integration")
+    finally:
+        respan.shutdown()
     print_result("Workflow output", output)
 
 
