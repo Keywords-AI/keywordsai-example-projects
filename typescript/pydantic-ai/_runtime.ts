@@ -189,6 +189,31 @@ export async function runPydanticAITool<T>(
   );
 }
 
+export async function runPydanticAIWorkflow<T>(
+  runtime: ExampleRuntime,
+  options: {
+    workflowName: string;
+    fn: () => Promise<T>;
+  },
+): Promise<T> {
+  return await runtime.respan.propagateAttributes(
+    {
+      custom_identifier: EXAMPLE_RUN_ID,
+      trace_group_identifier: options.workflowName,
+      metadata: {
+        example: "pydantic-ai-typescript",
+        run_id: EXAMPLE_RUN_ID,
+        workflow_name: options.workflowName,
+      },
+    },
+    async () =>
+      await runtime.respan.withWorkflow(
+        { name: options.workflowName },
+        options.fn,
+      ),
+  );
+}
+
 export async function runPydanticAIAgent<T>(
   runtime: ExampleRuntime,
   options: {
