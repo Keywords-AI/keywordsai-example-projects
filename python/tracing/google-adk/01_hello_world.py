@@ -6,14 +6,14 @@ from pathlib import Path
 from google.adk.agents import Agent
 from respan import workflow
 
-from _shared import create_gateway_model, create_respan, run_agent_once
+from _shared import create_gateway_model, create_respan, example_attributes, run_agent_once
 
 SCRIPT_NAME = Path(__file__).name
 APP_NAME = SCRIPT_NAME.removesuffix(".py")
 
 
 @workflow(name=SCRIPT_NAME)
-async def run_hello_world() -> str:
+async def run_hello_world(prompt: str) -> str:
     agent = Agent(
         name="hello_world_agent",
         model=create_gateway_model(),
@@ -22,7 +22,7 @@ async def run_hello_world() -> str:
     output = await run_agent_once(
         agent=agent,
         app_name=APP_NAME,
-        prompt="Say hello from a traced Google ADK agent.",
+        prompt=prompt,
     )
     print(output)
     return output
@@ -31,7 +31,8 @@ async def run_hello_world() -> str:
 async def main() -> None:
     respan = create_respan(APP_NAME)
     try:
-        await run_hello_world()
+        with example_attributes(APP_NAME):
+            await run_hello_world("Say hello from a traced Google ADK agent.")
     finally:
         respan.shutdown()
 

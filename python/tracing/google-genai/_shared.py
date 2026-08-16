@@ -12,7 +12,7 @@ from respan_instrumentation_google_genai import GoogleGenAIInstrumentor
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_RESPAN_BASE_URL = "https://api.respan.ai/api"
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3-flash-preview"
 
 
 def load_root_env() -> None:
@@ -44,13 +44,18 @@ def model_name() -> str:
 
 def make_respan(example_name: str) -> Respan:
     api_key = require_respan_api_key()
+    run_id = example_run_id()
     return Respan(
         api_key=api_key,
         base_url=respan_base_url(),
         app_name="google-genai-examples",
         instrumentations=[GoogleGenAIInstrumentor()],
         environment=os.getenv("RESPAN_ENVIRONMENT", "example"),
-        metadata={"integration": "google-genai", "example": example_name},
+        metadata={
+            "integration": "google-genai",
+            "example": example_name,
+            "run_id": run_id,
+        },
     )
 
 
@@ -76,7 +81,11 @@ def workflow_name(example_name: str) -> str:
 
 
 def make_custom_identifier(example_name: str) -> str:
-    return f"google-genai-{example_name}-{uuid4().hex[:8]}"
+    return f"{example_run_id()}:{example_name}"
+
+
+def example_run_id() -> str:
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID") or f"google-genai-{uuid4().hex[:10]}"
 
 
 @contextmanager
@@ -88,7 +97,8 @@ def example_attributes(example_name: str, custom_identifier: str | None = None):
         trace_group_identifier=current_workflow_name,
         metadata={
             "example": example_name,
-            "run_id": custom_identifier,
+            "integration": "google-genai",
+            "run_id": example_run_id(),
             "workflow_name": current_workflow_name,
         },
     ):

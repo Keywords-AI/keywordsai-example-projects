@@ -1,0 +1,4 @@
+elasticsearch[async]>=8.13.0,<10.0.0
+python-dotenv>=1.0.0
+respan-ai>=2.16.1
+respan-instrumentation-elasticsearch>=0.1.0

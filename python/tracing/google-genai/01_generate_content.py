@@ -16,17 +16,17 @@ EXAMPLE_NAME = "generate-content"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _generate_content_workflow(client) -> str:
+def _generate_content_workflow(prompt: str) -> str:
+    client = make_client()
     response = client.models.generate_content(
         model=model_name(),
-        contents="Reply with one concise sentence about observability for Gemini apps.",
+        contents=prompt,
     )
     return response.text or ""
 
 
 def run_generate_content() -> None:
     respan = make_respan(EXAMPLE_NAME)
-    client = make_client()
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     text = ""
 
@@ -34,7 +34,9 @@ def run_generate_content() -> None:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print(f"custom_identifier={custom_identifier}", flush=True)
             print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
-            text = _generate_content_workflow(client)
+            text = _generate_content_workflow(
+                "Reply with one concise sentence about observability for Gemini apps."
+            )
     finally:
         respan.shutdown()
 
