@@ -22,30 +22,33 @@ export async function generateContentStreamExample(): Promise<void> {
   );
 
   try {
-    const streamResult = await runWithExampleTrace(respan, workflowName, async () =>
-      await model.generateContentStream({
+    const result = await runWithExampleTrace(respan, workflowName, async () => {
+      const streamResult = await model.generateContentStream({
         contents: [
           {
             role: "user",
             parts: [{ text: "Stream a short explanation of Vertex AI tracing." }],
           },
         ],
-      }),
-    );
+      });
 
-    const chunks: string[] = [];
-    if (streamResult?.stream) {
-      for await (const chunk of streamResult.stream) {
-        chunks.push(textFromResponse(chunk));
+      const chunks: string[] = [];
+      if (streamResult?.stream) {
+        for await (const chunk of streamResult.stream) {
+          chunks.push(textFromResponse(chunk));
+        }
       }
-    }
-    const response = await responseFromResult(streamResult);
+      const response = await responseFromResult(streamResult);
+      return {
+        chunks,
+        finalText: textFromResponse(response),
+        usage: response?.usageMetadata,
+      };
+    });
 
     logExampleResult(workflowName, {
       mode,
-      chunks,
-      finalText: textFromResponse(response),
-      usage: response?.usageMetadata,
+      ...result,
     });
   } finally {
     await flushAndShutdown(respan);
