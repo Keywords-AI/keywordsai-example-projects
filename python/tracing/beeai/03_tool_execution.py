@@ -27,9 +27,14 @@ async def run_tool_execution() -> str:
 
 
 async def main() -> None:
-    with example_attributes(WORKFLOW_NAME) as run_id:
-        output = await run_tool_execution()
-        print(f"Run ID: {run_id}")
-        print(f"Tool output: {output}")
+    try:
+        with example_attributes(WORKFLOW_NAME) as run_id:
+            output = await run_tool_execution()
+            print(f"Run ID: {run_id}")
+            print(f"Tool output: {output}")
+    finally:
+        respan.shutdown()
+
+
 if __name__ == "__main__":
     asyncio.run(main())

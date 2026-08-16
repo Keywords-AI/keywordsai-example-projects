@@ -60,6 +60,8 @@ def run_scored_evaluation_workflow() -> str:
                     input={"rubric": "incident-summary-completeness"},
                     output={"score": 0.96, "reason": "All required fields present."},
                     scores={"completeness": 0.96, "brevity": 0.9},
+                    metrics={"latency_ms": 1250},
+                    tags=["evaluation", "release"],
                     metadata={"workflow_name": WORKFLOW_NAME},
                 )
 
@@ -67,6 +69,7 @@ def run_scored_evaluation_workflow() -> str:
                 input={"dataset_row": "incident-summary-001"},
                 output={"passed": True},
                 scores={"overall": 0.94},
+                tags=["evaluation", "release"],
                 metadata={"workflow_name": WORKFLOW_NAME},
             )
 
