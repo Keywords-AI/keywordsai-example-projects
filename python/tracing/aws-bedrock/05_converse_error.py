@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from botocore.exceptions import ClientError
 from respan import propagate_attributes, workflow
 
 from _shared import (
@@ -7,35 +8,38 @@ from _shared import (
     create_respan,
     deactivate_stubber,
     get_model_id,
-    maybe_stub_converse,
+    maybe_stub_converse_error,
     new_run_id,
 )
 
 
-WORKFLOW_NAME = "aws_bedrock_converse"
-EXAMPLE_NAME = "02_converse"
+WORKFLOW_NAME = "aws_bedrock_converse_error"
+EXAMPLE_NAME = "05_converse_error"
 
 
 @workflow(name=WORKFLOW_NAME)
-def run_converse() -> str:
+def run_converse_error() -> str:
     model_id = get_model_id()
     messages = [
         {
             "role": "user",
-            "content": [{"text": "Name one practical use for AWS Bedrock."}],
+            "content": [{"text": "Trigger the deterministic missing-model route."}],
         }
     ]
     client = create_bedrock_client()
-    stubber = maybe_stub_converse(client, model_id=model_id, messages=messages)
+    stubber = maybe_stub_converse_error(
+        client,
+        model_id=model_id,
+        messages=messages,
+    )
     try:
-        response = client.converse(
-            modelId=model_id,
-            messages=messages,
-            inferenceConfig={"maxTokens": 96},
-        )
-        return response["output"]["message"]["content"][0]["text"]
+        client.converse(modelId=model_id, messages=messages)
+    except ClientError as error:
+        status_code = error.response["ResponseMetadata"]["HTTPStatusCode"]
+        return f"expected Bedrock error {status_code}"
     finally:
         deactivate_stubber(stubber)
+    raise AssertionError("the deterministic Bedrock error route unexpectedly succeeded")
 
 
 def main() -> str:
@@ -45,9 +49,9 @@ def main() -> str:
         with propagate_attributes(
             group_identifier=WORKFLOW_NAME,
             custom_identifier=run_id,
-            metadata={"example": "converse", "run_id": run_id},
+            metadata={"example": "converse_error", "run_id": run_id},
         ):
-            print(run_converse())
+            print(run_converse_error())
     finally:
         respan.shutdown()
     print(f"RESPAN_EXAMPLE_RUN_ID={run_id}")

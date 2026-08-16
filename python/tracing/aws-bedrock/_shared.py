@@ -3,6 +3,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -37,11 +38,19 @@ def should_use_stubs() -> bool:
     return not (os.getenv("AWS_ACCESS_KEY_ID") or os.getenv("AWS_PROFILE"))
 
 
-def create_respan() -> Respan:
+def new_run_id(example_name: str) -> str:
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID") or f"{example_name}-{uuid.uuid4().hex[:10]}"
+
+
+def create_respan(*, example_name: str, run_id: str) -> Respan:
     return Respan(
         app_name="aws-bedrock-examples",
         instrumentations=[AWSBedrockInstrumentor()],
-        metadata={"example_set": "aws-bedrock"},
+        metadata={
+            "example_set": "aws-bedrock",
+            "example_name": example_name,
+            "run_id": run_id,
+        },
         environment=os.getenv("RESPAN_ENVIRONMENT", "examples"),
     )
 
@@ -161,11 +170,84 @@ def maybe_stub_converse_stream(
                 "contentBlockDelta": {
                     "contentBlockIndex": 0,
                     "delta": {"text": "Stubbed stream."},
-                }
+                },
+                "metadata": {
+                    "usage": {
+                        "inputTokens": 12,
+                        "outputTokens": 13,
+                        "totalTokens": 25,
+                    },
+                    "metrics": {"latencyMs": 7},
+                },
             },
             "ResponseMetadata": {"HTTPStatusCode": 200},
         },
         expected_params,
+    )
+    stubber.activate()
+    return stubber
+
+
+def maybe_stub_converse_tool(
+    client,
+    *,
+    model_id: str,
+    messages: list[dict[str, Any]],
+    tool_config: dict[str, Any],
+) -> Stubber | None:
+    if not should_use_stubs():
+        return None
+
+    stubber = Stubber(client)
+    stubber.add_response(
+        "converse",
+        {
+            "output": {
+                "message": {
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "toolUse": {
+                                "toolUseId": "tooluse-weather-1",
+                                "name": "get_weather",
+                                "input": {"city": "Tokyo"},
+                            }
+                        }
+                    ],
+                }
+            },
+            "stopReason": "tool_use",
+            "usage": {"inputTokens": 14, "outputTokens": 6, "totalTokens": 20},
+            "metrics": {"latencyMs": 8},
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+        },
+        {
+            "modelId": model_id,
+            "messages": messages,
+            "toolConfig": tool_config,
+            "inferenceConfig": {"maxTokens": 96},
+        },
+    )
+    stubber.activate()
+    return stubber
+
+
+def maybe_stub_converse_error(
+    client,
+    *,
+    model_id: str,
+    messages: list[dict[str, Any]],
+) -> Stubber | None:
+    if not should_use_stubs():
+        return None
+
+    stubber = Stubber(client)
+    stubber.add_client_error(
+        "converse",
+        service_error_code="ResourceNotFoundException",
+        service_message="The requested model was not found.",
+        http_status_code=404,
+        expected_params={"modelId": model_id, "messages": messages},
     )
     stubber.activate()
     return stubber

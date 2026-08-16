@@ -29,7 +29,7 @@ MODEL_INFO = {
 
 
 @workflow(name=SCRIPT_NAME)
-async def run_tool_agent() -> None:
+async def run_tool_agent() -> str:
     async def estimate_latency(service: str, requests_per_minute: int) -> str:
         """Estimate API latency for a service under load."""
         baseline_ms = 120
@@ -54,29 +54,42 @@ async def run_tool_agent() -> None:
     )
 
     try:
-        with propagate_attributes(
-            customer_identifier="autogen-example-user",
-            thread_identifier="autogen-tool-thread",
-            metadata={"script": SCRIPT_NAME},
-        ):
-            result = await agent.run(
-                task=(
-                    "Estimate the p95 latency for the tracing-api service at "
-                    "240 requests per minute."
-                )
+        result = await agent.run(
+            task=(
+                "Estimate the p95 latency for the tracing-api service at "
+                "240 requests per minute."
             )
-        print(result.messages[-1].content)
+        )
+        return str(result.messages[-1].content)
     finally:
         await model_client.close()
 
 
 async def main() -> None:
+    run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID", f"autogen-{Path(__file__).stem}")
     respan = Respan(
         api_key=RESPAN_API_KEY,
         base_url=RESPAN_BASE_URL,
         instrumentations=[AutoGenInstrumentor()],
-        metadata={"example": "autogen-tool-use", "script": SCRIPT_NAME},
+        metadata={
+            "example": "autogen-tool-use",
+            "script": SCRIPT_NAME,
+            "run_id": run_id,
+        },
     )
-    await run_tool_agent()
+    try:
+        with propagate_attributes(
+            customer_identifier="autogen-example-user",
+            thread_identifier="autogen-tool-thread",
+            group_identifier=SCRIPT_NAME,
+            custom_identifier=run_id,
+            metadata={"script": SCRIPT_NAME, "run_id": run_id},
+        ):
+            print(await run_tool_agent())
+    finally:
+        respan.shutdown()
+    print(f"RESPAN_EXAMPLE_RUN_ID={run_id}")
+
+
 if __name__ == "__main__":
     asyncio.run(main())

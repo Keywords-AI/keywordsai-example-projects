@@ -60,6 +60,8 @@ def _offline_result(resource: str, method_name: str, kwargs: dict[str, Any]) -> 
 
 def _make_offline_method(resource: str, method_name: str) -> Callable[..., Any]:
     def offline_method(self: Any, *args: Any, **kwargs: Any) -> Any:
+        if kwargs.pop("_respan_force_error", False):
+            raise RuntimeError(f"offline {resource}.{method_name} failure")
         return _offline_result(resource, method_name, kwargs)
 
     offline_method.__name__ = method_name
