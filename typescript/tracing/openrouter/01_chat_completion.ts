@@ -19,6 +19,9 @@ export async function runChatCompletion(respan: OpenRouterRespan = createRespan(
           maxTokens: 80,
         },
       });
+      if (!("choices" in response)) {
+        throw new Error("Expected a non-streaming OpenRouter chat response.");
+      }
       return response.choices?.[0]?.message?.content;
     });
     logExampleResult(workflowName, { model: CHAT_MODEL, content });

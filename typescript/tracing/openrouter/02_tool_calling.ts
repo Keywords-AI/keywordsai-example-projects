@@ -37,7 +37,10 @@ export async function runToolCalling(respan: OpenRouterRespan = createRespan()):
           maxTokens: 120,
         },
       });
-      return response.choices?.[0]?.message?.toolCalls ?? response.choices?.[0]?.message?.tool_calls;
+      if (!("choices" in response)) {
+        throw new Error("Expected a non-streaming OpenRouter tool-call response.");
+      }
+      return response.choices?.[0]?.message?.toolCalls;
     });
     logExampleResult(workflowName, { model: CHAT_MODEL, toolCalls });
     return toolCalls;

@@ -8,7 +8,8 @@
     "tools": "tsx 02_tool_calling.ts",
     "stream": "tsx 03_streaming.ts",
     "embeddings": "tsx 04_embeddings.ts",
-    "examples": "tsx run_all.ts"
+    "examples": "tsx run_all.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@openrouter/sdk": "^0.13.7",
@@ -18,5 +19,7 @@
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/node": "^22.15.29"
+  }
 }

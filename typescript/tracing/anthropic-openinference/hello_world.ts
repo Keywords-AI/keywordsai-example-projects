@@ -1,31 +1,26 @@
 /** Anthropic SDK — Chat completion with Respan tracing via OpenInference. */
 
-import "dotenv/config";
-import Anthropic from "@anthropic-ai/sdk";
-import { AnthropicInstrumentation } from "@arizeai/openinference-instrumentation-anthropic";
-import { Respan } from "@respan/respan";
-import { OpenInferenceInstrumentor } from "@respan/instrumentation-openinference";
+import { createAnthropicClient, createRuntime, runWithOpenInferenceWorkflow } from "./_runtime.js";
 
-const respan = new Respan({
-  apiKey: process.env.RESPAN_API_KEY,
-  baseURL: process.env.RESPAN_BASE_URL,
-  instrumentations: [
-    new OpenInferenceInstrumentor(AnthropicInstrumentation, Anthropic),
-  ],
-});
-await respan.initialize();
+const workflowName = "openinference_anthropic_supported";
+const { respan } = createRuntime();
 
-const client = new Anthropic();
+try {
+  const output = await runWithOpenInferenceWorkflow(respan, workflowName, async () => {
+    const message = await createAnthropicClient().messages.create({
+      model: process.env.RESPAN_ANTHROPIC_MODEL || "claude-sonnet-4-5-20250929",
+      max_tokens: 100,
+      messages: [
+        { role: "user", content: "Write a haiku about recursion in programming." },
+      ],
+    });
 
-const message = await client.messages.create({
-  model: "claude-sonnet-4-20250514",
-  max_tokens: 100,
-  messages: [
-    { role: "user", content: "Write a haiku about recursion in programming." },
-  ],
-});
-
-const text = message.content[0];
-if (text.type === "text") {
-  console.log(text.text);
+    return message.content
+      .map((block) => (block.type === "text" ? block.text : ""))
+      .filter(Boolean)
+      .join("\n");
+  });
+  console.log(JSON.stringify({ workflowName, output }, null, 2));
+} finally {
+  await respan.shutdown();
 }

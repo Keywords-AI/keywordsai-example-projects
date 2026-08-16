@@ -55,7 +55,8 @@ export async function createRuntime(appName: string): Promise<Runtime> {
     process.env.OPENAI_BASE_URL ??
     DEFAULT_GATEWAY_BASE_URL;
   const model = process.env.RESPAN_MODEL ?? "gpt-4o-mini";
-  const runId = `openai-agents-ts-${Date.now()}`;
+  const runId =
+    process.env.RESPAN_EXAMPLE_RUN_ID?.trim() || `openai-agents-ts-${Date.now()}`;
 
   const respan = new Respan({
     apiKey: respanApiKey,
@@ -98,6 +99,7 @@ export async function withExampleTrace<T>(
       groupId: runtime.runId,
       metadata: {
         run_id: runtime.runId,
+        custom_identifier: runtime.runId,
         example: "openai-agents-sdk",
       },
     },

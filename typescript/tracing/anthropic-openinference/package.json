@@ -3,17 +3,20 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "hello": "tsx hello_world.ts"
+    "hello": "tsx hello_world.ts",
+    "failure": "tsx failure.ts",
+    "all": "npm run hello && npm run failure",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
     "@arizeai/openinference-instrumentation-anthropic": "^0.1.7",
     "@opentelemetry/api": "^1.9.0",
-    "@opentelemetry/sdk-trace-base": "^1.30.1",
-    "@respan/instrumentation-openinference": "file:../../instrumentations/respan-instrumentation-openinference",
-    "@respan/respan": "file:../../respan",
-    "@respan/respan-sdk": "file:../../respan-sdk",
-    "@respan/tracing": "file:../../respan-tracing",
+    "@opentelemetry/sdk-trace-base": "^2.10.0",
+    "@respan/instrumentation-openinference": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-openinference",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
     "dotenv": "^16.0.0"
   },
   "devDependencies": {
