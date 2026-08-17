@@ -6,6 +6,10 @@ EXAMPLES = (
     "01_basic_completion.py",
     "02_streaming_completion.py",
     "03_respan_attributes.py",
+    "04_tool_calling.py",
+    "05_expected_error.py",
+    "06_async_completion.py",
+    "07_async_streaming.py",
 )
 
 

@@ -9,48 +9,21 @@ When RESPAN_API_KEY is set, the LangChain run is exported to Respan.
 
 from __future__ import annotations
 
-import os
-
-from dotenv import find_dotenv, load_dotenv
+from _shared import init_telemetry, tracing_config
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
-from respan_instrumentation_langchain import add_respan_callback
-from respan_tracing import RespanTelemetry
-
-load_dotenv(find_dotenv(), override=False)
 
 
 def langchain_instrumentation_quickstart() -> None:
-    api_key = os.getenv("RESPAN_API_KEY")
-    telemetry: RespanTelemetry | None = None
-
-    if api_key:
-        telemetry = RespanTelemetry(
-            app_name="langchain-quickstart",
-            api_key=api_key,
-            base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
-            is_auto_instrument=False,
-            is_batching_enabled=False,
-            is_enabled=True,
-        )
-    else:
-        print("RESPAN_API_KEY is not set; running locally without exporting spans.")
+    init_telemetry("langchain-quickstart")
 
     model = FakeListChatModel(responses=["Hello from a traced LangChain run."])
-    config = {
-        "run_name": "hello_world",
-        "tags": ["respan-langchain-example", "quickstart"],
-        "metadata": {"example": "quickstart"},
-    }
-    if telemetry:
-        config = add_respan_callback(config)
-
     response = model.invoke(
         [
             SystemMessage(content="Reply in one short sentence."),
             HumanMessage(content="Say hello to Respan tracing."),
         ],
-        config=config,
+        config=tracing_config("hello_world"),
     )
     print(response.content)
 

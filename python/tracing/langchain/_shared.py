@@ -2,21 +2,41 @@
 
 from __future__ import annotations
 
+import atexit
 import os
+from pathlib import Path
 from typing import Any
 
-from dotenv import find_dotenv, load_dotenv
+from dotenv import load_dotenv
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
 from langchain_core.messages import AIMessage
 from langchain_core.tools import tool
 from respan_instrumentation_langchain import add_respan_callback
 from respan_tracing import RespanTelemetry
 
-load_dotenv(find_dotenv(), override=False)
+ROOT_DIR = Path(__file__).resolve().parents[3]
+load_dotenv(ROOT_DIR / ".env", override=True)
+
+RUN_ID = os.getenv("RESPAN_EXAMPLE_RUN_ID", "").strip() or "langchain-local"
+_ACTIVE_TELEMETRY: list[RespanTelemetry] = []
 
 
 class NoopTelemetry:
-    pass
+    def flush(self) -> None:
+        return None
+
+
+def _flush_telemetry() -> None:
+    """Flush every example telemetry instance on normal and exceptional exits."""
+    while _ACTIVE_TELEMETRY:
+        telemetry = _ACTIVE_TELEMETRY.pop()
+        try:
+            telemetry.flush()
+        except Exception:  # noqa: BLE001,S110 - process-exit flush is best-effort
+            pass
+
+
+atexit.register(_flush_telemetry)
 
 
 def init_telemetry(app_name: str) -> RespanTelemetry | NoopTelemetry:
@@ -25,7 +45,7 @@ def init_telemetry(app_name: str) -> RespanTelemetry | NoopTelemetry:
     if not api_key:
         return NoopTelemetry()
 
-    return RespanTelemetry(
+    telemetry = RespanTelemetry(
         app_name=app_name,
         api_key=api_key,
         base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
@@ -33,6 +53,8 @@ def init_telemetry(app_name: str) -> RespanTelemetry | NoopTelemetry:
         is_batching_enabled=False,
         is_enabled=True,
     )
+    _ACTIVE_TELEMETRY.append(telemetry)
+    return telemetry
 
 
 def tracing_config(name: str, metadata: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -40,7 +62,19 @@ def tracing_config(name: str, metadata: dict[str, Any] | None = None) -> dict[st
         {
             "run_name": name,
             "tags": ["respan-langchain-example", name],
-            "metadata": {"example": name, **(metadata or {})},
+            "metadata": {
+                "example": name,
+                **(metadata or {}),
+                "respan_params": {
+                    "trace_group_identifier": f"langchain_{name}.workflow",
+                    "custom_identifier": f"{RUN_ID}:{name}",
+                    "metadata": {
+                        "example": "langchain",
+                        "example_run_id": RUN_ID,
+                        "workflow_name": f"langchain_{name}.workflow",
+                    },
+                },
+            },
         }
     )
 
@@ -66,7 +100,7 @@ class ToolCallingFakeMessagesListChatModel(FakeMessagesListChatModel):
         self,
         tools: Any,
         **kwargs: Any,
-    ) -> "ToolCallingFakeMessagesListChatModel":
+    ) -> ToolCallingFakeMessagesListChatModel:
         return self
 
 
@@ -107,7 +141,12 @@ def make_openai_chat_model(model_name: str = "gpt-4o-mini") -> Any | None:
         "api_key": api_key,
         "temperature": 0,
     }
-    base_url = os.getenv("OPENAI_BASE_URL") or os.getenv("RESPAN_OPENAI_BASE_URL")
+    base_url = (
+        os.getenv("OPENAI_BASE_URL")
+        or os.getenv("RESPAN_OPENAI_BASE_URL")
+        or os.getenv("RESPAN_GATEWAY_BASE_URL")
+        or os.getenv("RESPAN_BASE_URL")
+    )
     if base_url:
         kwargs["base_url"] = base_url
     return ChatOpenAI(**kwargs)

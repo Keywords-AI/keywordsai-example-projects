@@ -1,3 +1,4 @@
-langfuse>=2.0.0
-requests>=2.31.0
+langfuse>=3.12.0
+respan-ai
+respan-instrumentation-langfuse
 python-dotenv>=1.0.0

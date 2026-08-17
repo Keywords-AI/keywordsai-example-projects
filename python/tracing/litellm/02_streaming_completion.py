@@ -1,6 +1,4 @@
 import litellm
-from respan import workflow
-
 from _shared import (
     GATEWAY_API_KEY,
     GATEWAY_BASE_URL,
@@ -8,6 +6,7 @@ from _shared import (
     create_respan,
     run_with_example_attributes,
 )
+from respan import workflow
 
 WORKFLOW_NAME = "litellm_streaming_completion.workflow"
 
@@ -44,11 +43,16 @@ def litellm_streaming_completion() -> str:
 
 def main() -> None:
     respan = create_respan("litellm-streaming-completion")
-    output = run_with_example_attributes(
-        respan,
-        workflow_name=WORKFLOW_NAME,
-        action=litellm_streaming_completion,
-    )
-    print(output)
+    try:
+        output = run_with_example_attributes(
+            respan,
+            workflow_name=WORKFLOW_NAME,
+            action=litellm_streaming_completion,
+        )
+        print(output)
+    finally:
+        respan.shutdown()
+
+
 if __name__ == "__main__":
     main()
