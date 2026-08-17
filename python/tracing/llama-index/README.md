@@ -32,7 +32,7 @@ pip install -e /path/to/respan/python-sdks/respan \
 | `04_respan_params.py` | Build `SummaryIndex` documents and query the query engine |
 | `05_tool_use_agent.py` | Run `ReActAgent` with a `FunctionTool` |
 
-Each script sets distinct `app_name`, `example_name`, `example_run_id`, `trace_group_identifier`, and `custom_identifier` values so exported results can be traced back to the script that produced them.
+Each script sets distinct `app_name`, `example_name`, `example_run_id`, `trace_group_identifier`, and `custom_identifier` values so exported results can be traced back to the script that produced them. Set `RESPAN_EXAMPLE_RUN_ID` to apply one exact marker across a validation run. Every script shuts Respan down explicitly after its traced operation so finished spans are flushed before the process exits.
 
 Run any example:
 

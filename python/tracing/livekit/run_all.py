@@ -9,6 +9,7 @@ EXAMPLES = [
     "02_streaming_response.py",
     "03_tool_calling.py",
     "04_context_and_error.py",
+    "05_live_openai.py",
 ]
 
 
