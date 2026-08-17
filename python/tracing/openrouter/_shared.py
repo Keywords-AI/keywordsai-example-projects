@@ -3,7 +3,6 @@ from __future__ import annotations
 import atexit
 import json
 import os
-import sys
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -12,8 +11,6 @@ from typing import Any
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 EXAMPLE_REPO_ROOT = EXAMPLE_DIR.parents[2]
-WORKSPACE_ROOT = EXAMPLE_REPO_ROOT.parent
-RESPAN_REPO_ROOT = WORKSPACE_ROOT / "respan"
 DEFAULT_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_OPENROUTER_MODEL = "openai/gpt-4o-mini"
 _MOCK_SERVER: ThreadingHTTPServer | None = None
@@ -35,34 +32,10 @@ def _load_env_file(path: Path) -> None:
         key = key.strip()
         value = value.strip().strip("'").strip('"')
         if key:
-            os.environ[key] = value
-
-
-def _add_local_respan_paths() -> None:
-    local_paths = [
-        RESPAN_REPO_ROOT / "python-sdks" / "respan" / "src",
-        RESPAN_REPO_ROOT / "python-sdks" / "respan-tracing" / "src",
-        RESPAN_REPO_ROOT / "python-sdks" / "respan-sdk" / "src",
-        RESPAN_REPO_ROOT
-        / "python-sdks"
-        / "instrumentations"
-        / "respan-instrumentation-openai"
-        / "src",
-        RESPAN_REPO_ROOT
-        / "python-sdks"
-        / "instrumentations"
-        / "respan-instrumentation-openrouter"
-        / "src",
-    ]
-    for path in reversed(local_paths):
-        if path.exists():
-            path_text = str(path)
-            if path_text not in sys.path:
-                sys.path.insert(0, path_text)
+            os.environ.setdefault(key, value)
 
 
 _load_env_file(EXAMPLE_REPO_ROOT / ".env")
-_add_local_respan_paths()
 
 from openai import AsyncOpenAI, OpenAI
 from respan import Respan
@@ -96,13 +69,21 @@ def ensure_respan_api_key() -> str:
     return api_key
 
 
-def make_respan() -> Respan:
+def make_respan(*, scenario: str) -> Respan:
+    metadata = {
+        "example_set": "python/tracing/openrouter",
+        "scenario": scenario,
+    }
+    run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID")
+    if run_id:
+        metadata["run_id"] = run_id
+        metadata["example_run_id"] = run_id
     return Respan(
         api_key=ensure_respan_api_key(),
         base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
         app_name="openrouter-python-examples",
         instrumentations=[OpenRouterInstrumentor()],
-        metadata={"example_set": "python/tracing/openrouter"},
+        metadata=metadata,
     )
 
 
@@ -156,7 +137,10 @@ def _mock_completion_payload(request: dict[str, Any]) -> dict[str, Any]:
             finish_reason="tool_calls",
         )
 
-    if any(isinstance(message, dict) and message.get("role") == "tool" for message in messages):
+    if any(
+        isinstance(message, dict) and message.get("role") == "tool"
+        for message in messages
+    ):
         return _chat_response(
             model=model,
             message={
@@ -213,6 +197,22 @@ class _OpenRouterMockHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _send_error(self, *, status_code: int, message: str) -> None:
+        body = json.dumps(
+            {
+                "error": {
+                    "code": "rate_limit_exceeded",
+                    "message": message,
+                    "type": "rate_limit_error",
+                }
+            }
+        ).encode("utf-8")
+        self.send_response(status_code)
+        self.send_header("content-type", "application/json")
+        self.send_header("content-length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
     def _send_stream(self, request: dict[str, Any]) -> None:
         model = str(request.get("model") or DEFAULT_OPENROUTER_MODEL)
         created = int(time.time())
@@ -233,14 +233,39 @@ class _OpenRouterMockHandler(BaseHTTPRequestHandler):
                 ],
             }
             events.append("data: " + json.dumps(payload) + "\n\n")
-        events.append("data: [DONE]\n\n")
+        events.append(
+            "data: "
+            + json.dumps(
+                {
+                    "id": "chatcmpl-openrouter-mock-stream",
+                    "object": "chat.completion.chunk",
+                    "created": created,
+                    "model": model,
+                    "choices": [],
+                    "usage": {
+                        "prompt_tokens": 17,
+                        "completion_tokens": 12,
+                        "total_tokens": 29,
+                    },
+                }
+            )
+            + "\n\n"
+        )
+        # The default deterministic fixture ends after the terminal usage event and
+        # lets OpenAI drain the advertised body to EOF. OpenAI 3.0.0 with
+        # httpx2/httpcore2 2.10.0 can otherwise leave nested transport async
+        # generators closing concurrently when it breaks early on ``[DONE]``.
+        if self.headers.get("x-respan-mock-stream-termination") == "done":
+            events.append("data: [DONE]\n\n")
         body = "".join(events).encode("utf-8")
         self.send_response(200)
         self.send_header("content-type", "text/event-stream")
         self.send_header("cache-control", "no-cache")
         self.send_header("content-length", str(len(body)))
+        self.send_header("connection", "close")
         self.end_headers()
         self.wfile.write(body)
+        self.close_connection = True
 
     def do_POST(self) -> None:
         request = self._read_json()
@@ -249,6 +274,17 @@ class _OpenRouterMockHandler(BaseHTTPRequestHandler):
             self.send_header("content-length", "0")
             self.end_headers()
             return
+        messages = request.get("messages") or []
+        if any(
+            isinstance(message, dict)
+            and "trigger deterministic 429" in str(message.get("content") or "")
+            for message in messages
+        ):
+            self._send_error(
+                status_code=429,
+                message="deterministic OpenRouter rate limit",
+            )
+            return
         if request.get("stream"):
             self._send_stream(request)
             return
@@ -256,11 +292,18 @@ class _OpenRouterMockHandler(BaseHTTPRequestHandler):
 
 
 def _shutdown_mock_server() -> None:
-    global _MOCK_SERVER
-    if _MOCK_SERVER is not None:
-        _MOCK_SERVER.shutdown()
-        _MOCK_SERVER.server_close()
-        _MOCK_SERVER = None
+    global _MOCK_SERVER, _MOCK_THREAD
+    server = _MOCK_SERVER
+    thread = _MOCK_THREAD
+    _MOCK_SERVER = None
+    _MOCK_THREAD = None
+    if server is not None:
+        server.shutdown()
+        server.server_close()
+    if thread is not None:
+        thread.join(timeout=5)
+        if thread.is_alive():
+            raise RuntimeError("OpenRouter mock server did not stop within 5 seconds")
 
 
 def _mock_base_url() -> str:
@@ -277,7 +320,14 @@ def _mock_base_url() -> str:
     return f"http://{host}:{port}/api/v1"
 
 
-def openrouter_config() -> dict[str, Any]:
+def openrouter_config(*, live: bool = False) -> dict[str, Any]:
+    if not live:
+        return {
+            "api_key": "openrouter-mock-key",
+            "base_url": _mock_base_url(),
+            "model": os.getenv("OPENROUTER_MODEL", DEFAULT_OPENROUTER_MODEL),
+        }
+
     direct_key = os.getenv("OPENROUTER_API_KEY")
     if direct_key:
         return {
@@ -291,7 +341,11 @@ def openrouter_config() -> dict[str, Any]:
 
     gateway_key = os.getenv("RESPAN_GATEWAY_API_KEY")
     gateway_base_url = _first_env("RESPAN_GATEWAY_BASE_URL", "RESPAN_BASE_URL")
-    if _env_truthy("OPENROUTER_USE_RESPAN_GATEWAY") and gateway_key and gateway_base_url:
+    if (
+        _env_truthy("OPENROUTER_USE_RESPAN_GATEWAY")
+        and gateway_key
+        and gateway_base_url
+    ):
         return {
             "api_key": gateway_key,
             "base_url": gateway_base_url,
@@ -299,11 +353,10 @@ def openrouter_config() -> dict[str, Any]:
             or DEFAULT_OPENROUTER_MODEL,
         }
 
-    return {
-        "api_key": "openrouter-mock-key",
-        "base_url": _mock_base_url(),
-        "model": os.getenv("OPENROUTER_MODEL", DEFAULT_OPENROUTER_MODEL),
-    }
+    raise RuntimeError(
+        "Live OpenRouter mode requires OPENROUTER_API_KEY or an explicit "
+        "Respan gateway configuration"
+    )
 
 
 def _openrouter_headers() -> dict[str, str]:
@@ -317,11 +370,13 @@ def _openrouter_headers() -> dict[str, str]:
     return headers
 
 
-def make_client() -> tuple[OpenAI, str]:
-    config = openrouter_config()
+def make_client(*, live: bool = False) -> tuple[OpenAI, str]:
+    config = openrouter_config(live=live)
     kwargs: dict[str, Any] = {
         "api_key": config["api_key"],
         "base_url": config["base_url"],
+        "max_retries": 0,
+        "timeout": 20.0,
     }
     headers = _openrouter_headers()
     if headers:
@@ -329,13 +384,78 @@ def make_client() -> tuple[OpenAI, str]:
     return OpenAI(**kwargs), str(config["model"])
 
 
-def make_async_client() -> tuple[AsyncOpenAI, str]:
-    config = openrouter_config()
+def make_async_client(*, live: bool = False) -> tuple[AsyncOpenAI, str]:
+    config = openrouter_config(live=live)
     kwargs: dict[str, Any] = {
         "api_key": config["api_key"],
         "base_url": config["base_url"],
+        "max_retries": 0,
+        "timeout": 20.0,
     }
     headers = _openrouter_headers()
     if headers:
         kwargs["default_headers"] = headers
     return AsyncOpenAI(**kwargs), str(config["model"])
+
+
+def make_mock_client() -> tuple[OpenAI, str]:
+    model = os.getenv("OPENROUTER_MODEL", DEFAULT_OPENROUTER_MODEL)
+    return (
+        OpenAI(
+            api_key="openrouter-mock-key",
+            base_url=_mock_base_url(),
+            max_retries=0,
+            timeout=20.0,
+        ),
+        model,
+    )
+
+
+def close_sync(*, respan: Respan | None, client: OpenAI | None) -> None:
+    errors: list[Exception] = []
+    try:
+        if client is not None:
+            client.close()
+    except Exception as exc:  # noqa: BLE001 - teardown must continue
+        errors.append(exc)
+    try:
+        if respan is not None:
+            respan.flush()
+    except Exception as exc:  # noqa: BLE001 - teardown must continue
+        errors.append(exc)
+    try:
+        if respan is not None:
+            respan.shutdown()
+    except Exception as exc:  # noqa: BLE001 - teardown must continue
+        errors.append(exc)
+    try:
+        _shutdown_mock_server()
+    except Exception as exc:  # noqa: BLE001 - teardown must continue
+        errors.append(exc)
+    if errors:
+        raise errors[0]
+
+
+async def close_async(*, respan: Respan | None, client: AsyncOpenAI | None) -> None:
+    errors: list[Exception] = []
+    try:
+        if client is not None:
+            await client.close()
+    except Exception as exc:  # noqa: BLE001 - teardown must continue
+        errors.append(exc)
+    try:
+        if respan is not None:
+            respan.flush()
+    except Exception as exc:  # noqa: BLE001 - teardown must continue
+        errors.append(exc)
+    try:
+        if respan is not None:
+            respan.shutdown()
+    except Exception as exc:  # noqa: BLE001 - teardown must continue
+        errors.append(exc)
+    try:
+        _shutdown_mock_server()
+    except Exception as exc:  # noqa: BLE001 - teardown must continue
+        errors.append(exc)
+    if errors:
+        raise errors[0]

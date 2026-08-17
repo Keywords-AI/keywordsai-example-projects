@@ -1,0 +1,4 @@
+openai>=3.0.0,<4.0.0
+respan-ai>=4.1.0
+respan-instrumentation-openai>=1.2.1,<2.0.0
+respan-instrumentation-openrouter>=0.1.0
