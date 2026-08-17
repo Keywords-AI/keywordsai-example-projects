@@ -5,7 +5,11 @@ import sys
 from pathlib import Path
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
-SCRIPTS = ["01_collection_lifecycle.py", "02_data_operations.py"]
+SCRIPTS = [
+    "01_collection_lifecycle.py",
+    "02_data_operations.py",
+    "03_expected_error.py",
+]
 
 
 def main() -> None:

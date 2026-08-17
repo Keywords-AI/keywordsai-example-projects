@@ -1,13 +1,14 @@
-from respan import Respan, workflow
-
 from _shared import (
     collection_name,
+    create_local_collection,
     create_respan,
     finish_respan,
+    json_native,
     local_milvus_client,
     print_result,
     workflow_attributes,
 )
+from respan import Respan, workflow
 
 WORKFLOW_NAME = "milvus_collection_lifecycle_workflow"
 
@@ -16,17 +17,19 @@ WORKFLOW_NAME = "milvus_collection_lifecycle_workflow"
 def run_collection_lifecycle() -> dict:
     with local_milvus_client() as client:
         name = collection_name(WORKFLOW_NAME)
-        client.create_collection(collection_name=name, dimension=4)
+        create_local_collection(client, name)
         before_drop = {
             "exists": client.has_collection(collection_name=name),
             "collections": client.list_collections(),
             "description": client.describe_collection(collection_name=name),
         }
         client.drop_collection(collection_name=name)
-        return {
-            "before_drop": before_drop,
-            "exists_after_drop": client.has_collection(collection_name=name),
-        }
+        return json_native(
+            {
+                "before_drop": before_drop,
+                "exists_after_drop": client.has_collection(collection_name=name),
+            }
+        )
 
 
 def main() -> None:

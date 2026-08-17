@@ -1,6 +1,16 @@
 """Local MCP stdio server used by the Respan MCP examples."""
 
+import sys
+
+if "--exit-immediately" in sys.argv:
+    raise SystemExit(3)
+
 from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.server import Settings
+
+# MCP 1.x with current Pydantic otherwise warns while resolving the generic
+# lifespan annotation. Rebuild before FastMCP constructs its Settings instance.
+Settings.model_rebuild(force=True)
 
 mcp = FastMCP("respan-mcp-example-server")
 
