@@ -13,17 +13,24 @@ from _shared import (
 )
 from respan import workflow
 
-EXAMPLE_NAME = "chat-completion"
+EXAMPLE_NAME = "streaming-chat"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def trace_chat(prompt: str) -> dict[str, str]:
+def trace_stream(prompt: str) -> dict[str, str]:
     client = make_client()
+    content: list[str] = []
     try:
-        response = client.chat.completions.create(
-            model=model_name(), messages=[{"role": "user", "content": prompt}]
+        stream = client.chat.completions.create(
+            model=model_name(),
+            messages=[{"role": "user", "content": prompt}],
+            stream=True,
+            stream_options={"include_usage": True},
         )
-        return {"response": response.choices[0].message.content or ""}
+        for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                content.append(chunk.choices[0].delta.content)
+        return {"response": "".join(content)}
     finally:
         client.close()
 
@@ -36,7 +43,7 @@ def main() -> None:
         with example_attributes(
             EXAMPLE_NAME, run_marker, execution, mode="deterministic"
         ):
-            result = trace_chat("Explain AI gateways in one concise sentence.")
+            result = trace_stream("Stream a short Portkey tracing confirmation.")
         print_result(EXAMPLE_NAME, run_marker, result)
     finally:
         finish_respan(respan)

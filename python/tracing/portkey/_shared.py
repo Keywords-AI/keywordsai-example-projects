@@ -1,159 +1,136 @@
+"""Shared Portkey example setup with exact marker propagation."""
+
 from __future__ import annotations
 
+import json
 import os
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
+from _local_gateway import local_gateway_base_url, shutdown_local_gateway
 from dotenv import load_dotenv
 from portkey_ai import AsyncPortkey, Portkey
 from respan import Respan, propagate_attributes
 from respan_instrumentation_portkey import PortkeyInstrumentor
 
-from _local_gateway import local_gateway_base_url
-
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+EXAMPLE_DIR = Path(__file__).resolve().parent
+REPO_ROOT = EXAMPLE_DIR.parents[2]
 DEFAULT_RESPAN_BASE_URL = "https://api.respan.ai/api"
 DEFAULT_MODEL = "gpt-4.1-nano"
+EXAMPLE_SET = "portkey"
 
 
 def load_root_env() -> None:
-    load_dotenv(PROJECT_ROOT / ".env", override=True)
+    load_dotenv(REPO_ROOT / ".env", override=False)
+    if not os.getenv("RESPAN_API_KEY"):
+        raise RuntimeError(f"RESPAN_API_KEY is required in {REPO_ROOT / '.env'}")
 
 
-def env_value(name: str) -> str | None:
-    value = os.getenv(name)
-    if not value:
-        return None
-    value = value.strip()
-    if not value or value.upper() == name:
-        return None
-    if value.lower() in {"none", "null", "your_api_key_here"}:
-        return None
-    return value
-
-
-def require_env(name: str) -> str:
-    value = env_value(name)
-    if not value:
-        raise RuntimeError(f"{name} must be set in the repo root .env file")
-    return value
-
-
-def respan_api_key() -> str:
-    load_root_env()
-    return require_env("RESPAN_API_KEY")
-
-
-def respan_base_url() -> str:
-    return os.getenv("RESPAN_BASE_URL", DEFAULT_RESPAN_BASE_URL).rstrip("/")
-
-
-def gateway_api_key() -> str:
-    return respan_api_key() or require_env("RESPAN_GATEWAY_API_KEY")
-
-
-def gateway_base_url() -> str:
-    return (
-        os.getenv("RESPAN_GATEWAY_BASE_URL")
-        or os.getenv("RESPAN_BASE_URL")
-        or DEFAULT_RESPAN_BASE_URL
-    ).rstrip("/")
-
-
-def model_name() -> str:
-    return os.getenv("PORTKEY_MODEL") or os.getenv("RESPAN_MODEL", DEFAULT_MODEL)
-
-
-def workflow_name(example_name: str) -> str:
-    normalized_name = example_name.replace("-", "_")
-    return f"portkey_{normalized_name}"
-
-
-def make_custom_identifier(example_name: str) -> str:
-    return f"portkey-{example_name}-{uuid4().hex[:8]}"
-
-
-def make_respan(example_name: str) -> Respan:
-    return Respan(
-        api_key=respan_api_key(),
-        base_url=respan_base_url(),
-        app_name="portkey-examples",
-        instrumentations=[PortkeyInstrumentor()],
-        environment=os.getenv("RESPAN_ENVIRONMENT", "example"),
-        metadata={"integration": "portkey", "example": example_name},
+def marker() -> str:
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID", "").strip() or (
+        f"portkey-{uuid4().hex[:10]}"
     )
 
 
-def _portkey_client_kwargs() -> dict[str, object]:
+def execution_id() -> str:
+    return uuid4().hex[:10]
+
+
+def workflow_name(example_name: str) -> str:
+    return f"portkey_{example_name.replace('-', '_')}"
+
+
+def make_respan(example_name: str, run_marker: str) -> Respan:
     load_root_env()
-    portkey_api_key = env_value("PORTKEY_API_KEY")
-    if portkey_api_key:
-        kwargs: dict[str, object] = {"api_key": portkey_api_key}
-        if portkey_base_url := env_value("PORTKEY_BASE_URL"):
-            kwargs["base_url"] = portkey_base_url.rstrip("/")
-        if portkey_provider := env_value("PORTKEY_PROVIDER"):
-            kwargs["provider"] = portkey_provider
-        if portkey_config := env_value("PORTKEY_CONFIG"):
-            kwargs["config"] = portkey_config
+    return Respan(
+        api_key=os.environ["RESPAN_API_KEY"],
+        base_url=os.getenv("RESPAN_BASE_URL", DEFAULT_RESPAN_BASE_URL),
+        app_name=workflow_name(example_name),
+        instrumentations=[PortkeyInstrumentor()],
+        is_batching_enabled=False,
+        metadata={
+            "example_set": EXAMPLE_SET,
+            "workflow_name": workflow_name(example_name),
+            "example_run_id": run_marker,
+            "run_id": run_marker,
+        },
+        log_level=os.getenv("RESPAN_LOG_LEVEL", "WARNING"),
+    )
+
+
+def live_configured() -> bool:
+    return bool(os.getenv("PORTKEY_API_KEY"))
+
+
+def _client_kwargs(*, live: bool) -> dict[str, object]:
+    load_root_env()
+    if live:
+        if not live_configured():
+            raise RuntimeError(
+                "PORTKEY_API_KEY is required for the optional live example"
+            )
+        kwargs: dict[str, object] = {"api_key": os.environ["PORTKEY_API_KEY"]}
+        if base_url := os.getenv("PORTKEY_BASE_URL"):
+            kwargs["base_url"] = base_url.rstrip("/")
+        if provider := os.getenv("PORTKEY_PROVIDER"):
+            kwargs["provider"] = provider
+        if config := os.getenv("PORTKEY_CONFIG"):
+            kwargs["config"] = config
         return kwargs
-
-    if env_value("PORTKEY_EXAMPLE_USE_LIVE_GATEWAY"):
-        return {
-            "api_key": gateway_api_key(),
-            "base_url": gateway_base_url(),
-        }
-
-    if openai_api_key := env_value("OPENAI_API_KEY"):
-        if env_value("PORTKEY_EXAMPLE_USE_OPENAI"):
-            return {
-                "api_key": openai_api_key,
-                "base_url": env_value("OPENAI_BASE_URL") or "https://api.openai.com/v1",
-            }
-
     return {
         "api_key": "local-portkey-example-key",
         "base_url": local_gateway_base_url(),
     }
 
 
-def make_client() -> Portkey:
-    return Portkey(**_portkey_client_kwargs())
+def make_client(*, live: bool = False) -> Portkey:
+    return Portkey(**_client_kwargs(live=live))
 
 
-def make_async_client() -> AsyncPortkey:
-    return AsyncPortkey(**_portkey_client_kwargs())
+def make_async_client(*, live: bool = False) -> AsyncPortkey:
+    return AsyncPortkey(**_client_kwargs(live=live))
 
 
-def client_mode() -> str:
-    if env_value("PORTKEY_API_KEY"):
-        return "portkey-gateway"
-    if env_value("PORTKEY_EXAMPLE_USE_LIVE_GATEWAY"):
-        return "respan-gateway"
-    if env_value("PORTKEY_EXAMPLE_USE_OPENAI") and env_value("OPENAI_API_KEY"):
-        return "openai-api"
-    return "local-openai-compatible"
+def model_name(*, live: bool = False) -> str:
+    if live:
+        return os.getenv("PORTKEY_MODEL") or os.getenv("RESPAN_MODEL", DEFAULT_MODEL)
+    return "local-portkey-model"
 
 
 @contextmanager
-def example_attributes(example_name: str, custom_identifier: str | None = None):
-    custom_identifier = custom_identifier or make_custom_identifier(example_name)
+def example_attributes(
+    example_name: str, run_marker: str, execution: str, *, mode: str
+):
     current_workflow_name = workflow_name(example_name)
     with propagate_attributes(
-        custom_identifier=custom_identifier,
+        custom_identifier=f"{current_workflow_name}-{execution}",
         trace_group_identifier=current_workflow_name,
         metadata={
+            "example_set": EXAMPLE_SET,
             "example": example_name,
-            "run_id": custom_identifier,
             "workflow_name": current_workflow_name,
+            "example_run_id": run_marker,
+            "run_id": run_marker,
+            "execution_id": execution,
+            "mode": mode,
         },
     ):
-        yield custom_identifier
+        yield
 
 
-def print_result(example_name: str, custom_identifier: str, text: str) -> None:
-    print(f"example={example_name}")
-    print(f"custom_identifier={custom_identifier}")
-    print(f"workflow_name={workflow_name(example_name)}")
-    print(f"client_mode={client_mode()}")
-    print(text.strip())
+def print_result(example_name: str, run_marker: str, result: Any) -> None:
+    print(f"RESPAN_EXAMPLE_RUN_ID={run_marker}")
+    print(f"\n== {example_name} ==")
+    print(json.dumps(result, allow_nan=False, indent=2, sort_keys=True))
+
+
+def finish_respan(respan: Respan) -> None:
+    try:
+        respan.flush()
+    finally:
+        try:
+            respan.shutdown()
+        finally:
+            shutdown_local_gateway()

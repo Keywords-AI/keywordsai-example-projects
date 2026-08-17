@@ -8,22 +8,22 @@ from pathlib import Path
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 SCRIPTS = (
-    "01_upsert_and_query.py",
-    "02_async_fetch.py",
+    "01_offline_pipeline.py",
+    "02_gateway_llm_pipeline.py",
     "03_expected_error.py",
 )
-DEFAULT_TIMEOUT_SECONDS = 90.0
+DEFAULT_TIMEOUT_SECONDS = 120.0
 
 
 def main() -> None:
-    marker = os.getenv("RESPAN_EXAMPLE_RUN_ID", "").strip() or (
-        "pinecone-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    run_marker = os.getenv("RESPAN_EXAMPLE_RUN_ID", "").strip() or (
+        "pipecat-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     )
     timeout = float(
         os.getenv("RESPAN_EXAMPLE_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS)
     )
     env = os.environ.copy()
-    env["RESPAN_EXAMPLE_RUN_ID"] = marker
+    env["RESPAN_EXAMPLE_RUN_ID"] = run_marker
     failures: list[str] = []
     for script in SCRIPTS:
         print(f"\n### Running {script}", flush=True)
@@ -40,8 +40,8 @@ def main() -> None:
         if completed.returncode:
             failures.append(f"{script}: exited {completed.returncode}")
     if failures:
-        raise SystemExit("Pinecone example failures:\n- " + "\n- ".join(failures))
-    print(f"\nCompleted Pinecone examples: RESPAN_EXAMPLE_RUN_ID={marker}")
+        raise SystemExit("Pipecat example failures:\n- " + "\n- ".join(failures))
+    print(f"\nCompleted Pipecat examples: RESPAN_EXAMPLE_RUN_ID={run_marker}")
 
 
 if __name__ == "__main__":
