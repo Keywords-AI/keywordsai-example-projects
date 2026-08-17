@@ -1,47 +1,49 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
     content_to_text,
     example_attributes,
+    finish_respan,
     make_client,
     make_custom_identifier,
     make_respan,
-    model_name,
     print_result,
+    print_start,
+    root_request,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "multi-turn-chat"
+PROMPT = "Now make that advice specific to Mistral AI apps."
 
 
-@workflow(name=workflow_name(EXAMPLE_NAME))
-def _multi_turn_chat_workflow(client) -> str:
-    response = client.chat.complete(
-        model=model_name(),
-        messages=[
-            {
-                "role": "system",
-                "content": "You answer with concise observability advice.",
-            },
-            {
-                "role": "user",
-                "content": "Name one reason traces help LLM applications.",
-            },
-            {
-                "role": "assistant",
-                "content": "They reveal where latency, errors, and token use happen.",
-            },
-            {
-                "role": "user",
-                "content": "Now make that advice specific to Mistral AI apps.",
-            },
-        ],
-        temperature=0.1,
-        max_tokens=100,
-    )
-    return content_to_text(response.choices[0].message.content)
+def _build_multi_turn_chat_workflow(client):
+    @workflow(name=workflow_name(EXAMPLE_NAME))
+    def run(request: dict[str, str]) -> str:
+        response = client.chat.complete(
+            model=request["model"],
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You answer with concise observability advice.",
+                },
+                {
+                    "role": "user",
+                    "content": "Name one reason traces help LLM applications.",
+                },
+                {
+                    "role": "assistant",
+                    "content": "They reveal where latency, errors, and token use happen.",
+                },
+                {"role": "user", "content": request["prompt"]},
+            ],
+            temperature=0.1,
+            max_tokens=100,
+        )
+        return content_to_text(response.choices[0].message.content)
+
+    return run
 
 
 def run_multi_turn_chat() -> None:
@@ -50,13 +52,20 @@ def run_multi_turn_chat() -> None:
     text = ""
 
     try:
-        with make_client() as client:
-            with example_attributes(EXAMPLE_NAME, custom_identifier):
-                print(f"custom_identifier={custom_identifier}", flush=True)
-                print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
-                text = _multi_turn_chat_workflow(client)
+        with (
+            make_client() as client,
+            example_attributes(EXAMPLE_NAME, custom_identifier),
+        ):
+            print_start(EXAMPLE_NAME, custom_identifier)
+            text = _build_multi_turn_chat_workflow(client)(
+                root_request(
+                    EXAMPLE_NAME,
+                    PROMPT,
+                    prior_turns=3,
+                )
+            )
     finally:
-        respan.shutdown()
+        finish_respan(respan)
 
     print_result(EXAMPLE_NAME, custom_identifier, text)
 

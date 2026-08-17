@@ -1,8 +1,6 @@
--e ../../../../respan/python-sdks/respan-sdk
--e ../../../../respan/python-sdks/respan-tracing
--e ../../../../respan/python-sdks/respan
--e ../../../../respan/python-sdks/instrumentations/respan-instrumentation-openinference
--e ../../../../respan/python-sdks/instrumentations/respan-instrumentation-mistralai
-mistralai>=2.0.0
-openinference-instrumentation-mistralai>=2.0.0
-python-dotenv
+httpx>=0.28.0,<1.0.0
+mistralai>=2.9.3,<3.0.0
+openinference-instrumentation-mistralai>=2.0.6,<3.0.0
+python-dotenv>=1.0.0,<2.0.0
+respan-ai>=4.1.0
+respan-instrumentation-mistralai>=0.1.0
