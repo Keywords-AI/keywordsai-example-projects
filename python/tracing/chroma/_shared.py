@@ -53,6 +53,7 @@ def load_example_env() -> None:
 
 def create_respan(workflow_name: str) -> Respan:
     load_example_env()
+    run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID") or uuid4().hex[:8]
     return Respan(
         api_key=os.environ["RESPAN_API_KEY"],
         base_url=os.getenv("RESPAN_BASE_URL", RESPAN_BASE_URL),
@@ -60,6 +61,7 @@ def create_respan(workflow_name: str) -> Respan:
         metadata={
             "example_set": EXAMPLE_SET,
             "workflow_name": workflow_name,
+            "run_id": run_id,
         },
         instrumentations=[ChromaInstrumentor()],
         is_batching_enabled=False,
@@ -82,6 +84,7 @@ def workflow_attributes(workflow_name: str) -> dict[str, object]:
             "example_set": EXAMPLE_SET,
             "workflow_name": workflow_name,
             "example_run_id": run_id,
+            "run_id": run_id,
         },
     }
 

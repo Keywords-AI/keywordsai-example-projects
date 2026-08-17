@@ -1,4 +1,4 @@
-"""Run all Hugging Face tracing examples in isolated Python processes."""
+"""Run all maintained Instructor examples in isolated processes."""
 
 from __future__ import annotations
 
@@ -8,10 +8,11 @@ from pathlib import Path
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 SCRIPTS = [
-    "01_text_generation_pipeline.py",
-    "02_batch_prompts.py",
-    "03_trace_content_disabled.py",
-    "04_real_tiny_pipeline.py",
+    "01_create.py",
+    "02_validation_hooks.py",
+    "03_create_with_completion.py",
+    "04_create_iterable.py",
+    "05_async_create.py",
 ]
 
 

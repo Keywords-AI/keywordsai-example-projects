@@ -1,14 +1,12 @@
-"""Return the parsed model and the raw provider completion."""
+"""Return the parsed model and a bounded provider completion summary."""
 
 from __future__ import annotations
 
-from typing import Literal
-from typing import TypedDict
-
-from respan_tracing import workflow
-from respan_tracing.exporters import propagate_attributes
+from typing import Literal, TypedDict
 
 from _respan_instructor import create_respan_instructor_client
+from respan_tracing import workflow
+from respan_tracing.exporters import propagate_attributes
 
 
 class ReleaseNote(TypedDict):
@@ -19,8 +17,8 @@ class ReleaseNote(TypedDict):
 
 
 @workflow(name="instructor_example_03_create_with_completion")
-def draft_release_note(client) -> tuple[ReleaseNote, object]:
-    return client.create_with_completion(
+def draft_release_note(client, scenario: str) -> tuple[ReleaseNote, dict[str, object]]:
+    release_note, completion = client.create_with_completion(
         response_model=ReleaseNote,
         messages=[
             {
@@ -33,30 +31,35 @@ def draft_release_note(client) -> tuple[ReleaseNote, object]:
             }
         ],
     )
+    return release_note, {
+        "completion_type": type(completion).__name__,
+        "completion_id": getattr(completion, "id", None),
+        "completion_model": getattr(completion, "model", None),
+    }
 
 
 def run_create_with_completion_example() -> None:
-    telemetry, client = create_respan_instructor_client(
+    respan, client = create_respan_instructor_client(
         app_name="instructor-create-with-completion"
     )
 
-    with propagate_attributes(
-        thread_identifier="instructor_example_03_create_with_completion",
-        metadata={
-            "example_script": "03_create_with_completion.py",
-            "instructor_api": "create_with_completion",
-        },
-    ):
-        release_note, completion = draft_release_note(client)
+    try:
+        with propagate_attributes(
+            thread_identifier="instructor_example_03_create_with_completion",
+            metadata={
+                "example_script": "03_create_with_completion.py",
+                "instructor_api": "create_with_completion",
+            },
+        ):
+            release_note, completion_summary = draft_release_note(
+                client,
+                "draft a deterministic release note",
+            )
 
-    print(dict(release_note))
-    print(
-        {
-            "completion_type": type(completion).__name__,
-            "completion_id": getattr(completion, "id", None),
-            "completion_model": getattr(completion, "model", None),
-        }
-    )
+        print(dict(release_note))
+        print(completion_summary)
+    finally:
+        respan.shutdown()
 
 
 if __name__ == "__main__":
