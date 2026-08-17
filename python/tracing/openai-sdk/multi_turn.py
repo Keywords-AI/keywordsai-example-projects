@@ -1,44 +1,43 @@
-"""Multi-Turn — Conversational chat with message history, auto-traced."""
+"""Three-turn Chat history with each provider call auto-traced."""
 
-import os
-from dotenv import load_dotenv
+from respan import workflow
 
-load_dotenv(override=True)
-
-from openai import OpenAI
-from respan import Respan, workflow
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
+EXAMPLE = "multi-turn"
+respan = make_respan(EXAMPLE)
 
-@workflow(name="conversation")
-def chat():
-    messages = [
+
+@workflow(name="openai_conversation")
+def run() -> str:
+    messages: list[dict[str, str]] = [
         {"role": "system", "content": "You are a concise cooking assistant."}
     ]
-    questions = [
+    for question in (
         "What can I make with eggs and cheese?",
-        "How long does the omelette take?",
-        "Any tips to make it fluffy?",
-    ]
-
-    for question in questions:
+        "How long does it take?",
+        "How can I make it fluffy?",
+    ):
         messages.append({"role": "user", "content": question})
-        response = client.chat.completions.create(
-            model="gpt-4.1-nano",
-            messages=messages,
-
-        )
-        answer = response.choices[0].message.content
+        response = client.chat.completions.create(model=model_name(), messages=messages)
+        answer = response.choices[0].message.content or ""
         messages.append({"role": "assistant", "content": answer})
-        print(f"User: {question}")
-        print(f"Bot:  {answer}\n")
+    return messages[-1]["content"]
 
 
-chat()
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run())
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

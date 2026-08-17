@@ -1,23 +1,21 @@
-"""Tool Calls — Function calling with OpenAI, auto-traced."""
+"""Two-turn Chat function call with a canonical tool execution span."""
 
-import os
 import json
-from dotenv import load_dotenv
 
-load_dotenv(override=True)
+from respan import tool, workflow
 
-from openai import OpenAI
-from respan import Respan, workflow, task
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
-tools = [
+EXAMPLE = "tool-calls"
+respan = make_respan(EXAMPLE)
+TOOLS = [
     {
         "type": "function",
         "function": {
@@ -33,42 +31,40 @@ tools = [
 ]
 
 
-@task(name="get_weather")
-def get_weather(city: str) -> str:
-    return f"Sunny, 72F in {city}"
+@tool(name="get_weather")
+def get_weather(city: str) -> dict[str, str]:
+    return {"city": city, "weather": "sunny", "temperature_c": "22"}
 
 
-@workflow(name="weather_assistant")
-def run(question: str):
-    messages = [{"role": "user", "content": question}]
-
-    response = client.chat.completions.create(
-        model="gpt-4.1-nano",
-        messages=messages,
-        tools=tools,
-
+@workflow(name="openai_chat_weather_assistant")
+def run(question: str) -> str:
+    messages: list = [{"role": "user", "content": question}]
+    first = client.chat.completions.create(
+        model=model_name(), messages=messages, tools=TOOLS
     )
-    message = response.choices[0].message
-
-    if message.tool_calls:
-        messages.append(message)
-        for tc in message.tool_calls:
-            args = json.loads(tc.function.arguments)
-            result = get_weather(**args)
-            print(f"Tool: {tc.function.name}({args}) -> {result}")
-            messages.append(
-                {"role": "tool", "tool_call_id": tc.id, "content": result}
-            )
-
-        final = client.chat.completions.create(
-            model="gpt-4.1-nano",
-            messages=messages,
-            tools=tools,
-    
+    message = first.choices[0].message
+    messages.append(message)
+    for call in message.tool_calls or []:
+        result = get_weather(**json.loads(call.function.arguments))
+        messages.append(
+            {
+                "role": "tool",
+                "tool_call_id": call.id,
+                "content": json.dumps(result),
+            }
         )
-        print(f"Answer: {final.choices[0].message.content}")
-    else:
-        print(f"Answer: {message.content}")
+    final = client.chat.completions.create(
+        model=model_name(), messages=messages, tools=TOOLS
+    )
+    return final.choices[0].message.content or ""
 
 
-run("What's the weather in Paris?")
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run("Weather in Paris?"))
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

@@ -1,46 +1,46 @@
-"""Responses API Prompt — Use a Respan-managed prompt with the Responses API.
-
-With schema_version 2, the prompt template becomes `instructions` and the
-body `input` is preserved as the user turn.
-"""
+"""A managed-prompt-shaped request sent through the Responses API."""
 
 import os
-from dotenv import load_dotenv
 
-load_dotenv(override=True)
+from respan import workflow
 
-from openai import OpenAI
-from respan import Respan
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
-PROMPT_ID = "d767498c1cbb4951bb122eef423b5f76"
+EXAMPLE = "responses-prompt"
+respan = make_respan(EXAMPLE)
 
-response = client.responses.create(
-    model="gpt-4.1-nano",
-    input=[
-        {
-            "role": "user",
-            "content": "Add a real-time notification system for order status updates",
-        }
-    ],
-    extra_body={
-        "respan_params": {
-            "prompt": {
-                "prompt_id": PROMPT_ID,
-                "schema_version": 2,
-                "variables": {
-                    "feature_request": "Add a real-time notification system for order status updates",
-                },
+
+@workflow(name="openai_responses_prompt")
+def run() -> str:
+    response = client.responses.create(
+        model=model_name(),
+        input="Add order-status notifications.",
+        extra_body={
+            "respan_params": {
+                "prompt": {
+                    "prompt_id": os.getenv("RESPAN_PROMPT_ID", "deterministic-prompt"),
+                    "schema_version": 2,
+                    "variables": {"feature_request": "Add order notifications"},
+                }
             }
-        }
-    },
-)
+        },
+    )
+    return response.output_text
 
-print(response.output_text)
+
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run())
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

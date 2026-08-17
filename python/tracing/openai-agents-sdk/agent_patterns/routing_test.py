@@ -1,18 +1,18 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
+load_dotenv(override=False)
 import asyncio
+import os
 import uuid
 
+import pytest
+from agents import Agent, RawResponsesStreamEvent, Runner, TResponseInputItem, trace
+from agents.tracing import set_trace_processors
 from openai.types.responses import ResponseContentPartDoneEvent, ResponseTextDeltaEvent
 
-from agents import Agent, RawResponsesStreamEvent, Runner, TResponseInputItem, trace
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
-from agents.tracing import set_trace_processors
-import os
 
 set_trace_processors(
     [
@@ -55,8 +55,15 @@ async def test_main():
     conversation_id = str(uuid.uuid4().hex[:16])
 
     agent = triage_agent
-    inputs: list[TResponseInputItem] = [{"content": "Can you help me with my math homework?", "role": "user"}]
-    questions = ["Can you help me with my math homework?", "Yeah, how to solve for x: 2x + 5 = 11?", "What's the capital of France?", ""]
+    inputs: list[TResponseInputItem] = [
+        {"content": "Can you help me with my math homework?", "role": "user"}
+    ]
+    questions = [
+        "Can you help me with my math homework?",
+        "Yeah, how to solve for x: 2x + 5 = 11?",
+        "What's the capital of France?",
+        "",
+    ]
 
     with trace("Routing example", group_id=conversation_id):
         for question in questions:
@@ -82,6 +89,7 @@ async def test_main():
                 break
             inputs.append({"content": question, "role": "user"})
             agent = result.current_agent
+
 
 if __name__ == "__main__":
     asyncio.run(test_main())

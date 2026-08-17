@@ -1,12 +1,14 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 import asyncio
 import os
+
 import pytest
 from agents import Agent, ItemHelpers, MessageOutputItem, Runner, trace
 from agents.tracing import set_trace_processors
+
 from respan_exporter_openai_agents import RespanTraceProcessor
 
 set_trace_processors(
@@ -69,6 +71,7 @@ synthesizer_agent = Agent(
     instructions="You inspect translations, correct them if needed, and produce a final concatenated response.",
 )
 
+
 @pytest.mark.asyncio
 async def test_main():
     msg = "english to spanish"
@@ -88,7 +91,6 @@ async def test_main():
         )
 
     print(f"\n\nFinal response:\n{synthesizer_result.final_output}")
-
 
 
 if __name__ == "__main__":

@@ -1,23 +1,37 @@
 from __future__ import annotations
+
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
+load_dotenv(override=False)
+
 endpoint = "http://localhost:8000/api/openai/v1/traces/ingest"
 
-import os
 import json
+import os
 import random
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from agents import Agent, HandoffInputData, Runner, function_tool, handoff, trace
 from agents.extensions import handoff_filters
-from respan_exporter_openai_agents import (
-    RespanTraceProcessor,
-)
 from agents.tracing import set_trace_processors
 
+from respan_exporter_openai_agents import (
+    RespanTraceProcessor,
+    shutdown_respan_async,
+)
+
 set_trace_processors(
-    [RespanTraceProcessor(os.getenv("RESPAN_API_KEY"), endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"))]
+    [
+        RespanTraceProcessor(
+            os.getenv("RESPAN_API_KEY"),
+            endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"),
+        )
+    ]
 )
 
 
@@ -191,7 +205,14 @@ async def main():
         """
 
 
+async def _main_and_shutdown():
+    try:
+        await main()
+    finally:
+        await shutdown_respan_async()
+
+
 if __name__ == "__main__":
     import asyncio
 
-    asyncio.run(main())
+    asyncio.run(_main_and_shutdown())

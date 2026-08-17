@@ -1,16 +1,15 @@
 from __future__ import annotations as _annotations
+
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 endpoint = "http://localhost:8000/api/openai/v1/traces/ingest"
-import pytest
-import os
 import asyncio
+import os
 import random
 import uuid
 
-from pydantic import BaseModel
-
+import pytest
 from agents import (
     Agent,
     HandoffOutputItem,
@@ -26,32 +25,40 @@ from agents import (
     trace,
 )
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
+from agents.tracing import set_trace_processors
+from pydantic import BaseModel
+
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
-from agents.tracing import set_trace_processors
-from typing import Union
-load_dotenv(override=True)
+
+load_dotenv(override=False)
 
 set_trace_processors(
-    [RespanTraceProcessor(os.getenv("RESPAN_API_KEY"), endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"))]
+    [
+        RespanTraceProcessor(
+            os.getenv("RESPAN_API_KEY"),
+            endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"),
+        )
+    ]
 )
 
 ### CONTEXT
 
 
 class AirlineAgentContext(BaseModel):
-    passenger_name: Union[str, None] = None
-    confirmation_number: Union[str, None] = None
-    seat_number: Union[str, None] = None
-    flight_number: Union[str, None] = None
+    passenger_name: str | None = None
+    confirmation_number: str | None = None
+    seat_number: str | None = None
+    flight_number: str | None = None
 
 
 ### TOOLS
 
 
 @function_tool(
-    name_override="faq_lookup_tool", description_override="Lookup frequently asked questions."
+    name_override="faq_lookup_tool",
+    description_override="Lookup frequently asked questions.",
 )
 async def faq_lookup_tool(question: str) -> str:
     if "bag" in question or "baggage" in question:
@@ -73,7 +80,9 @@ async def faq_lookup_tool(question: str) -> str:
 
 @function_tool
 async def update_seat(
-    context: RunContextWrapper[AirlineAgentContext], confirmation_number: str, new_seat: str
+    context: RunContextWrapper[AirlineAgentContext],
+    confirmation_number: str,
+    new_seat: str,
 ) -> str:
     """
     Update the seat for a given confirmation number.
@@ -93,7 +102,9 @@ async def update_seat(
 ### HOOKS
 
 
-async def on_seat_booking_handoff(context: RunContextWrapper[AirlineAgentContext]) -> None:
+async def on_seat_booking_handoff(
+    context: RunContextWrapper[AirlineAgentContext],
+) -> None:
     flight_number = f"FLT-{random.randint(100, 999)}"
     context.context.flight_number = flight_number
 
@@ -158,7 +169,6 @@ async def test_main():
     conversation_id = uuid.uuid4().hex[:16]
     questions = ["I need to change my seat", "Can you confirm my flight number?", ""]
     with trace("Customer service", group_id=conversation_id):
-
         for question in questions:
             user_input = question
             if question == "":
@@ -182,7 +192,6 @@ async def test_main():
                     print(f"{agent_name}: Skipping item: {new_item.__class__.__name__}")
             input_items = result.to_input_list()
             current_agent = result.last_agent
-
 
 
 if __name__ == "__main__":

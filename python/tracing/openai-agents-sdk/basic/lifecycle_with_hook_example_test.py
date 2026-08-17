@@ -1,19 +1,27 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
-import os
+load_dotenv(override=False)
 import asyncio
+import os
 import random
 from typing import Any
 
+import pytest
+from agents import (
+    Agent,
+    RunContextWrapper,
+    RunHooks,
+    Runner,
+    Tool,
+    Usage,
+    function_tool,
+)
+from agents.tracing import set_trace_processors, trace
 from pydantic import BaseModel
 
-from agents import Agent, RunContextWrapper, RunHooks, Runner, Tool, Usage, function_tool
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
-from agents.tracing import set_trace_processors, trace
 
 set_trace_processors(
     [
@@ -23,6 +31,7 @@ set_trace_processors(
         ),
     ]
 )
+
 
 class ExampleHooks(RunHooks):
     def __init__(self):
@@ -37,13 +46,17 @@ class ExampleHooks(RunHooks):
             f"### {self.event_counter}: Agent {agent.name} started. Usage: {self._usage_to_str(context.usage)}"
         )
 
-    async def on_agent_end(self, context: RunContextWrapper, agent: Agent, output: Any) -> None:
+    async def on_agent_end(
+        self, context: RunContextWrapper, agent: Agent, output: Any
+    ) -> None:
         self.event_counter += 1
         print(
             f"### {self.event_counter}: Agent {agent.name} ended with output {output}. Usage: {self._usage_to_str(context.usage)}"
         )
 
-    async def on_tool_start(self, context: RunContextWrapper, agent: Agent, tool: Tool) -> None:
+    async def on_tool_start(
+        self, context: RunContextWrapper, agent: Agent, tool: Tool
+    ) -> None:
         self.event_counter += 1
         print(
             f"### {self.event_counter}: Tool {tool.name} started. Usage: {self._usage_to_str(context.usage)}"

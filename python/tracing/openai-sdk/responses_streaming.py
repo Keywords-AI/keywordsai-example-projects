@@ -1,29 +1,39 @@
-"""Responses API Streaming — Stream a response, auto-traced."""
+"""Responses API streaming with explicit source close and final flush."""
 
-import os
-from dotenv import load_dotenv
+from respan import workflow
 
-load_dotenv(override=True)
-
-from openai import OpenAI
-from respan import Respan
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
-stream = client.responses.create(
-    model="gpt-4.1-nano",
-    instructions="You are a helpful assistant.",
-    input="Write a haiku about Python.",
-    stream=True,
-)
+EXAMPLE = "responses-streaming"
+respan = make_respan(EXAMPLE)
 
-for event in stream:
-    if event.type == "response.output_text.delta":
-        print(event.delta, end="", flush=True)
-print()
+
+@workflow(name="openai_responses_streaming")
+def run() -> str:
+    parts: list[str] = []
+    stream = client.responses.create(
+        model=model_name(), input="Write a Python haiku.", stream=True
+    )
+    with stream:
+        for event in stream:
+            if event.type == "response.output_text.delta":
+                parts.append(event.delta)
+    return "".join(parts)
+
+
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run())
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

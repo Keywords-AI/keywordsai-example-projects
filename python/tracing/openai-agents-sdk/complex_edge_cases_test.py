@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Complex Edge-Case Tracing Example — stress-tests the Respan OpenAI Agents SDK exporter.
 
@@ -18,11 +17,6 @@ import asyncio
 import json
 import os
 import time
-from typing import Union
-
-from dotenv import load_dotenv, find_dotenv
-from openai import AsyncOpenAI
-from pydantic import BaseModel, Field
 
 from agents import (
     Agent,
@@ -35,35 +29,35 @@ from agents import (
     function_tool,
     input_guardrail,
     output_guardrail,
-    set_default_openai_client,
 )
 from agents.tracing import set_trace_processors, trace
-from respan_exporter_openai_agents import RespanTraceProcessor
+from dotenv import find_dotenv, load_dotenv
+from pydantic import BaseModel, Field
 
-load_dotenv(find_dotenv(), override=True)
+from respan_exporter_openai_agents import RespanTraceProcessor, shutdown_respan_async
+
+load_dotenv(find_dotenv(), override=False)
 
 # ── Configuration ──────────────────────────────────────────────────────────
 RESPAN_BASE_URL = os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api").rstrip("/")
 RESPAN_API_KEY = os.getenv("RESPAN_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 RESPAN_MODEL = os.getenv("RESPAN_MODEL", "gpt-4o")
 
-# ── Gateway: route all OpenAI calls through Respan ─────────────────────────
-client = AsyncOpenAI(api_key=OPENAI_API_KEY)
-set_default_openai_client(client)
-
 # ── Tracing: export spans to Respan ────────────────────────────────────────
-set_trace_processors([
-    RespanTraceProcessor(
-        api_key=RESPAN_API_KEY,
-        default_model=RESPAN_MODEL,
-    ),
-])
+set_trace_processors(
+    [
+        RespanTraceProcessor(
+            api_key=RESPAN_API_KEY,
+            default_model=RESPAN_MODEL,
+        ),
+    ]
+)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  TOOLS — each one probes a different serialization / error edge case
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 @function_tool
 def get_weather(city: str) -> str:
@@ -83,8 +77,16 @@ def get_city_stats(city: str) -> str:
             "population": 13_960_000,
             "density_per_km2": 6_363,
             "districts": [
-                {"name": "Shibuya", "pop": 230_000, "landmarks": ["Hachiko", "Scramble Crossing"]},
-                {"name": "Shinjuku", "pop": 346_000, "landmarks": ["Kabukicho", "Gyoen"]},
+                {
+                    "name": "Shibuya",
+                    "pop": 230_000,
+                    "landmarks": ["Hachiko", "Scramble Crossing"],
+                },
+                {
+                    "name": "Shinjuku",
+                    "pop": 346_000,
+                    "landmarks": ["Kabukicho", "Gyoen"],
+                },
             ],
         },
         "coordinates": {"lat": 35.6762, "lon": 139.6503},
@@ -119,7 +121,7 @@ def get_localized_greeting(language: str) -> str:
         "japanese": "こんにちは世界！🌸 東京タワー\n\t— with tabs and newlines —",
         "arabic": "مرحبا بالعالم 🌍 — RTL text mixed with LTR",
         "emoji": "👨‍👩‍👧‍👦 Family emoji + 🏳️‍🌈 flag + 🇯🇵 regional indicators",
-        "special": 'Quotes: "double" \'single\' `backtick` — Slashes: \\ / — Angle: <>&amp; — Tabs:\t\tEnd',
+        "special": "Quotes: \"double\" 'single' `backtick` — Slashes: \\ / — Angle: <>&amp; — Tabs:\t\tEnd",
     }
     return greetings.get(language, f"Hello from {language}!")
 
@@ -142,7 +144,9 @@ async def slow_database_query(query: str) -> str:
 @function_tool
 def get_secret_data(classification: str) -> str:
     """Always raises — tests that errored tool spans are captured."""
-    raise PermissionError(f"Access denied: '{classification}' requires LEVEL-5 clearance")
+    raise PermissionError(
+        f"Access denied: '{classification}' requires LEVEL-5 clearance"
+    )
 
 
 # EDGE CASE: Tool with extremely large output.
@@ -151,15 +155,14 @@ def get_secret_data(classification: str) -> str:
 @function_tool
 def generate_large_report(topic: str) -> str:
     """Generate a ~50KB report to stress payload size limits."""
-    paragraph = (
-        f"Analysis of {topic}: " + "Lorem ipsum dolor sit amet, " * 50 + "\n"
-    )
+    paragraph = f"Analysis of {topic}: " + "Lorem ipsum dolor sit amet, " * 50 + "\n"
     return paragraph * 30  # ~50KB
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  GUARDRAILS — test both triggered and non-triggered paths
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class ContentCheckOutput(BaseModel):
     is_appropriate: bool
@@ -183,7 +186,7 @@ guardrail_checker = Agent(
 async def content_safety_guardrail(
     context: RunContextWrapper[None],
     agent: Agent,
-    input: Union[str, list[TResponseInputItem]],
+    input: str | list[TResponseInputItem],
 ) -> GuardrailFunctionOutput:
     """Guardrail that internally runs a sub-agent — tests nested span trees."""
     result = await Runner.run(guardrail_checker, input, context=context.context)
@@ -325,7 +328,13 @@ triage_agent = Agent(
         "- Report generation → Report Agent\n"
         "NEVER answer directly — ALWAYS hand off."
     ),
-    handoffs=[weather_router, research_agent, analysis_agent, resilience_agent, report_agent],
+    handoffs=[
+        weather_router,
+        research_agent,
+        analysis_agent,
+        resilience_agent,
+        report_agent,
+    ],
     input_guardrails=[content_safety_guardrail],
 )
 
@@ -369,6 +378,7 @@ orchestrator_agent = Agent(
 #  SCENARIO RUNNERS
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 async def run_scenario(name: str, coro):
     """Run a scenario with error isolation so one failure doesn't kill the rest."""
     print(f"\n{'─' * 60}")
@@ -379,8 +389,8 @@ async def run_scenario(name: str, coro):
         print(f"  ✓ {name} completed")
     except (InputGuardrailTripwireTriggered, OutputGuardrailTripwireTriggered) as e:
         print(f"  ⚠ {name} — guardrail tripped (expected): {type(e).__name__}")
-    except Exception as e:
-        print(f"  ✗ {name} — error (testing resilience): {type(e).__name__}: {e}")
+    except Exception as error:  # noqa: BLE001 - every scenario must continue.
+        print(f"  ✗ {name} — error (testing resilience): {type(error).__name__}")
 
 
 async def scenario_handoff_chain():
@@ -466,8 +476,8 @@ async def scenario_rapid_sequential_runs():
         instructions="Reply with exactly one word.",
     )
     for i in range(5):
-        result = await Runner.run(simple, f"Word #{i+1}: give me a color name")
-        print(f"    Run {i+1}: {result.final_output}")
+        result = await Runner.run(simple, f"Word #{i + 1}: give me a color name")
+        print(f"    Run {i + 1}: {result.final_output}")
 
 
 async def scenario_concurrent_sub_traces():
@@ -548,6 +558,7 @@ async def scenario_zero_duration_spans():
 #  MAIN
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 async def main():
     print("=" * 60)
     print("  COMPLEX EDGE-CASE TRACING EXAMPLE")
@@ -560,7 +571,6 @@ async def main():
     start = time.time()
 
     with trace("Edge Case Stress Test"):
-
         # ── Handoff chain (Handoff + Agent + Response + Generation) ────
         await run_scenario(
             "Three-level handoff chain",
@@ -636,12 +646,19 @@ async def main():
     elapsed = time.time() - start
     print(f"\n{'=' * 60}")
     print(f"  ALL SCENARIOS COMPLETE — {elapsed:.1f}s elapsed")
-    print(f"  Waiting 5s for batch processor to flush...")
+    print("  Waiting 5s for batch processor to flush...")
     print(f"{'=' * 60}")
 
     await asyncio.sleep(5)
     print("\n  Done! Check your Respan dashboard for the trace.")
 
 
+async def _main_and_shutdown():
+    try:
+        await main()
+    finally:
+        await shutdown_respan_async()
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(_main_and_shutdown())

@@ -1,17 +1,25 @@
 from __future__ import annotations
+
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 # =============Only copy the below for docs=============
 # from __future__ import annotations
 import os
 import random
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from agents import Agent, HandoffInputData, Runner, function_tool, handoff, trace
 from agents.extensions import handoff_filters
-from respan_exporter_openai_agents import RespanTraceProcessor
 from agents.tracing import set_trace_processors
 
+from respan_exporter_openai_agents import RespanTraceProcessor, shutdown_respan_async
 
 set_trace_processors(
     [
@@ -193,9 +201,14 @@ async def main():
         """
 
 
-import time
+async def _main_and_shutdown():
+    try:
+        await main()
+    finally:
+        await shutdown_respan_async()
+
 
 if __name__ == "__main__":
     import asyncio
 
-    asyncio.run(main())
+    asyncio.run(_main_and_shutdown())
