@@ -3,27 +3,24 @@
 These examples cover Respan's Haystack instrumentation package:
 
 ```bash
-cd /home/yuyang/KeywordsAI/respan-example-projects/python/tracing/haystack
+cd python/tracing/haystack
 pip install -r requirements.txt
-cp .env.example .env
 ```
 
-For local package development, install from source instead:
-
-```bash
-pip install -e /home/yuyang/KeywordsAI/respan/python-sdks/respan \
-            -e /home/yuyang/KeywordsAI/respan/python-sdks/respan-sdk \
-            -e /home/yuyang/KeywordsAI/respan/python-sdks/respan-tracing \
-            -e /home/yuyang/KeywordsAI/respan/python-sdks/instrumentations/respan-instrumentation-haystack \
-            haystack-ai python-dotenv jq markdown-it-py mdit_plain trafilatura
-```
+The requirements file links the local Respan core, OpenInference bridge, and
+Haystack instrumentation packages and constrains Haystack to the supported 2.x
+line.
 
 Run any numbered unit script directly:
 
 ```bash
 python 00_setup_tracing.py
 python 02_pipeline_run.py
+python run_all.py
 ```
+
+Set `RESPAN_EXAMPLE_RUN_ID` to attach one exact marker to every script in a
+complete batch run.
 
 Gateway scripts route OpenAI-compatible Haystack calls through Respan and require `RESPAN_API_KEY`.
 They do not require `OPENAI_API_KEY`: the examples point Haystack's OpenAI-compatible components at the Respan gateway, and keys with credits can use Respan-managed model credentials.

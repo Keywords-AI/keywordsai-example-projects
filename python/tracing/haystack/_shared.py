@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from dotenv import find_dotenv, load_dotenv
 
@@ -13,6 +14,8 @@ _CURRENT_APP_NAME = "haystack-example"
 _LAST_RESULT_LABEL = ""
 _LAST_RESULT_JSON = "{}"
 _CURRENT_WORKFLOW_CONTEXT = None
+_CURRENT_WORKFLOW_SPAN = None
+_CURRENT_ATTRIBUTE_CONTEXT = None
 
 
 def configure_respan(app_name: str, *, use_gateway: bool = False):
@@ -41,14 +44,18 @@ def configure_respan(app_name: str, *, use_gateway: bool = False):
     from respan import Respan, get_client
     from respan_instrumentation_haystack import HaystackInstrumentor
 
+    instrumentor = HaystackInstrumentor()
     respan = Respan(
         api_key=api_key,
         base_url=base_url,
         app_name=app_name,
-        instrumentations=[HaystackInstrumentor()],
+        instrumentations=[instrumentor],
         is_batching_enabled=False,
         log_level=os.getenv("RESPAN_LOG_LEVEL", "WARNING"),
     )
+    if not instrumentor.is_instrumented:
+        respan.shutdown()
+        raise RuntimeError("Haystack instrumentation did not activate")
 
     _start_example_workflow(app_name, get_client())
     return respan
@@ -60,7 +67,7 @@ def finish_respan(respan: Any, *, emit_summary_span: bool = True) -> None:
     if emit_summary_span:
         try:
             _emit_example_run_span()
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             print(f"Failed to emit example run span: {exc}")
     _finish_example_workflow()
     shutdown = getattr(respan, "shutdown", None)
@@ -78,22 +85,49 @@ def print_result(label: str, value: Any) -> None:
 
 
 def _start_example_workflow(app_name: str, client: Any) -> None:
-    global _CURRENT_WORKFLOW_CONTEXT
+    global _CURRENT_ATTRIBUTE_CONTEXT, _CURRENT_WORKFLOW_CONTEXT, _CURRENT_WORKFLOW_SPAN
 
     _finish_example_workflow()
+    from respan import propagate_attributes
+
+    run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID") or f"haystack-{uuid4().hex[:12]}"
+    _CURRENT_ATTRIBUTE_CONTEXT = propagate_attributes(
+        custom_identifier=f"haystack-{app_name}-{uuid4().hex[:8]}",
+        trace_group_identifier=app_name,
+        metadata={
+            "example": app_name,
+            "run_id": run_id,
+            "workflow_name": app_name,
+        },
+    )
+    _CURRENT_ATTRIBUTE_CONTEXT.__enter__()
     _CURRENT_WORKFLOW_CONTEXT = client.start_span(app_name, kind="workflow")
-    _CURRENT_WORKFLOW_CONTEXT.__enter__()
+    _CURRENT_WORKFLOW_SPAN = _CURRENT_WORKFLOW_CONTEXT.__enter__()
+    if _CURRENT_WORKFLOW_SPAN is not None:
+        _CURRENT_WORKFLOW_SPAN.set_attribute(
+            "traceloop.entity.input",
+            json.dumps({"example": app_name}, separators=(",", ":")),
+        )
 
 
 def _finish_example_workflow() -> None:
-    global _CURRENT_WORKFLOW_CONTEXT
+    global _CURRENT_ATTRIBUTE_CONTEXT, _CURRENT_WORKFLOW_CONTEXT, _CURRENT_WORKFLOW_SPAN
 
     if _CURRENT_WORKFLOW_CONTEXT is None:
         return
     try:
+        if _CURRENT_WORKFLOW_SPAN is not None:
+            _CURRENT_WORKFLOW_SPAN.set_attribute(
+                "traceloop.entity.output",
+                _LAST_RESULT_JSON[:4000],
+            )
         _CURRENT_WORKFLOW_CONTEXT.__exit__(None, None, None)
     finally:
         _CURRENT_WORKFLOW_CONTEXT = None
+        _CURRENT_WORKFLOW_SPAN = None
+        if _CURRENT_ATTRIBUTE_CONTEXT is not None:
+            _CURRENT_ATTRIBUTE_CONTEXT.__exit__(None, None, None)
+            _CURRENT_ATTRIBUTE_CONTEXT = None
 
 
 def _emit_example_run_span() -> None:

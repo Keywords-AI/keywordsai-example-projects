@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
     example_attributes,
     make_client,
@@ -9,22 +7,21 @@ from _shared import (
     make_respan,
     model_name,
     print_result,
+    set_workflow_input,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "streaming"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
 def _streaming_workflow(client) -> str:
+    prompt = "Write a four-line checklist for reliable LLM traces."
+    set_workflow_input(prompt)
     stream = client.chat.completions.create(
         model=model_name(),
-        messages=[
-            {
-                "role": "user",
-                "content": "Write a four-line checklist for reliable LLM traces.",
-            }
-        ],
+        messages=[{"role": "user", "content": prompt}],
         temperature=0,
         stream=True,
     )

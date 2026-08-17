@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
     example_attributes,
     make_client,
@@ -9,22 +7,21 @@ from _shared import (
     make_respan,
     model_name,
     print_result,
+    set_workflow_input,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "chat-completion"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
 def _chat_completion_workflow(client) -> str:
+    prompt = "Reply with one concise sentence about Groq tracing."
+    set_workflow_input(prompt)
     response = client.chat.completions.create(
         model=model_name(),
-        messages=[
-            {
-                "role": "user",
-                "content": "Reply with one concise sentence about Groq tracing.",
-            }
-        ],
+        messages=[{"role": "user", "content": prompt}],
         temperature=0,
     )
     return response.choices[0].message.content or ""
