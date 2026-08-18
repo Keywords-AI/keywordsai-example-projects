@@ -3,8 +3,6 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from respan import workflow
-
 from _shared import (
     example_attributes,
     first_message_text,
@@ -16,10 +14,12 @@ from _shared import (
     print_start,
     workflow_name,
 )
+from respan import tool, workflow
 
 EXAMPLE_NAME = "tool-calling"
 
 
+@tool(name="get_weather")
 def get_weather(city: str) -> str:
     return f"Sunny and 22 C in {city}"
 
@@ -38,11 +38,11 @@ def _run_tool_call(tool_call: Any) -> dict[str, str]:
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _tool_calling_workflow(client) -> str:
+def _tool_calling_workflow(city: str) -> str:
     messages: list[dict[str, Any]] = [
         {
             "role": "user",
-            "content": "What is the weather in Tokyo? Use the tool when available.",
+            "content": f"What is the weather in {city}? Use the tool when available.",
         }
     ]
     tools = [
@@ -59,67 +59,67 @@ def _tool_calling_workflow(client) -> str:
             },
         }
     ]
-    response = client.chat.completions.create(
-        model=model_name(),
-        messages=messages,
-        tools=tools,
-        tool_choice="auto",
-        max_tokens=160,
-        temperature=0,
-    )
-    first_choice = (getattr(response, "choices", None) or [None])[0]
-    message = getattr(first_choice, "message", None)
-    tool_calls = getattr(message, "tool_calls", None) or []
-    if not tool_calls:
-        return first_message_text(response)
+    with make_client() as client:
+        response = client.chat.completions.create(
+            model=model_name(),
+            messages=messages,
+            tools=tools,
+            tool_choice="auto",
+            max_tokens=160,
+            temperature=0,
+        )
+        first_choice = (getattr(response, "choices", None) or [None])[0]
+        message = getattr(first_choice, "message", None)
+        tool_calls = getattr(message, "tool_calls", None) or []
+        if not tool_calls:
+            return first_message_text(response)
 
-    messages.append(
-        {
-            "role": "assistant",
-            "content": getattr(message, "content", "") or "",
-            "tool_calls": [
-                {
-                    "id": tool_call.id,
-                    "type": tool_call.type,
-                    "function": {
-                        "name": tool_call.function.name,
-                        "arguments": tool_call.function.arguments,
-                    },
-                }
-                for tool_call in tool_calls
-            ],
-        }
-    )
-    for tool_call in tool_calls:
-        tool_result = _run_tool_call(tool_call)
         messages.append(
             {
-                "role": "tool",
-                "tool_call_id": tool_call.id,
-                "content": tool_result["result"],
+                "role": "assistant",
+                "content": getattr(message, "content", "") or "",
+                "tool_calls": [
+                    {
+                        "id": tool_call.id,
+                        "type": tool_call.type,
+                        "function": {
+                            "name": tool_call.function.name,
+                            "arguments": tool_call.function.arguments,
+                        },
+                    }
+                    for tool_call in tool_calls
+                ],
             }
         )
+        for tool_call in tool_calls:
+            tool_result = _run_tool_call(tool_call)
+            messages.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": tool_result["result"],
+                }
+            )
 
-    final_response = client.chat.completions.create(
-        model=model_name(),
-        messages=messages,
-        tools=tools,
-        max_tokens=120,
-        temperature=0,
-    )
-    return first_message_text(final_response)
+        final_response = client.chat.completions.create(
+            model=model_name(),
+            messages=messages,
+            tools=tools,
+            max_tokens=120,
+            temperature=0,
+        )
+        return first_message_text(final_response)
 
 
 def run_tool_calling() -> None:
-    respan = make_respan(EXAMPLE_NAME)
-    client = make_client()
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
+    respan = make_respan(EXAMPLE_NAME, custom_identifier)
     text = ""
 
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_start(EXAMPLE_NAME, custom_identifier)
-            text = _tool_calling_workflow(client)
+            text = _tool_calling_workflow("Tokyo")
     finally:
         respan.shutdown()
 

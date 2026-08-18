@@ -1,6 +1,4 @@
--e ../../../../respan/python-sdks/respan-sdk
--e ../../../../respan/python-sdks/respan-tracing
--e ../../../../respan/python-sdks/respan
--e ../../../../respan/python-sdks/instrumentations/respan-instrumentation-together
-together>=2.0.0
-python-dotenv
+respan-ai
+respan-instrumentation-together
+together>=2.31,<3
+python-dotenv>=1,<2

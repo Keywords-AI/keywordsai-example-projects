@@ -1,42 +1,21 @@
-# Watson Orchestrate ADK tracing examples
+# Watson Orchestrate ADK OTel 2.x examples
 
-These examples trace IBM watsonx Orchestrate ADK activity with Respan.
+The first five scripts exercise the installed
+`ibm-watsonx-orchestrate` 2.15 public classes without service credentials:
+local Python tools, synchronous and asynchronous run clients, chat, and a
+precise provider 429. Deterministic methods are installed on the real current
+SDK classes before Respan activation and restored after shutdown.
 
-They load environment variables from `respan-example-projects/.env`.
+`06_live_run_client.py` and `07_live_watsonx_chat.py` call IBM services only
+when their documented credentials are present; otherwise they exit with an
+explicit skip.
 
-Required for all scripts:
-
-- `RESPAN_API_KEY`
-- `RESPAN_BASE_URL` (optional, defaults to `https://api.respan.ai/api`)
-
-Required for the live run-client script:
-
-- `WATSON_ORCHESTRATE_BASE_URL`
-- `WATSON_ORCHESTRATE_API_KEY`
-- `WATSON_ORCHESTRATE_AGENT_ID`
-- `WATSON_ORCHESTRATE_THREAD_ID` (optional)
-
-Required for the live watsonx.ai chat script:
-
-- `WATSONX_APIKEY`
-- `WATSONX_SPACE_ID`
-- `WATSONX_URL` (optional)
-- `WATSON_ORCHESTRATE_LLM_MODEL` (optional)
-
-Run from this directory after installing local packages:
+Every deterministic trace retains the exact caller-supplied
+`RESPAN_EXAMPLE_RUN_ID` in both `run_id` and `example_run_id` metadata.
 
 ```bash
-python 01_local_agent_tool.py
-python 02_live_run_client.py
-python 03_live_watsonx_chat.py
+RESPAN_EXAMPLE_RUN_ID=my-exact-marker python run_all.py
 ```
 
-`01_local_agent_tool.py` does not need IBM service credentials. It defines an
-ADK tool and agent spec, invokes a successful tool, and invokes a deterministic
-failing tool so the instrumentation emits both success and error tool spans.
-
-`02_live_run_client.py` submits a message to a deployed Orchestrate agent when
-the `WATSON_ORCHESTRATE_*` variables are set.
-
-`03_live_watsonx_chat.py` calls the ADK watsonx.ai autodiscover chat client when
-the `WATSONX_*` variables are set.
+The runner applies one marker and timeout to every process, continues through
+failures, and returns nonzero if any example fails.

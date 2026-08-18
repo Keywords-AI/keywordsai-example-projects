@@ -1,39 +1,35 @@
-# Together AI tracing examples
+# Together OTel 2.x tracing examples
 
-These examples exercise `respan-instrumentation-together` against the official
-Together Python SDK.
+The nine examples exercise the official Together Python SDK with the local
+Respan instrumentation. By default, the SDK parses deterministic
+`httpx.MockTransport` responses, so chat, streaming, text completion,
+embeddings, rerank, image, connected tool execution, and a provider 429 are
+repeatable without a Together credential.
 
-## Setup
+Set `RESPAN_TOGETHER_LIVE=1` and `TOGETHER_API_KEY` to make the non-error
+examples call Together directly. The exact `RESPAN_EXAMPLE_RUN_ID` supplied by
+the caller is preserved in both `run_id` and `example_run_id` metadata.
 
-From this directory:
-
-```bash
-uv venv
-uv pip install -r requirements.txt
-```
-
-The examples load `/home/yuyang/KeywordsAI/respan-example-projects/.env`.
-They use `TOGETHER_API_KEY` directly when present. Otherwise they use
-`RESPAN_GATEWAY_API_KEY` or `RESPAN_API_KEY` with `RESPAN_GATEWAY_BASE_URL` or
-`RESPAN_BASE_URL`.
-
-Optional model overrides:
-
-- `RESPAN_TOGETHER_MODEL`
-- `RESPAN_TOGETHER_COMPLETION_MODEL`
-- `RESPAN_TOGETHER_EMBEDDING_MODEL`
-- `RESPAN_TOGETHER_RERANK_MODEL`
-- `RESPAN_TOGETHER_IMAGE_MODEL`
-
-## Run
+## Registry setup
 
 ```bash
-python 01_chat_completion.py
-python 02_stream_chat.py
-python 03_async_chat.py
-python 04_text_completion.py
-python 05_embeddings.py
-python 06_rerank.py
-python 07_image_generation.py
-python 08_tool_calling.py
+python -m venv .venv
+.venv/bin/pip install -r requirements.txt
 ```
+
+For local instrumentation development, link the sibling checkout after the
+registry install:
+
+```bash
+.venv/bin/pip install --no-build-isolation --no-deps -e \
+  ../../../../respan/python-sdks/instrumentations/respan-instrumentation-together
+```
+
+## Run the complete set
+
+```bash
+RESPAN_EXAMPLE_RUN_ID=my-exact-marker .venv/bin/python run_all.py
+```
+
+`run_all.py` applies one marker to every subprocess, bounds each process with a
+timeout, continues after failures, and returns nonzero if any example fails.
