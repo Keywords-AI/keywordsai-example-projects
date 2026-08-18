@@ -25,15 +25,22 @@ Optional variables:
 python -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
-python 01_basic_agent.py
-python 02_tool_use.py
-python 03_propagated_attributes.py
+RESPAN_EXAMPLE_RUN_ID=strands-check python run_all.py
 ```
 
-Each script prints a `RESPAN_EXAMPLE_RUN_ID` value. Use that value to find the
-exact trace in Respan metadata or custom identifier filters. The trace workflow
-name and trace group identify the example:
+For local package development, link the instrumentation after installing the
+portable registry requirements:
+
+```bash
+pip install -e ../../../../respan/python-sdks/instrumentations/respan-instrumentation-strands-agents
+```
+
+`run_all.py` runs every script with one exact marker, continues after a failed
+or timed-out child, and exits nonzero after reporting the aggregate failures.
+Every script flushes and shuts down Respan in `finally`. The suite covers:
 
 - `Strands Basic Example`
 - `Strands Tool Use Example`
 - `Strands Attribute Propagation Example`
+- `Strands Structured Output Example`
+- `Strands Expected Provider Error`
