@@ -1,3 +1,5 @@
+"""Run every committed smolagents tracing example."""
+
 from __future__ import annotations
 
 import os
@@ -6,12 +8,12 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCRIPTS = [
-    "01_invoke_endpoint_text.py",
-    "02_invoke_endpoint_chat_tools.py",
-    "03_invoke_endpoint_stream.py",
-    "04_invoke_endpoint_async.py",
-]
+SCRIPTS = (
+    "01_code_agent.py",
+    "02_tool_calling_agent.py",
+    "03_expected_tool_failure.py",
+    "04_streaming_agent.py",
+)
 
 
 def main() -> None:
@@ -19,17 +21,16 @@ def main() -> None:
     env = os.environ.copy()
     env.setdefault(
         "RESPAN_EXAMPLE_RUN_ID",
-        datetime.now(timezone.utc).strftime("otel2-sagemaker-%Y%m%dT%H%M%SZ"),
+        datetime.now(timezone.utc).strftime("otel2-smolagents-%Y%m%dT%H%M%SZ"),
     )
     failures: list[str] = []
     for script in SCRIPTS:
-        print(f"\n=== {script} ===", flush=True)
         try:
             result = subprocess.run(
                 [sys.executable, str(root / script)],
                 check=False,
                 env=env,
-                timeout=120,
+                timeout=240,
             )
         except subprocess.TimeoutExpired:
             failures.append(f"{script}: timeout")

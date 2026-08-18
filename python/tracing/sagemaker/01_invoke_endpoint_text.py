@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
     custom_attributes,
     endpoint_name,
@@ -17,15 +15,17 @@ from _shared import (
     stubbed_response,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "invoke-endpoint-text"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _invoke_text_workflow(client) -> dict:
+def _invoke_text_workflow(prompt: str) -> dict:
+    client = make_client()
     request_body = json_bytes(
         {
-            "inputs": "Reply with one concise sentence about SageMaker observability.",
+            "inputs": prompt,
             "parameters": {"max_new_tokens": 32, "temperature": 0.1},
         }
     )
@@ -48,21 +48,25 @@ def _invoke_text_workflow(client) -> dict:
         "ContentType": "application/json",
     }
 
-    with stubbed_response(client, "invoke_endpoint", response, params):
-        result = client.invoke_endpoint(**params)
-        return {"response": read_json_body(result)}
+    try:
+        with stubbed_response(client, "invoke_endpoint", response, params):
+            result = client.invoke_endpoint(**params)
+            return {"response": read_json_body(result)}
+    finally:
+        client.close()
 
 
 def run_invoke_endpoint_text() -> None:
     respan = make_respan(EXAMPLE_NAME)
-    client = make_client()
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     result: dict = {}
 
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_run_header(EXAMPLE_NAME, custom_identifier)
-            result = _invoke_text_workflow(client)
+            result = _invoke_text_workflow(
+                "Reply with one concise sentence about SageMaker observability."
+            )
     finally:
         respan.shutdown()
 

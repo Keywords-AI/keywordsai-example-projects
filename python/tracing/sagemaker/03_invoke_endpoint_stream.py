@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import json
 
-from respan import workflow
-
 from _shared import (
+    collect_stream_text,
     custom_attributes,
     endpoint_name,
     example_attributes,
@@ -16,15 +15,16 @@ from _shared import (
     print_run_header,
     stubbed_response,
     workflow_name,
-    collect_stream_text,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "invoke-endpoint-stream"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _invoke_stream_workflow(client) -> dict:
-    request_body = json_bytes({"inputs": "Stream a concise SageMaker sentence."})
+def _invoke_stream_workflow(prompt: str) -> dict:
+    client = make_client()
+    request_body = json_bytes({"inputs": prompt})
     params = {
         "EndpointName": endpoint_name(),
         "Body": request_body,
@@ -48,26 +48,28 @@ def _invoke_stream_workflow(client) -> dict:
         "ContentType": "application/json",
     }
 
-    with stubbed_response(
-        client,
-        "invoke_endpoint_with_response_stream",
-        response,
-        params,
-    ):
-        result = client.invoke_endpoint_with_response_stream(**params)
-        return {"stream_text": collect_stream_text(result)}
+    try:
+        with stubbed_response(
+            client,
+            "invoke_endpoint_with_response_stream",
+            response,
+            params,
+        ):
+            result = client.invoke_endpoint_with_response_stream(**params)
+            return {"stream_text": collect_stream_text(result)}
+    finally:
+        client.close()
 
 
 def run_invoke_endpoint_stream() -> None:
     respan = make_respan(EXAMPLE_NAME)
-    client = make_client()
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     result: dict = {}
 
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_run_header(EXAMPLE_NAME, custom_identifier)
-            result = _invoke_stream_workflow(client)
+            result = _invoke_stream_workflow("Stream a concise SageMaker sentence.")
     finally:
         respan.shutdown()
 

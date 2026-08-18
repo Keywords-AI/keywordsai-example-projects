@@ -3,10 +3,15 @@
 import asyncio
 from pathlib import Path
 
+from _shared import (
+    close_kernel_clients,
+    create_kernel,
+    create_respan,
+    example_attributes,
+    print_result,
+)
 from respan import workflow
 from semantic_kernel.functions import KernelArguments, kernel_function
-
-from _shared import create_kernel, create_respan, print_result
 
 SCRIPT_NAME = Path(__file__).name
 APP_NAME = SCRIPT_NAME.removesuffix(".py")
@@ -22,13 +27,13 @@ class TextPlugin:
 
 
 @workflow(name=SCRIPT_NAME)
-async def run_kernel_function() -> str:
+async def run_kernel_function(city: str) -> str:
     kernel = create_kernel(with_chat_service=False)
     kernel.add_plugin(TextPlugin(), plugin_name="Text")
     result = await kernel.invoke(
         function_name="normalize_city",
         plugin_name="Text",
-        arguments=KernelArguments(city="  san francisco  "),
+        arguments=KernelArguments(city=city),
     )
     output = str(result)
     print_result("normalized_city", output)
@@ -38,9 +43,13 @@ async def run_kernel_function() -> str:
 async def main() -> None:
     respan = create_respan(APP_NAME)
     try:
-        await run_kernel_function()
+        with example_attributes(APP_NAME):
+            await run_kernel_function("  san francisco  ")
     finally:
-        respan.shutdown()
+        try:
+            await close_kernel_clients()
+        finally:
+            respan.shutdown()
 
 
 if __name__ == "__main__":

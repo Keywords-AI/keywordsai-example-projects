@@ -27,8 +27,7 @@ uv venv /tmp/respan-smolagents-example-venv
 Run the examples:
 
 ```bash
-python 01_code_agent.py
-python 02_tool_calling_agent.py
+python run_all.py
 ```
 
 ## Examples
@@ -37,3 +36,9 @@ python 02_tool_calling_agent.py
 |--------|----------|
 | `01_code_agent.py` | `CodeAgent` planning, code execution, local tool use, and LLM spans under `smolagents_code_agent_workflow` |
 | `02_tool_calling_agent.py` | `ToolCallingAgent` function-tool planning and LLM spans under `smolagents_tool_calling_agent_workflow` |
+| `03_expected_tool_failure.py` | Deterministic connected tool failure with the exception escaping the workflow wrapper |
+| `04_streaming_agent.py` | Streamed `ToolCallingAgent` execution with bounded semantic workflow input/output |
+
+`run_all.py` preserves one externally supplied `RESPAN_EXAMPLE_RUN_ID`, applies
+a timeout to every child process, runs every scenario even after a failure, and
+returns a non-zero exit when any scenario fails.

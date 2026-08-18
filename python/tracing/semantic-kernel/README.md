@@ -12,11 +12,14 @@ The scripts load environment variables from the examples repo root `.env` file:
 - `RESPAN_GATEWAY_BASE_URL`
 - `RESPAN_MODEL`
 
-Run from this directory after installing local packages:
+Run the complete set from this directory after installing local packages:
 
 ```bash
-python 01_kernel_function.py
-python 02_chat_completion.py
-python 03_plugin_tool_call.py
-python 04_function_failure.py
+python run_all.py
 ```
+
+The runner preserves an externally supplied `RESPAN_EXAMPLE_RUN_ID`, applies a
+timeout to every process, continues after individual failures, and reports the
+aggregate result. The failure scenario lets the exception escape the decorated
+workflow before catching it in `main`, so both native tool and workflow status
+are observable.

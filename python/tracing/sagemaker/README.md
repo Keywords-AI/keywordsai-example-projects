@@ -3,7 +3,7 @@
 These examples cover Respan's SageMaker Runtime instrumentation package.
 
 ```bash
-cd /home/yuyang/KeywordsAI/respan-example-projects/python/tracing/sagemaker
+cd python/tracing/sagemaker
 pip install -r requirements.txt
 python run_all.py
 ```
@@ -11,14 +11,14 @@ python run_all.py
 For local package development, install from source instead:
 
 ```bash
-pip install -e /home/yuyang/KeywordsAI/respan/python-sdks/respan \
-            -e /home/yuyang/KeywordsAI/respan/python-sdks/respan-sdk \
-            -e /home/yuyang/KeywordsAI/respan/python-sdks/respan-tracing \
-            -e /home/yuyang/KeywordsAI/respan/python-sdks/instrumentations/respan-instrumentation-sagemaker \
+pip install -e ../../../../respan/python-sdks/respan \
+            -e ../../../../respan/python-sdks/respan-sdk \
+            -e ../../../../respan/python-sdks/respan-tracing \
+            -e ../../../../respan/python-sdks/instrumentations/respan-instrumentation-sagemaker \
             boto3 python-dotenv
 ```
 
-The scripts load `/home/yuyang/KeywordsAI/respan-example-projects/.env`.
+The scripts load the repository root `.env` without overriding shell values.
 When `SAGEMAKER_ENDPOINT_NAME` is absent, they run in boto3 `Stubber` mode so
 the instrumentation can be validated without an AWS endpoint. Set
 `SAGEMAKER_EXAMPLE_MODE=live` and `SAGEMAKER_ENDPOINT_NAME` to exercise a real
@@ -38,3 +38,6 @@ endpoints.
 | `02_invoke_endpoint_chat_tools.py` | `InvokeEndpoint` two-turn tool flow with a model tool call, decorated local tool execution, tool-result follow-up, and final answer |
 | `03_invoke_endpoint_stream.py` | `InvokeEndpointWithResponseStream` with event-stream output |
 | `04_invoke_endpoint_async.py` | `InvokeEndpointAsync` request and output-location metadata |
+
+`run_all.py` preserves one externally supplied `RESPAN_EXAMPLE_RUN_ID`, runs
+all four scenarios with per-process timeouts, and reports every failure.
