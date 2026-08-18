@@ -6,31 +6,28 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-EXAMPLES = [
-    "01_run_prediction.py",
-    "02_stream_prediction.py",
-    "03_async_run_prediction.py",
-    "04_prediction_lifecycle.py",
-    "05_expected_error.py",
-]
+EXAMPLE_DIR = Path(__file__).resolve().parent
+SCRIPTS = ["01_modern_metrics.py", "02_evaluate.py", "03_experiment.py"]
 TIMEOUT_SECONDS = 120
 
 
+def marker() -> str:
+    existing = os.getenv("RESPAN_EXAMPLE_RUN_ID")
+    if existing:
+        return existing
+    return f"otel2-ragas-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}"
+
+
 def main() -> None:
-    base_dir = Path(__file__).resolve().parent
     env = dict(os.environ)
-    env.setdefault(
-        "RESPAN_EXAMPLE_RUN_ID",
-        f"otel2-replicate-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}",
-    )
+    env["RESPAN_EXAMPLE_RUN_ID"] = marker()
     failures: list[str] = []
     print(f"RESPAN_EXAMPLE_RUN_ID={env['RESPAN_EXAMPLE_RUN_ID']}", flush=True)
-    for script in EXAMPLES:
-        print(f"\n=== {script} ===", flush=True)
+    for script in SCRIPTS:
         try:
             result = subprocess.run(
-                [sys.executable, str(base_dir / script)],
-                cwd=base_dir,
+                [sys.executable, str(EXAMPLE_DIR / script)],
+                cwd=EXAMPLE_DIR,
                 env=env,
                 timeout=TIMEOUT_SECONDS,
                 check=False,

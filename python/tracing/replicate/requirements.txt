@@ -1,4 +1,4 @@
-respan-ai
-respan-instrumentation-replicate
-replicate>=1.0.0
-python-dotenv
+replicate>=1.0.0,<2.0.0
+respan-ai>=4,<5
+respan-instrumentation-replicate>=0.1.0,<0.2.0
+python-dotenv>=1,<2
