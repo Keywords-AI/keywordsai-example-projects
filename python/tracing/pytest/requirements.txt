@@ -1,0 +1,4 @@
+pytest>=7.4,<10
+python-dotenv>=1,<2
+respan-ai
+respan-instrumentation-pytest
