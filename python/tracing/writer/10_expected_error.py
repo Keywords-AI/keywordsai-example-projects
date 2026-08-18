@@ -14,43 +14,40 @@ from _shared import (
 )
 from respan import workflow
 
-EXAMPLE_NAME = "streaming-chat"
+EXAMPLE_NAME = "expected-error"
 _CLIENT = None
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _streaming_chat_workflow(prompt: str) -> str:
-    parts: list[str] = []
-    with _CLIENT.chat.stream(
+def _expected_error_workflow(prompt: str) -> None:
+    _CLIENT.chat.chat(
         model=model_name(),
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=80,
-        temperature=0,
-    ) as stream:
-        for event in stream:
-            if event.type == "content.delta":
-                parts.append(event.delta)
-    return "".join(parts)
+        max_tokens=16,
+    )
 
 
-def run() -> str:
+def run() -> dict[str, str]:
     global _CLIENT
     respan = make_respan(EXAMPLE_NAME)
     client = make_client()
     _CLIENT = client
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
-    text = ""
+    result = {}
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_start(EXAMPLE_NAME, custom_identifier)
-            text = _streaming_chat_workflow("Stream one short tracing sentence.")
+            try:
+                _expected_error_workflow("RESPAN_EXPECTED_WRITER_ERROR")
+            except BaseException as exc:  # noqa: BLE001
+                result = {"expected_error": type(exc).__name__}
     finally:
         try:
             close_client(client)
         finally:
             finish_respan(respan)
-    print_result("streaming chat", text)
-    return text
+    print_result("expected error", result)
+    return result
 
 
 if __name__ == "__main__":

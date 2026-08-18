@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
+    close_client,
     example_attributes,
     finish_respan,
     make_client,
@@ -13,20 +12,22 @@ from _shared import (
     print_start,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "text-completion"
+_CLIENT = None
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _completion_workflow(client) -> dict[str, str]:
-    response = client.completions.create(
+def _completion_workflow(prompt: str) -> dict[str, str]:
+    response = _CLIENT.completions.create(
         model=model_name(),
-        prompt="Write a short completion about trace context.",
+        prompt=prompt,
         max_tokens=80,
         temperature=0,
     )
     stream_parts = []
-    for chunk in client.completions.create(
+    for chunk in _CLIENT.completions.create(
         model=model_name(),
         prompt="Stream a short completion about spans.",
         stream=True,
@@ -41,16 +42,23 @@ def _completion_workflow(client) -> dict[str, str]:
 
 
 def run() -> dict[str, str]:
+    global _CLIENT
     respan = make_respan(EXAMPLE_NAME)
     client = make_client()
+    _CLIENT = client
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     result: dict[str, str] = {}
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_start(EXAMPLE_NAME, custom_identifier)
-            result = _completion_workflow(client)
+            result = _completion_workflow(
+                "Write a short completion about trace context."
+            )
     finally:
-        finish_respan(respan)
+        try:
+            close_client(client)
+        finally:
+            finish_respan(respan)
     print_result("text completion", result)
     return result
 

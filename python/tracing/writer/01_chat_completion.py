@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
+    close_client,
     example_attributes,
     finish_respan,
     make_client,
@@ -13,17 +12,19 @@ from _shared import (
     print_start,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "chat-completion"
+_CLIENT = None
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _chat_workflow(client) -> str:
-    response = client.chat.chat(
+def _chat_workflow(prompt: str) -> str:
+    response = _CLIENT.chat.chat(
         model=model_name(),
         messages=[
             {"role": "system", "content": "Answer in one concise sentence."},
-            {"role": "user", "content": "What does instrumentation capture?"},
+            {"role": "user", "content": prompt},
         ],
         max_tokens=80,
         temperature=0,
@@ -32,16 +33,21 @@ def _chat_workflow(client) -> str:
 
 
 def run() -> str:
+    global _CLIENT
     respan = make_respan(EXAMPLE_NAME)
     client = make_client()
+    _CLIENT = client
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     text = ""
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_start(EXAMPLE_NAME, custom_identifier)
-            text = _chat_workflow(client)
+            text = _chat_workflow("What does instrumentation capture?")
     finally:
-        finish_respan(respan)
+        try:
+            close_client(client)
+        finally:
+            finish_respan(respan)
     print_result("chat completion", text)
     return text
 

@@ -22,7 +22,7 @@ MOCK_BASE_URL = "https://writer.mock"
 
 
 def load_root_env() -> None:
-    load_dotenv(PROJECT_ROOT / ".env", override=True)
+    load_dotenv(PROJECT_ROOT / ".env", override=False)
 
 
 def require_respan_api_key() -> str:
@@ -55,11 +55,11 @@ def writer_api_key() -> str | None:
 
 def use_mock_writer() -> bool:
     mode = os.getenv("WRITER_EXAMPLE_MODE", "").strip().lower()
-    if mode in {"mock", "offline"}:
-        return True
-    if mode in {"live", "real"}:
-        return False
-    return writer_api_key() is None
+    return mode not in {"live", "real"}
+
+
+def example_run_id() -> str:
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID") or f"writer-{uuid4().hex[:12]}"
 
 
 def client_mode() -> str:
@@ -74,7 +74,14 @@ def make_respan(example_name: str) -> Respan:
         app_name="writer-examples",
         instrumentations=[WriterInstrumentor()],
         environment=os.getenv("RESPAN_ENVIRONMENT", "example"),
-        metadata={"integration": "writer", "example": example_name},
+        metadata={
+            "integration": "writer",
+            "example": example_name,
+            "example_set": "writer",
+            "example_run_id": example_run_id(),
+            "run_id": example_run_id(),
+        },
+        is_batching_enabled=False,
     )
 
 
@@ -84,13 +91,16 @@ def make_client() -> Writer:
         return Writer(
             api_key="mock-writer-key",
             base_url=MOCK_BASE_URL,
-            http_client=httpx.Client(transport=httpx.MockTransport(_mock_writer_response)),
+            max_retries=0,
+            http_client=httpx.Client(
+                transport=httpx.MockTransport(_mock_writer_response)
+            ),
         )
 
     api_key = writer_api_key()
     if not api_key:
         raise RuntimeError("WRITER_API_KEY must be set for live Writer examples")
-    return Writer(api_key=api_key)
+    return Writer(api_key=api_key, max_retries=0)
 
 
 async def make_async_client() -> AsyncWriter:
@@ -99,6 +109,7 @@ async def make_async_client() -> AsyncWriter:
         return AsyncWriter(
             api_key="mock-writer-key",
             base_url=MOCK_BASE_URL,
+            max_retries=0,
             http_client=httpx.AsyncClient(
                 transport=httpx.MockTransport(_mock_writer_response)
             ),
@@ -107,7 +118,7 @@ async def make_async_client() -> AsyncWriter:
     api_key = writer_api_key()
     if not api_key:
         raise RuntimeError("WRITER_API_KEY must be set for live Writer examples")
-    return AsyncWriter(api_key=api_key)
+    return AsyncWriter(api_key=api_key, max_retries=0)
 
 
 def workflow_name(example_name: str) -> str:
@@ -127,7 +138,9 @@ def example_attributes(example_name: str, custom_identifier: str | None = None):
         trace_group_identifier=current_workflow_name,
         metadata={
             "example": example_name,
-            "run_id": custom_identifier,
+            "example_set": "writer",
+            "example_run_id": example_run_id(),
+            "run_id": example_run_id(),
             "workflow_name": current_workflow_name,
             "client_mode": client_mode(),
         },
@@ -141,7 +154,9 @@ def graph_ids() -> list[str]:
         return [item.strip() for item in value.split(",") if item.strip()]
     if use_mock_writer():
         return ["graph_mock"]
-    raise RuntimeError("Set WRITER_GRAPH_ID or WRITER_GRAPH_IDS for live graph examples")
+    raise RuntimeError(
+        "Set WRITER_GRAPH_ID or WRITER_GRAPH_IDS for live graph examples"
+    )
 
 
 def application_id() -> str:
@@ -159,7 +174,9 @@ def file_id() -> str:
         return value
     if use_mock_writer():
         return "file_mock"
-    raise RuntimeError("Set WRITER_FILE_ID or WRITER_VISION_FILE_ID for live file examples")
+    raise RuntimeError(
+        "Set WRITER_FILE_ID or WRITER_VISION_FILE_ID for live file examples"
+    )
 
 
 def print_start(example_name: str, custom_identifier: str) -> None:
@@ -167,6 +184,7 @@ def print_start(example_name: str, custom_identifier: str) -> None:
     print(f"custom_identifier={custom_identifier}", flush=True)
     print(f"workflow_name={workflow_name(example_name)}", flush=True)
     print(f"client_mode={client_mode()}", flush=True)
+    print(f"example_run_id={example_run_id()}", flush=True)
 
 
 def print_result(label: str, value: Any) -> None:
@@ -183,12 +201,20 @@ def finish_respan(respan: Respan) -> None:
         shutdown()
 
 
+def close_client(client: Writer) -> None:
+    client.close()
+
+
+async def close_async_client(client: AsyncWriter) -> None:
+    await client.close()
+
+
 def _json_body(request: httpx.Request) -> dict[str, Any]:
     if not request.content:
         return {}
     try:
         body = json.loads(request.content.decode("utf-8"))
-    except Exception:
+    except (UnicodeDecodeError, json.JSONDecodeError):
         return {}
     return body if isinstance(body, dict) else {}
 
@@ -197,7 +223,9 @@ def _response(request: httpx.Request, payload: dict[str, Any]) -> httpx.Response
     return httpx.Response(200, json=payload, request=request)
 
 
-def _sse_response(request: httpx.Request, events: list[dict[str, Any]]) -> httpx.Response:
+def _sse_response(
+    request: httpx.Request, events: list[dict[str, Any]]
+) -> httpx.Response:
     content = "".join(f"data: {json.dumps(event)}\n\n" for event in events)
     content += "data: [DONE]\n\n"
     return httpx.Response(
@@ -213,6 +241,9 @@ def _chat_payload(body: dict[str, Any]) -> dict[str, Any]:
     user_content = ""
     if messages and isinstance(messages[-1], dict):
         user_content = str(messages[-1].get("content") or "")
+
+    if user_content == "RESPAN_EXPECTED_WRITER_ERROR":
+        return {"error": {"message": "Writer deterministic provider limit"}}
 
     content = f"Writer mock response for: {user_content[:80]}"
     tool_calls = None
@@ -231,7 +262,9 @@ def _chat_payload(body: dict[str, Any]) -> dict[str, Any]:
             }
         ]
     elif body.get("response_format"):
-        content = json.dumps({"summary": "mock structured output", "sentiment": "positive"})
+        content = json.dumps(
+            {"summary": "mock structured output", "sentiment": "positive"}
+        )
 
     message: dict[str, Any] = {"role": "assistant", "content": content}
     if tool_calls:
@@ -247,7 +280,9 @@ def _chat_payload(body: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _chat_stream_response(request: httpx.Request, body: dict[str, Any]) -> httpx.Response:
+def _chat_stream_response(
+    request: httpx.Request, body: dict[str, Any]
+) -> httpx.Response:
     model = body.get("model") or DEFAULT_WRITER_MODEL
     events = [
         {
@@ -255,14 +290,22 @@ def _chat_stream_response(request: httpx.Request, body: dict[str, Any]) -> httpx
             "object": "chat.completion.chunk",
             "created": 1,
             "model": model,
-            "choices": [{"index": 0, "delta": {"role": "assistant", "content": "Writer "}}],
+            "choices": [
+                {"index": 0, "delta": {"role": "assistant", "content": "Writer "}}
+            ],
         },
         {
             "id": "chatcmpl_mock_stream",
             "object": "chat.completion.chunk",
             "created": 1,
             "model": model,
-            "choices": [{"index": 0, "delta": {"content": "streaming response."}, "finish_reason": "stop"}],
+            "choices": [
+                {
+                    "index": 0,
+                    "delta": {"content": "streaming response."},
+                    "finish_reason": "stop",
+                }
+            ],
             "usage": {"prompt_tokens": 7, "completion_tokens": 4, "total_tokens": 11},
         },
     ]
@@ -288,6 +331,13 @@ def _mock_writer_response(request: httpx.Request) -> httpx.Response:
     body = _json_body(request)
 
     if path == "/v1/chat":
+        messages = body.get("messages") or []
+        if messages and messages[-1].get("content") == "RESPAN_EXPECTED_WRITER_ERROR":
+            return httpx.Response(
+                429,
+                json={"error": {"message": "Writer deterministic provider limit"}},
+                request=request,
+            )
         if body.get("stream") is True:
             return _chat_stream_response(request, body)
         return _response(request, _chat_payload(body))
@@ -325,7 +375,9 @@ def _mock_writer_response(request: httpx.Request) -> httpx.Response:
         )
 
     if path == "/v1/vision":
-        return _response(request, {"data": "Mock vision analysis for the provided file."})
+        return _response(
+            request, {"data": "Mock vision analysis for the provided file."}
+        )
 
     if path == "/v1/translation":
         return _response(request, {"data": "Bonjour depuis Writer."})
@@ -345,4 +397,6 @@ def _mock_writer_response(request: httpx.Request) -> httpx.Response:
     if path.startswith("/v1/tools/pdf-parser/"):
         return _response(request, {"content": "# Mock PDF\nParsed Writer PDF content."})
 
-    return httpx.Response(404, json={"error": f"Unhandled mock path: {path}"}, request=request)
+    return httpx.Response(
+        404, json={"error": f"Unhandled mock path: {path}"}, request=request
+    )

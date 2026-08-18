@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
+    close_provider,
     example_attributes,
     make_custom_identifier,
     make_model,
@@ -11,23 +10,25 @@ from _shared import (
     stream_chunk_text,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "streaming"
+_MODEL = None
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _streaming_workflow(model) -> str:
+def _streaming_workflow(text_prompt: str, chat_prompt: str) -> str:
     text_chunks = [
         stream_chunk_text(chunk)
-        for chunk in model.generate_text_stream(
-            prompt="Stream a short sentence about production traces.",
+        for chunk in _MODEL.generate_text_stream(
+            prompt=text_prompt,
             params={"max_new_tokens": 40},
         )
     ]
     chat_chunks = [
         stream_chunk_text(chunk)
-        for chunk in model.chat_stream(
-            messages=[{"role": "user", "content": "Stream a tiny Watsonx chat reply."}],
+        for chunk in _MODEL.chat_stream(
+            messages=[{"role": "user", "content": chat_prompt}],
             params={"max_new_tokens": 40},
         )
     ]
@@ -35,16 +36,24 @@ def _streaming_workflow(model) -> str:
 
 
 def run_streaming() -> None:
+    global _MODEL
     model = make_model()
+    _MODEL = model
     respan = make_respan(EXAMPLE_NAME)
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     output = ""
 
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
-            output = _streaming_workflow(model)
+            output = _streaming_workflow(
+                "Stream a short sentence about production traces.",
+                "Stream a tiny Watsonx chat reply.",
+            )
     finally:
-        respan.shutdown()
+        try:
+            close_provider(model)
+        finally:
+            respan.shutdown()
 
     print_lookup(EXAMPLE_NAME, custom_identifier, output)
 

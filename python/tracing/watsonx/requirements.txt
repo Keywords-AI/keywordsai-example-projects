@@ -1,6 +1,4 @@
 python-dotenv>=1.0.0
-ibm-watsonx-ai>=1.0.0
--e ../../../../respan/python-sdks/respan-sdk
--e ../../../../respan/python-sdks/respan-tracing
--e ../../../../respan/python-sdks/respan
--e ../../../../respan/python-sdks/instrumentations/respan-instrumentation-watsonx
+ibm-watsonx-ai>=1.6.3,<2
+respan-ai>=4,<5
+respan-instrumentation-watsonx>=0.1.0,<1

@@ -28,7 +28,9 @@ WRITER_APPLICATION_ID=...
 WRITER_FILE_ID=...
 ```
 
-When `WRITER_API_KEY` is absent, the examples use a local `httpx.MockTransport`.
+The suite uses a local `httpx.MockTransport` by default. Set
+`WRITER_EXAMPLE_MODE=live` together with the required Writer resources to opt
+into live calls.
 Mock mode still runs the actual Writer SDK methods and exports real Respan spans,
 so it is useful for instrumentation verification in this checkout.
 
@@ -57,3 +59,8 @@ python python/tracing/writer/01_chat_completion.py
 - `client.vision.analyze()`
 - `client.translation.translate()`
 - `client.tools.web_search()` and `client.tools.parse_pdf()`
+- deterministic provider 429 handling
+
+Set `RESPAN_EXAMPLE_RUN_ID` to retrieve the complete suite exactly. Every
+script also retains a per-example identifier, meaningful workflow input, and
+explicit client plus Respan shutdown.

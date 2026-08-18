@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import asyncio
 
-from respan import workflow
-
 from _shared import (
+    close_async_client,
     example_attributes,
     finish_respan,
     make_async_client,
@@ -15,15 +14,17 @@ from _shared import (
     print_start,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "async-chat"
+_CLIENT = None
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-async def _async_chat_workflow(client) -> str:
-    response = await client.chat.chat(
+async def _async_chat_workflow(prompt: str) -> str:
+    response = await _CLIENT.chat.chat(
         model=model_name(),
-        messages=[{"role": "user", "content": "Give one async tracing tip."}],
+        messages=[{"role": "user", "content": prompt}],
         max_tokens=80,
         temperature=0,
     )
@@ -31,17 +32,21 @@ async def _async_chat_workflow(client) -> str:
 
 
 async def run_async() -> str:
+    global _CLIENT
     respan = make_respan(EXAMPLE_NAME)
     client = await make_async_client()
+    _CLIENT = client
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     text = ""
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_start(EXAMPLE_NAME, custom_identifier)
-            text = await _async_chat_workflow(client)
+            text = await _async_chat_workflow("Give one async tracing tip.")
     finally:
-        await client.close()
-        finish_respan(respan)
+        try:
+            await close_async_client(client)
+        finally:
+            finish_respan(respan)
     print_result("async chat", text)
     return text
 

@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from pydantic import BaseModel
-from respan import workflow
-
 from _shared import (
+    close_client,
     example_attributes,
     finish_respan,
     make_client,
@@ -14,8 +12,11 @@ from _shared import (
     print_start,
     workflow_name,
 )
+from pydantic import BaseModel
+from respan import workflow
 
 EXAMPLE_NAME = "structured-parse"
+_CLIENT = None
 
 
 class TraceSummary(BaseModel):
@@ -24,10 +25,10 @@ class TraceSummary(BaseModel):
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _structured_parse_workflow(client) -> dict[str, str]:
-    response = client.chat.parse(
+def _structured_parse_workflow(prompt: str) -> dict[str, str]:
+    response = _CLIENT.chat.parse(
         model=model_name(),
-        messages=[{"role": "user", "content": "Summarize Writer tracing as JSON."}],
+        messages=[{"role": "user", "content": prompt}],
         response_format=TraceSummary,
         max_tokens=120,
         temperature=0,
@@ -37,16 +38,21 @@ def _structured_parse_workflow(client) -> dict[str, str]:
 
 
 def run() -> dict[str, str]:
+    global _CLIENT
     respan = make_respan(EXAMPLE_NAME)
     client = make_client()
+    _CLIENT = client
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     result: dict[str, str] = {}
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_start(EXAMPLE_NAME, custom_identifier)
-            result = _structured_parse_workflow(client)
+            result = _structured_parse_workflow("Summarize Writer tracing as JSON.")
     finally:
-        finish_respan(respan)
+        try:
+            close_client(client)
+        finally:
+            finish_respan(respan)
     print_result("structured parse", result)
     return result
 
