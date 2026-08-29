@@ -228,7 +228,10 @@ export async function runWithExampleTrace<T>(
   );
 }
 
-export async function flushAndShutdown(respan: Respan): Promise<void> {
+export async function flushAndShutdown(
+  respan: Pick<Respan, "shutdown">,
+): Promise<void> {
+  await respan.shutdown();
 }
 
 export function logExampleResult(

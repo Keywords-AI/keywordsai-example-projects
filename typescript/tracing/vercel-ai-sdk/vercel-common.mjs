@@ -16,6 +16,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 let envLoaded = false;
 let telemetryRegistered = false;
 
+export function resolveCaseIdentifiers(caseId, env = process.env, now = Date.now()) {
+  const runId = `vercel-ai-sdk-ts-${caseId}-${now}`;
+  const auditRunId = env.RESPAN_EXAMPLE_RUN_ID?.trim() || runId;
+  return { auditRunId, runId };
+}
+
 function loadEnv() {
   if (envLoaded) return;
   let current = __dirname;
@@ -49,7 +55,7 @@ function ensureTelemetryRegistered() {
 export async function runVercelCase(caseId, fn) {
   loadEnv();
 
-  const runId = `vercel-ai-sdk-ts-${caseId}-${Date.now()}`;
+  const { auditRunId, runId } = resolveCaseIdentifiers(caseId);
   const respanApiKey = process.env.RESPAN_API_KEY;
   const gatewayApiKey = process.env.RESPAN_GATEWAY_API_KEY ?? respanApiKey;
   const respanBaseURL = process.env.RESPAN_BASE_URL ?? DEFAULT_RESPAN_BASE_URL;
@@ -83,6 +89,7 @@ export async function runVercelCase(caseId, fn) {
   });
 
   console.log(`run_id: ${runId}`);
+  console.log(`audit_run_id: ${auditRunId}`);
   console.log(`model: ${modelName}`);
   console.log(`gateway_base_url: ${gatewayBaseURL}`);
 
@@ -99,7 +106,7 @@ export async function runVercelCase(caseId, fn) {
         session_identifier: `session-${runId}`,
         trace_group_identifier: `trace-group-${runId}`,
         metadata: {
-          run_id: runId,
+          run_id: auditRunId,
           case_id: caseId,
           example: "vercel-ai-sdk",
         },
