@@ -1,0 +1,2 @@
+apache-burr>=0.42.0,<1.0.0
+respan-instrumentation-burr>=0.1.0

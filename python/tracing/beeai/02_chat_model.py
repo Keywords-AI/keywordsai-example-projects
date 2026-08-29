@@ -27,9 +27,14 @@ async def run_chat_model() -> str:
 
 
 async def main() -> None:
-    with example_attributes(WORKFLOW_NAME) as run_id:
-        output = await run_chat_model()
-        print(f"Run ID: {run_id}")
-        print(f"Chat output: {output}")
+    try:
+        with example_attributes(WORKFLOW_NAME) as run_id:
+            output = await run_chat_model()
+            print(f"Run ID: {run_id}")
+            print(f"Chat output: {output}")
+    finally:
+        respan.shutdown()
+
+
 if __name__ == "__main__":
     asyncio.run(main())

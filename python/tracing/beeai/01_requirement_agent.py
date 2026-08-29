@@ -30,9 +30,14 @@ async def run_requirement_agent() -> str:
 
 
 async def main() -> None:
-    with example_attributes(WORKFLOW_NAME) as run_id:
-        output = await run_requirement_agent()
-        print(f"Run ID: {run_id}")
-        print(f"Agent output: {output}")
+    try:
+        with example_attributes(WORKFLOW_NAME) as run_id:
+            output = await run_requirement_agent()
+            print(f"Run ID: {run_id}")
+            print(f"Agent output: {output}")
+    finally:
+        respan.shutdown()
+
+
 if __name__ == "__main__":
     asyncio.run(main())
