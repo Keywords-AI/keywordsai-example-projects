@@ -4,7 +4,6 @@ import json
 import os
 from contextlib import contextmanager
 from pathlib import Path
-from uuid import uuid4
 
 import httpx
 import replicate
@@ -19,7 +18,7 @@ MOCK_BASE_URL = "https://mock.replicate.local"
 
 
 def load_root_env() -> None:
-    load_dotenv(PROJECT_ROOT / ".env", override=True)
+    load_dotenv(PROJECT_ROOT / ".env", override=False)
 
 
 def require_respan_api_key() -> str:
@@ -39,10 +38,18 @@ def model_name() -> str:
 
 
 def use_mock_replicate() -> bool:
-    explicit = os.getenv("RESPAN_REPLICATE_MOCK")
-    if explicit is not None:
-        return explicit.lower() not in {"0", "false", "no"}
-    return not bool(os.getenv("REPLICATE_API_TOKEN"))
+    return os.getenv("RESPAN_REPLICATE_LIVE", "0").lower() not in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def run_id() -> str:
+    marker = os.getenv("RESPAN_EXAMPLE_RUN_ID")
+    if not marker:
+        raise RuntimeError("RESPAN_EXAMPLE_RUN_ID must be supplied by run_all.py")
+    return marker
 
 
 def make_respan(example_name: str) -> Respan:
@@ -53,7 +60,12 @@ def make_respan(example_name: str) -> Respan:
         app_name="replicate-examples",
         instrumentations=[ReplicateInstrumentor()],
         environment=os.getenv("RESPAN_ENVIRONMENT", "example"),
-        metadata={"integration": "replicate", "example": example_name},
+        metadata={
+            "example_set": "replicate",
+            "example": example_name,
+            "example_run_id": run_id(),
+            "run_id": run_id(),
+        },
     )
 
 
@@ -88,11 +100,18 @@ def _mock_response(request: httpx.Request) -> httpx.Response:
     path = request.url.path
     method = request.method.upper()
     if method == "POST" and (
-        path == "/v1/predictions" or path.startswith("/v1/models/") and path.endswith("/predictions")
+        path == "/v1/predictions"
+        or path.startswith("/v1/models/")
+        and path.endswith("/predictions")
     ):
         body = json.loads(request.content.decode() or "{}")
         prompt = (body.get("input") or {}).get("prompt", "")
-        prediction_id = f"mock-{uuid4().hex[:8]}"
+        prediction_id = "mock-prediction"
+        if "expected provider error" in prompt.lower():
+            return httpx.Response(
+                429,
+                json={"detail": "deterministic Replicate rate limit"},
+            )
         return httpx.Response(
             201,
             json=_mock_prediction(
@@ -149,20 +168,19 @@ def workflow_name(example_name: str) -> str:
     return f"replicate_{normalized_name}"
 
 
-def make_custom_identifier(example_name: str) -> str:
-    return f"replicate-{example_name}-{uuid4().hex[:8]}"
-
-
 @contextmanager
-def example_attributes(example_name: str, custom_identifier: str | None = None):
-    custom_identifier = custom_identifier or make_custom_identifier(example_name)
+def example_attributes(example_name: str):
+    marker = run_id()
+    custom_identifier = f"replicate-{example_name}-{marker}"
     current_workflow_name = workflow_name(example_name)
     with propagate_attributes(
         custom_identifier=custom_identifier,
         trace_group_identifier=current_workflow_name,
         metadata={
             "example": example_name,
-            "run_id": custom_identifier,
+            "example_set": "replicate",
+            "example_run_id": marker,
+            "run_id": marker,
             "workflow_name": current_workflow_name,
             "replicate_client_mode": client_mode(),
         },
@@ -191,3 +209,10 @@ def print_result(example_name: str, custom_identifier: str, text: str) -> None:
     print(f"workflow_name={workflow_name(example_name)}")
     print(f"client_mode={client_mode()}")
     print(text.strip())
+
+
+def finish_respan(respan: Respan) -> None:
+    try:
+        respan.flush()
+    finally:
+        respan.shutdown()

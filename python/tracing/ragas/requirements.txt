@@ -1,0 +1,4 @@
+ragas>=0.4.3,<0.5.0
+respan-ai>=4,<5
+respan-instrumentation-ragas>=0.1.0,<0.2.0
+python-dotenv>=1,<2
