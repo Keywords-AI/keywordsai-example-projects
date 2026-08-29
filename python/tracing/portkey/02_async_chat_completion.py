@@ -2,52 +2,47 @@ from __future__ import annotations
 
 import asyncio
 
-from respan import workflow
-
 from _shared import (
     example_attributes,
+    execution_id,
+    finish_respan,
     make_async_client,
-    make_custom_identifier,
     make_respan,
+    marker,
     model_name,
     print_result,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "async-chat-completion"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-async def _async_chat_completion_workflow(client) -> str:
-    response = await client.chat.completions.create(
-        model=model_name(),
-        messages=[
-            {
-                "role": "user",
-                "content": "Reply with one concise sentence about tracing LLM apps.",
-            }
-        ],
-    )
-    return response.choices[0].message.content or ""
-
-
-async def run_async_chat_completion() -> None:
-    respan = make_respan(EXAMPLE_NAME)
+async def trace_async_chat(prompt: str) -> dict[str, str]:
     client = make_async_client()
-    custom_identifier = make_custom_identifier(EXAMPLE_NAME)
-    text = ""
-
     try:
-        with example_attributes(EXAMPLE_NAME, custom_identifier):
-            print(f"custom_identifier={custom_identifier}", flush=True)
-            print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
-            text = await _async_chat_completion_workflow(client)
+        response = await client.chat.completions.create(
+            model=model_name(), messages=[{"role": "user", "content": prompt}]
+        )
+        return {"response": response.choices[0].message.content or ""}
     finally:
         await client.close()
-        respan.shutdown()
 
-    print_result(EXAMPLE_NAME, custom_identifier, text)
+
+async def main() -> None:
+    run_marker = marker()
+    execution = execution_id()
+    respan = make_respan(EXAMPLE_NAME, run_marker)
+    try:
+        with example_attributes(
+            EXAMPLE_NAME, run_marker, execution, mode="deterministic"
+        ):
+            result = await trace_async_chat("Explain tracing in one concise sentence.")
+        print_result(EXAMPLE_NAME, run_marker, result)
+    finally:
+        finish_respan(respan)
 
 
 if __name__ == "__main__":
-    asyncio.run(run_async_chat_completion())
+    asyncio.run(main())
