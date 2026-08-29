@@ -1,0 +1,4 @@
+openai>=2.54.0,<3.0.0
+python-dotenv>=1.0.0
+respan-ai>=2.7.4
+respan-instrumentation-openlit>=0.1.0
