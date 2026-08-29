@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import asyncio
 
-from respan import workflow
-
 from _shared import (
+    close_provider,
     example_attributes,
     make_custom_identifier,
     make_embeddings,
@@ -12,8 +11,10 @@ from _shared import (
     print_lookup,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "embeddings"
+_EMBEDDINGS = None
 
 
 def _shape(value) -> str:
@@ -28,15 +29,17 @@ def _shape(value) -> str:
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-async def _embeddings_workflow(embeddings) -> str:
-    raw = embeddings.generate(inputs=["Watsonx tracing", "Respan observability"])
-    documents = embeddings.embed_documents(
+async def _embeddings_workflow(query_text: str) -> str:
+    raw = _EMBEDDINGS.generate(inputs=["Watsonx tracing", "Respan observability"])
+    documents = _EMBEDDINGS.embed_documents(
         texts=["Trace model calls", "Inspect embedding usage"]
     )
-    query = embeddings.embed_query(text="What does tracing capture?")
-    async_raw = await embeddings.agenerate(inputs=["Async embedding request"])
-    async_documents = await embeddings.aembed_documents(texts=["Async one", "Async two"])
-    async_query = await embeddings.aembed_query(text="Async query")
+    query = _EMBEDDINGS.embed_query(text=query_text)
+    async_raw = await _EMBEDDINGS.agenerate(inputs=["Async embedding request"])
+    async_documents = await _EMBEDDINGS.aembed_documents(
+        texts=["Async one", "Async two"]
+    )
+    async_query = await _EMBEDDINGS.aembed_query(text="Async query")
     return "\n".join(
         [
             f"generate={_shape(raw)}",
@@ -50,9 +53,14 @@ async def _embeddings_workflow(embeddings) -> str:
 
 
 async def _run_embeddings(custom_identifier: str) -> str:
+    global _EMBEDDINGS
     embeddings = make_embeddings()
+    _EMBEDDINGS = embeddings
     with example_attributes(EXAMPLE_NAME, custom_identifier):
-        return await _embeddings_workflow(embeddings)
+        try:
+            return await _embeddings_workflow("What does tracing capture?")
+        finally:
+            close_provider(embeddings)
 
 
 def run_embeddings() -> None:

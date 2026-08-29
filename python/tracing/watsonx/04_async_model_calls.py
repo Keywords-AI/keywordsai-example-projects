@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import asyncio
 
-from respan import workflow
-
 from _shared import (
     chat_text,
+    close_provider,
     example_attributes,
     generated_text,
     make_custom_identifier,
@@ -15,27 +14,29 @@ from _shared import (
     stream_chunk_text,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "async-model-calls"
+_MODEL = None
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-async def _async_model_workflow(model) -> str:
-    generated = await model.agenerate(
-        prompt="Reply asynchronously about Watsonx tracing.",
+async def _async_model_workflow(prompt: str) -> str:
+    generated = await _MODEL.agenerate(
+        prompt=prompt,
         params={"max_new_tokens": 40},
     )
-    generated_stream = await model.agenerate_stream(
+    generated_stream = await _MODEL.agenerate_stream(
         prompt="Stream an async Watsonx sentence.",
         params={"max_new_tokens": 40},
     )
     generated_chunks = [stream_chunk_text(chunk) async for chunk in generated_stream]
 
-    chat = await model.achat(
+    chat = await _MODEL.achat(
         messages=[{"role": "user", "content": "Give one async chat sentence."}],
         params={"max_new_tokens": 40},
     )
-    chat_stream = await model.achat_stream(
+    chat_stream = await _MODEL.achat_stream(
         messages=[{"role": "user", "content": "Stream async chat."}],
         params={"max_new_tokens": 40},
     )
@@ -50,9 +51,16 @@ async def _async_model_workflow(model) -> str:
 
 
 async def _run_async_model_calls(custom_identifier: str) -> str:
+    global _MODEL
     model = make_model()
+    _MODEL = model
     with example_attributes(EXAMPLE_NAME, custom_identifier):
-        return await _async_model_workflow(model)
+        try:
+            return await _async_model_workflow(
+                "Reply asynchronously about Watsonx tracing."
+            )
+        finally:
+            close_provider(model)
 
 
 def run_async_model_calls() -> None:

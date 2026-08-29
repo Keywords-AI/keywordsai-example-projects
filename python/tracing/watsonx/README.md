@@ -30,6 +30,9 @@ python 02_streaming.py
 python 03_chat_tool_calling.py
 python 04_async_model_calls.py
 python 05_embeddings.py
+python 06_expected_error.py
+# or run the complete bounded suite
+python run_all.py
 ```
 
-Each script prints a `custom_identifier` and `workflow_name`. The workflow name is also used as the Respan trace group identifier so the run is easy to find in traces and MCP lookups.
+Set `RESPAN_EXAMPLE_RUN_ID` to retrieve the whole suite exactly. Each script also keeps a separate per-example `custom_identifier`, uses meaningful workflow arguments, closes its provider object when supported, and explicitly shuts Respan down.

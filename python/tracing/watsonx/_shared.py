@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from contextlib import contextmanager
 from pathlib import Path
@@ -17,7 +18,7 @@ DEFAULT_EMBEDDING_MODEL = "ibm/slate-125m-english-rtrvr"
 
 
 def load_root_env() -> None:
-    load_dotenv(PROJECT_ROOT / ".env", override=True)
+    load_dotenv(PROJECT_ROOT / ".env", override=False)
 
 
 def _first_env(*names: str) -> str | None:
@@ -57,6 +58,10 @@ def watsonx_live_mode() -> bool:
     return has_key and has_scope
 
 
+def example_run_id() -> str:
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID") or f"watsonx-{uuid4().hex[:12]}"
+
+
 def _offline_model_id(self) -> str:
     return getattr(self, "_model_id", model_name())
 
@@ -84,12 +89,22 @@ def _install_offline_backend() -> None:
         }
 
     def generate_text(self, prompt=None, **kwargs):
+        if prompt == "RESPAN_EXPECTED_WATSONX_ERROR":
+            error = RuntimeError("Watsonx deterministic provider limit")
+            error.status_code = 429
+            raise error
         return f"Offline Watsonx text response for: {prompt}"
 
     def generate_text_stream(self, prompt=None, **kwargs):
-        yield "Offline "
-        yield "Watsonx "
-        yield "stream response."
+        yield {"results": [{"generated_text": "Offline ", "input_token_count": 8}]}
+        yield {
+            "results": [
+                {
+                    "generated_text": "Watsonx stream response.",
+                    "generated_token_count": 5,
+                }
+            ]
+        }
 
     async def agenerate(self, prompt=None, **kwargs):
         return {
@@ -105,12 +120,37 @@ def _install_offline_backend() -> None:
 
     async def agenerate_stream(self, prompt=None, **kwargs):
         async def chunks():
-            yield "Offline async "
-            yield "Watsonx stream."
+            yield {
+                "results": [
+                    {"generated_text": "Offline async ", "input_token_count": 7}
+                ]
+            }
+            yield {
+                "results": [
+                    {"generated_text": "Watsonx stream.", "generated_token_count": 4}
+                ]
+            }
 
         return chunks()
 
     def chat(self, messages, **kwargs):
+        if messages and messages[-1].get("role") == "tool":
+            return {
+                "model_id": _offline_model_id(self),
+                "choices": [
+                    {
+                        "message": {
+                            "role": "assistant",
+                            "content": "Tokyo is sunny and 24°C.",
+                        }
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 22,
+                    "completion_tokens": 7,
+                    "total_tokens": 29,
+                },
+            }
         return {
             "model_id": _offline_model_id(self),
             "choices": [
@@ -136,13 +176,21 @@ def _install_offline_backend() -> None:
 
     def chat_stream(self, messages, **kwargs):
         yield {"choices": [{"delta": {"content": "Offline chat "}}]}
-        yield {"choices": [{"delta": {"content": "stream response."}}]}
+        yield {
+            "choices": [{"delta": {"content": "stream response."}}],
+            "usage": {"prompt_tokens": 6, "completion_tokens": 4, "total_tokens": 10},
+        }
 
     async def achat(self, messages, **kwargs):
         return {
             "model_id": _offline_model_id(self),
             "choices": [
-                {"message": {"role": "assistant", "content": "Offline async chat response."}}
+                {
+                    "message": {
+                        "role": "assistant",
+                        "content": "Offline async chat response.",
+                    }
+                }
             ],
             "usage": {"prompt_tokens": 7, "completion_tokens": 5, "total_tokens": 12},
         }
@@ -150,7 +198,14 @@ def _install_offline_backend() -> None:
     async def achat_stream(self, messages, **kwargs):
         async def chunks():
             yield {"choices": [{"delta": {"content": "Offline async "}}]}
-            yield {"choices": [{"delta": {"content": "chat stream."}}]}
+            yield {
+                "choices": [{"delta": {"content": "chat stream."}}],
+                "usage": {
+                    "prompt_tokens": 5,
+                    "completion_tokens": 4,
+                    "total_tokens": 9,
+                },
+            }
 
         return chunks()
 
@@ -204,11 +259,11 @@ def _new_uninitialized(instance_class, model_id: str):
     return instance
 
 
-def make_model():
+def make_model(*, force_offline: bool = False):
     load_root_env()
     from ibm_watsonx_ai.foundation_models import ModelInference
 
-    if not watsonx_live_mode():
+    if force_offline or not watsonx_live_mode():
         _install_offline_backend()
         return _new_uninitialized(ModelInference, model_name())
 
@@ -268,7 +323,13 @@ def make_respan(example_name: str) -> Respan:
         app_name="watsonx-examples",
         instrumentations=[WatsonxInstrumentor()],
         environment=os.getenv("RESPAN_ENVIRONMENT", "example"),
-        metadata={"integration": "watsonx", "example": example_name},
+        metadata={
+            "integration": "watsonx",
+            "example": example_name,
+            "example_set": "watsonx",
+            "example_run_id": example_run_id(),
+            "run_id": example_run_id(),
+        },
         is_batching_enabled=False,
     )
 
@@ -290,7 +351,9 @@ def example_attributes(example_name: str, custom_identifier: str | None = None):
         trace_group_identifier=current_workflow_name,
         metadata={
             "example": example_name,
-            "run_id": custom_identifier,
+            "example_set": "watsonx",
+            "example_run_id": example_run_id(),
+            "run_id": example_run_id(),
             "workflow_name": current_workflow_name,
             "client_mode": client_mode(),
         },
@@ -335,9 +398,19 @@ def stream_chunk_text(chunk) -> str:
     return str(chunk.get("generated_text", ""))
 
 
-def print_lookup(example_name: str, custom_identifier: str, output: str) -> None:
+def print_lookup(example_name: str, custom_identifier: str, output) -> None:
     print(f"example={example_name}")
     print(f"custom_identifier={custom_identifier}")
     print(f"workflow_name={workflow_name(example_name)}")
     print(f"client_mode={client_mode()}")
-    print(output.strip())
+    print(f"example_run_id={example_run_id()}")
+    if isinstance(output, str):
+        print(output.strip())
+    else:
+        print(json.dumps(output, sort_keys=True))
+
+
+def close_provider(value) -> None:
+    close = getattr(value, "close", None)
+    if callable(close):
+        close()
