@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from typing import TypedDict
 
+from _respan_instructor import create_respan_instructor_client
 from respan_tracing import workflow
 from respan_tracing.exporters import propagate_attributes
-
-from _respan_instructor import create_respan_instructor_client
 
 
 class InvoiceSummary(TypedDict):
@@ -19,7 +18,7 @@ class InvoiceSummary(TypedDict):
 
 
 @workflow(name="instructor_example_01_create")
-def extract_invoice(client) -> InvoiceSummary:
+def extract_invoice(client, scenario: str) -> InvoiceSummary:
     return client.create(
         response_model=InvoiceSummary,
         messages=[
@@ -37,15 +36,17 @@ def extract_invoice(client) -> InvoiceSummary:
 
 
 def run_create_example() -> None:
-    telemetry, client = create_respan_instructor_client(app_name="instructor-create")
+    respan, client = create_respan_instructor_client(app_name="instructor-create")
+    try:
+        with propagate_attributes(
+            thread_identifier="instructor_example_01_create",
+            metadata={"example_script": "01_create.py", "instructor_api": "create"},
+        ):
+            invoice = extract_invoice(client, "extract a deterministic invoice")
 
-    with propagate_attributes(
-        thread_identifier="instructor_example_01_create",
-        metadata={"example_script": "01_create.py", "instructor_api": "create"},
-    ):
-        invoice = extract_invoice(client)
-
-    print(dict(invoice))
+        print(dict(invoice))
+    finally:
+        respan.shutdown()
 
 
 if __name__ == "__main__":

@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Literal
-from typing import TypedDict
-
-from respan_tracing import workflow
-from respan_tracing.exporters import propagate_attributes
+from typing import Literal, TypedDict
 
 from _respan_instructor import create_respan_instructor_client
+from respan_tracing import workflow
+from respan_tracing.exporters import propagate_attributes
 
 
 class ActionItem(TypedDict):
@@ -19,7 +17,7 @@ class ActionItem(TypedDict):
 
 
 @workflow(name="instructor_example_04_create_iterable")
-def extract_action_items(client) -> list[ActionItem]:
+def extract_action_items(client, scenario: str) -> list[ActionItem]:
     return list(
         client.create_iterable(
             response_model=ActionItem,
@@ -39,20 +37,26 @@ def extract_action_items(client) -> list[ActionItem]:
 
 
 def run_create_iterable_example() -> None:
-    telemetry, client = create_respan_instructor_client(
+    respan, client = create_respan_instructor_client(
         app_name="instructor-create-iterable"
     )
 
-    with propagate_attributes(
-        thread_identifier="instructor_example_04_create_iterable",
-        metadata={
-            "example_script": "04_create_iterable.py",
-            "instructor_api": "create_iterable",
-        },
-    ):
-        action_items = extract_action_items(client)
+    try:
+        with propagate_attributes(
+            thread_identifier="instructor_example_04_create_iterable",
+            metadata={
+                "example_script": "04_create_iterable.py",
+                "instructor_api": "create_iterable",
+            },
+        ):
+            action_items = extract_action_items(
+                client,
+                "extract three deterministic action items",
+            )
 
-    print([dict(item) for item in action_items])
+        print([dict(item) for item in action_items])
+    finally:
+        respan.shutdown()
 
 
 if __name__ == "__main__":

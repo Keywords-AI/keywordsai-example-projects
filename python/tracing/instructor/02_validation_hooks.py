@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Literal
-from typing import TypedDict
+from typing import Literal, TypedDict
 
+from _respan_instructor import create_respan_instructor_client
 from instructor.core.hooks import HookName
 from respan_tracing import workflow
 from respan_tracing.exporters import propagate_attributes
-
-from _respan_instructor import create_respan_instructor_client
 
 
 class SupportEscalation(TypedDict):
@@ -21,7 +19,7 @@ class SupportEscalation(TypedDict):
 
 
 @workflow(name="instructor_example_02_validation_hooks")
-def classify_support_escalation(client) -> SupportEscalation:
+def classify_support_escalation(client, scenario: str) -> SupportEscalation:
     return client.create(
         response_model=SupportEscalation,
         max_retries=2,
@@ -39,7 +37,7 @@ def classify_support_escalation(client) -> SupportEscalation:
 
 
 def run_validation_hooks_example() -> None:
-    telemetry, client = create_respan_instructor_client(
+    respan, client = create_respan_instructor_client(
         app_name="instructor-validation-hooks"
     )
     hook_counts = {"completion_kwargs": 0, "completion_response": 0}
@@ -61,21 +59,27 @@ def run_validation_hooks_example() -> None:
     client.on(HookName.COMPLETION_RESPONSE, on_completion_response)
 
     try:
-        with propagate_attributes(
-            customer_identifier="customer_instructor_example",
-            thread_identifier="instructor_example_02_validation_hooks",
-            metadata={
-                "example_script": "02_validation_hooks.py",
-                "instructor_api": "create_hooks",
-            },
-        ):
-            escalation = classify_support_escalation(client)
-    finally:
-        client.off(HookName.COMPLETION_KWARGS, on_completion_kwargs)
-        client.off(HookName.COMPLETION_RESPONSE, on_completion_response)
+        try:
+            with propagate_attributes(
+                customer_identifier="customer_instructor_example",
+                thread_identifier="instructor_example_02_validation_hooks",
+                metadata={
+                    "example_script": "02_validation_hooks.py",
+                    "instructor_api": "create_hooks",
+                },
+            ):
+                escalation = classify_support_escalation(
+                    client,
+                    "classify a deterministic support escalation",
+                )
+        finally:
+            client.off(HookName.COMPLETION_KWARGS, on_completion_kwargs)
+            client.off(HookName.COMPLETION_RESPONSE, on_completion_response)
 
-    print(dict(escalation))
-    print(hook_counts)
+        print(dict(escalation))
+        print(hook_counts)
+    finally:
+        respan.shutdown()
 
 
 if __name__ == "__main__":

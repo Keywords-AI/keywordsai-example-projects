@@ -5,10 +5,9 @@ from __future__ import annotations
 import asyncio
 from typing import TypedDict
 
+from _respan_instructor import create_respan_instructor_client
 from respan_tracing import workflow
 from respan_tracing.exporters import propagate_attributes
-
-from _respan_instructor import create_respan_instructor_client
 
 
 class ProjectBrief(TypedDict):
@@ -19,7 +18,7 @@ class ProjectBrief(TypedDict):
 
 
 @workflow(name="instructor_example_05_async_create")
-async def create_project_brief(client) -> ProjectBrief:
+async def create_project_brief(client, scenario: str) -> ProjectBrief:
     return await client.create(
         response_model=ProjectBrief,
         messages=[
@@ -37,21 +36,27 @@ async def create_project_brief(client) -> ProjectBrief:
 
 
 async def run_async_create_example() -> None:
-    telemetry, client = create_respan_instructor_client(
+    respan, client = create_respan_instructor_client(
         app_name="instructor-async-create",
         async_client=True,
     )
 
-    with propagate_attributes(
-        thread_identifier="instructor_example_05_async_create",
-        metadata={
-            "example_script": "05_async_create.py",
-            "instructor_api": "async_create",
-        },
-    ):
-        project_brief = await create_project_brief(client)
+    try:
+        with propagate_attributes(
+            thread_identifier="instructor_example_05_async_create",
+            metadata={
+                "example_script": "05_async_create.py",
+                "instructor_api": "async_create",
+            },
+        ):
+            project_brief = await create_project_brief(
+                client,
+                "build a deterministic project brief",
+            )
 
-    print(dict(project_brief))
+        print(dict(project_brief))
+    finally:
+        respan.shutdown()
 
 
 if __name__ == "__main__":

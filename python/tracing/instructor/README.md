@@ -1,7 +1,7 @@
 # Instructor Respan Integration Examples
 
 These examples exercise Instructor's own client functions while routing traffic
-through the Respan gateway. Tracing is initialized with `respan-tracing`, and
+through the Respan gateway. Tracing is initialized with `respan`, and
 Instructor-specific spans come from `respan-instrumentation-instructor`.
 
 ## Setup
@@ -28,7 +28,8 @@ separate OpenAI key is required.
 
 Each script wraps its Instructor call in a uniquely named Respan workflow and
 propagates `example_script` metadata, so traces are easy to filter alongside
-the Instructor chat span.
+the Instructor chat span. `RESPAN_EXAMPLE_RUN_ID` is propagated to every span,
+and every script shuts down Respan in `finally`.
 
 By default the examples use `gpt-4o-mini`. Override it with:
 
@@ -50,6 +51,12 @@ Run any example:
 
 ```bash
 python 01_create.py
+```
+
+Run the complete maintained set:
+
+```bash
+python run_all.py
 ```
 
 ## Further Reading
