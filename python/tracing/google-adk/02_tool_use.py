@@ -6,7 +6,7 @@ from pathlib import Path
 from google.adk.agents import Agent
 from respan import workflow
 
-from _shared import create_gateway_model, create_respan, run_agent_once
+from _shared import create_gateway_model, create_respan, example_attributes, run_agent_once
 
 SCRIPT_NAME = Path(__file__).name
 APP_NAME = SCRIPT_NAME.removesuffix(".py")
@@ -18,7 +18,7 @@ def get_weather(city: str) -> str:
 
 
 @workflow(name=SCRIPT_NAME)
-async def run_tool_use() -> str:
+async def run_tool_use(prompt: str) -> str:
     agent = Agent(
         name="weather_agent",
         model=create_gateway_model(),
@@ -31,7 +31,7 @@ async def run_tool_use() -> str:
     output = await run_agent_once(
         agent=agent,
         app_name=APP_NAME,
-        prompt="Use get_weather for San Francisco and summarize the result.",
+        prompt=prompt,
     )
     print(output)
     return output
@@ -40,7 +40,10 @@ async def run_tool_use() -> str:
 async def main() -> None:
     respan = create_respan(APP_NAME)
     try:
-        await run_tool_use()
+        with example_attributes(APP_NAME):
+            await run_tool_use(
+                "Use get_weather for San Francisco and summarize the result."
+            )
     finally:
         respan.shutdown()
 

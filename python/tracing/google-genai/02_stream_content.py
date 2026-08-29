@@ -16,11 +16,12 @@ EXAMPLE_NAME = "stream-content"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _stream_content_workflow(client) -> str:
+def _stream_content_workflow(prompt: str) -> str:
+    client = make_client()
     chunks: list[str] = []
     for chunk in client.models.generate_content_stream(
         model=model_name(),
-        contents="Stream three short bullet points about production tracing.",
+        contents=prompt,
     ):
         if chunk.text:
             chunks.append(chunk.text)
@@ -29,7 +30,6 @@ def _stream_content_workflow(client) -> str:
 
 def run_stream_content() -> None:
     respan = make_respan(EXAMPLE_NAME)
-    client = make_client()
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     text = ""
 
@@ -37,7 +37,9 @@ def run_stream_content() -> None:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print(f"custom_identifier={custom_identifier}", flush=True)
             print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
-            text = _stream_content_workflow(client)
+            text = _stream_content_workflow(
+                "Stream three short bullet points about production tracing."
+            )
     finally:
         respan.shutdown()
 

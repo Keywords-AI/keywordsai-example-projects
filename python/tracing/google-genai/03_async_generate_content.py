@@ -18,20 +18,22 @@ EXAMPLE_NAME = "async-generate-content"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-async def _async_generate_content_workflow(client) -> str:
+async def _async_generate_content_workflow(prompt: str) -> str:
+    client = make_client()
     response = await client.aio.models.generate_content(
         model=model_name(),
-        contents="Reply with one sentence about async Gemini workloads.",
+        contents=prompt,
     )
     return response.text or ""
 
 
 async def _run_async_generate_content(custom_identifier: str) -> str:
-    client = make_client()
     with example_attributes(EXAMPLE_NAME, custom_identifier):
         print(f"custom_identifier={custom_identifier}", flush=True)
         print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
-        return await _async_generate_content_workflow(client)
+        return await _async_generate_content_workflow(
+            "Reply with one sentence about async Gemini workloads."
+        )
 
 
 def run_async_generate_content() -> None:
