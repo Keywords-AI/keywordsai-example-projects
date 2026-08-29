@@ -1,9 +1,8 @@
 """Trace a smolagents ToolCallingAgent run with a function tool."""
 
+from _shared import build_model, build_respan, example_attributes
 from respan import workflow
 from smolagents import ToolCallingAgent, tool
-
-from _shared import build_model, build_respan
 
 EXAMPLE_NAME = "tool-calling-agent"
 WORKFLOW_NAME = "smolagents_tool_calling_agent_workflow"
@@ -22,16 +21,13 @@ def calculate_invoice_total(unit_price_usd: int, quantity: int) -> str:
 
 
 @workflow(name=WORKFLOW_NAME)
-def execute_tool_calling_agent_workflow() -> str:
+def execute_tool_calling_agent_workflow(prompt: str) -> str:
     agent = ToolCallingAgent(
         tools=[calculate_invoice_total],
         model=build_model(),
         max_steps=3,
     )
-    result = agent.run(
-        "Use the calculate_invoice_total tool for 7 items priced at 9 USD "
-        "each, then return only the final total sentence."
-    )
+    result = agent.run(prompt)
     print(result)
     return str(result)
 
@@ -39,7 +35,11 @@ def execute_tool_calling_agent_workflow() -> str:
 def run_tool_calling_agent() -> str:
     respan = build_respan(example_name=EXAMPLE_NAME, workflow_name=WORKFLOW_NAME)
     try:
-        return execute_tool_calling_agent_workflow()
+        with example_attributes(EXAMPLE_NAME, WORKFLOW_NAME):
+            return execute_tool_calling_agent_workflow(
+                "Use the calculate_invoice_total tool for 7 items priced at 9 USD "
+                "each, then return only the final total sentence."
+            )
     finally:
         respan.shutdown()
 

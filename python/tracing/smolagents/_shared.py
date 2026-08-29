@@ -3,16 +3,17 @@
 from __future__ import annotations
 
 import os
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
-from respan import Respan
+from respan import Respan, propagate_attributes
 from respan_instrumentation_smolagents import SmolagentsInstrumentor
 from smolagents import LiteLLMModel
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-load_dotenv(REPO_ROOT / ".env", override=True)
+load_dotenv(REPO_ROOT / ".env", override=False)
 
 DEFAULT_RESPAN_BASE_URL = "https://api.respan.ai/api"
 DEFAULT_CUSTOMER_IDENTIFIER = "smolagents-example-user"
@@ -72,9 +73,30 @@ def build_respan(example_name: str, workflow_name: str) -> Respan:
             DEFAULT_CUSTOMER_IDENTIFIER,
         ),
         metadata={
+            "integration": "smolagents",
+            "example_set": "smolagents",
             "example": example_name,
             "run_id": run_id,
+            "example_run_id": run_id,
             "workflow_name": workflow_name,
         },
         environment="examples",
+        is_batching_enabled=False,
     )
+
+
+@contextmanager
+def example_attributes(example_name: str, workflow_name: str):
+    run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID", DEFAULT_RUN_ID)
+    with propagate_attributes(
+        trace_group_identifier=workflow_name,
+        metadata={
+            "integration": "smolagents",
+            "example_set": "smolagents",
+            "example": example_name,
+            "run_id": run_id,
+            "example_run_id": run_id,
+            "workflow_name": workflow_name,
+        },
+    ):
+        yield

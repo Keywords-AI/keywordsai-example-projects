@@ -23,7 +23,12 @@ STUB_ENDPOINT_NAME = "respan-sagemaker-stub-endpoint"
 
 
 def load_root_env() -> None:
-    load_dotenv(PROJECT_ROOT / ".env", override=True)
+    load_dotenv(PROJECT_ROOT / ".env", override=False)
+
+
+def example_run_id() -> str:
+    load_root_env()
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID") or f"sagemaker-local-{uuid4().hex[:12]}"
 
 
 def respan_api_key() -> str | None:
@@ -41,13 +46,20 @@ def respan_base_url() -> str:
 
 
 def make_respan(example_name: str) -> Respan:
+    run_id = example_run_id()
     return Respan(
         api_key=respan_api_key(),
         base_url=respan_base_url(),
         app_name="sagemaker-examples",
         instrumentations=[SageMakerInstrumentor()],
         environment=os.getenv("RESPAN_ENVIRONMENT", "example"),
-        metadata={"integration": "sagemaker", "example": example_name},
+        metadata={
+            "integration": "sagemaker",
+            "example_set": "sagemaker",
+            "example": example_name,
+            "run_id": run_id,
+            "example_run_id": run_id,
+        },
         is_batching_enabled=False,
         log_level=os.getenv("RESPAN_LOG_LEVEL", "WARNING"),
     )
@@ -71,8 +83,7 @@ def endpoint_name() -> str:
     if use_live_sagemaker():
         if not endpoint:
             raise RuntimeError(
-                "SAGEMAKER_ENDPOINT_NAME is required when "
-                "SAGEMAKER_EXAMPLE_MODE=live."
+                "SAGEMAKER_ENDPOINT_NAME is required when SAGEMAKER_EXAMPLE_MODE=live."
             )
         return endpoint
     return endpoint or STUB_ENDPOINT_NAME
@@ -121,12 +132,16 @@ def make_custom_identifier(example_name: str) -> str:
 def example_attributes(example_name: str, custom_identifier: str | None = None):
     custom_identifier = custom_identifier or make_custom_identifier(example_name)
     current_workflow_name = workflow_name(example_name)
+    run_id = example_run_id()
     with propagate_attributes(
         custom_identifier=custom_identifier,
         trace_group_identifier=current_workflow_name,
         metadata={
             "example": example_name,
-            "run_id": custom_identifier,
+            "example_set": "sagemaker",
+            "run_id": run_id,
+            "example_run_id": run_id,
+            "execution_id": custom_identifier,
             "workflow_name": current_workflow_name,
             "sagemaker_mode": sagemaker_mode(),
         },
@@ -171,19 +186,24 @@ def collect_stream_text(response: dict[str, Any]) -> str:
     parts: list[str] = []
     for event in response["Body"]:
         payload_part = event.get("PayloadPart") if isinstance(event, dict) else None
-        payload_bytes = payload_part.get("Bytes") if isinstance(payload_part, dict) else None
+        payload_bytes = (
+            payload_part.get("Bytes") if isinstance(payload_part, dict) else None
+        )
         if payload_bytes is None:
             continue
         payload = json.loads(payload_bytes.decode("utf-8"))
         token = payload.get("token") if isinstance(payload, dict) else None
         if isinstance(token, dict) and isinstance(token.get("text"), str):
             parts.append(token["text"])
-        elif isinstance(payload, dict) and isinstance(payload.get("generated_text"), str):
+        elif isinstance(payload, dict) and isinstance(
+            payload.get("generated_text"), str
+        ):
             parts.append(payload["generated_text"])
     return "".join(parts)
 
 
 def print_run_header(example_name: str, custom_identifier: str) -> None:
+    print(f"example_run_id={example_run_id()}", flush=True)
     print(f"custom_identifier={custom_identifier}", flush=True)
     print(f"workflow_name={workflow_name(example_name)}", flush=True)
     print(f"sagemaker_mode={sagemaker_mode()}", flush=True)
@@ -196,4 +216,4 @@ def print_result(example_name: str, custom_identifier: str, result: Any) -> None
     print(f"workflow_name={workflow_name(example_name)}")
     print(f"sagemaker_mode={sagemaker_mode()}")
     print(f"model={model_name()}")
-    print(json.dumps(result, default=str, indent=2, sort_keys=True))
+    print(json.dumps(result, indent=2, sort_keys=True))

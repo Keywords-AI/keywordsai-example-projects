@@ -3,14 +3,19 @@
 import asyncio
 from pathlib import Path
 
+from _shared import (
+    close_kernel_clients,
+    create_kernel,
+    create_respan,
+    example_attributes,
+    print_result,
+)
 from respan import workflow
 from semantic_kernel.connectors.ai.function_choice_behavior import (
     FunctionChoiceBehavior,
 )
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
 from semantic_kernel.functions import KernelArguments, kernel_function
-
-from _shared import create_kernel, create_respan, print_result
 
 SCRIPT_NAME = Path(__file__).name
 APP_NAME = SCRIPT_NAME.removesuffix(".py")
@@ -26,7 +31,7 @@ class TravelPlugin:
 
 
 @workflow(name=SCRIPT_NAME)
-async def run_plugin_tool_call() -> str:
+async def run_plugin_tool_call(city: str) -> str:
     kernel = create_kernel()
     kernel.add_plugin(TravelPlugin(), plugin_name="Travel")
     settings = OpenAIChatPromptExecutionSettings(
@@ -36,7 +41,7 @@ async def run_plugin_tool_call() -> str:
         function_choice_behavior=FunctionChoiceBehavior.Auto(auto_invoke=True),
     )
     result = await kernel.invoke_prompt(
-        "Use the Travel plugin to check the weather in Tokyo, then summarize it.",
+        f"Use the Travel plugin to check the weather in {city}, then summarize it.",
         arguments=KernelArguments(settings=settings),
     )
     output = str(result)
@@ -47,9 +52,13 @@ async def run_plugin_tool_call() -> str:
 async def main() -> None:
     respan = create_respan(APP_NAME)
     try:
-        await run_plugin_tool_call()
+        with example_attributes(APP_NAME):
+            await run_plugin_tool_call("Tokyo")
     finally:
-        respan.shutdown()
+        try:
+            await close_kernel_clients()
+        finally:
+            respan.shutdown()
 
 
 if __name__ == "__main__":

@@ -3,18 +3,23 @@
 import asyncio
 from pathlib import Path
 
+from _shared import (
+    close_kernel_clients,
+    create_kernel,
+    create_respan,
+    example_attributes,
+    print_result,
+)
 from respan import workflow
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatPromptExecutionSettings
 from semantic_kernel.functions import KernelArguments
-
-from _shared import create_kernel, create_respan, print_result
 
 SCRIPT_NAME = Path(__file__).name
 APP_NAME = SCRIPT_NAME.removesuffix(".py")
 
 
 @workflow(name=SCRIPT_NAME)
-async def run_chat_completion() -> str:
+async def run_chat_completion(prompt: str) -> str:
     kernel = create_kernel()
     settings = OpenAIChatPromptExecutionSettings(
         service_id="chat",
@@ -22,7 +27,7 @@ async def run_chat_completion() -> str:
         max_tokens=80,
     )
     result = await kernel.invoke_prompt(
-        "Reply in one sentence: what does Semantic Kernel help developers build?",
+        prompt,
         arguments=KernelArguments(settings=settings),
     )
     output = str(result)
@@ -33,9 +38,15 @@ async def run_chat_completion() -> str:
 async def main() -> None:
     respan = create_respan(APP_NAME)
     try:
-        await run_chat_completion()
+        with example_attributes(APP_NAME):
+            await run_chat_completion(
+                "Reply in one sentence: what does Semantic Kernel help developers build?"
+            )
     finally:
-        respan.shutdown()
+        try:
+            await close_kernel_clients()
+        finally:
+            respan.shutdown()
 
 
 if __name__ == "__main__":

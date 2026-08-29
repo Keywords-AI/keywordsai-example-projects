@@ -3,11 +3,16 @@
 import asyncio
 from pathlib import Path
 
+from _shared import (
+    close_kernel_clients,
+    create_kernel,
+    create_respan,
+    example_attributes,
+    print_result,
+)
 from respan import workflow
 from semantic_kernel.exceptions.kernel_exceptions import KernelInvokeException
 from semantic_kernel.functions import kernel_function
-
-from _shared import create_kernel, create_respan, print_result
 
 SCRIPT_NAME = Path(__file__).name
 APP_NAME = SCRIPT_NAME.removesuffix(".py")
@@ -23,27 +28,31 @@ class FailurePlugin:
 
 
 @workflow(name=SCRIPT_NAME)
-async def run_function_failure() -> str:
+async def run_function_failure(scenario: str) -> None:
     kernel = create_kernel(with_chat_service=False)
     kernel.add_plugin(FailurePlugin(), plugin_name="Failure")
-    try:
-        await kernel.invoke(
-            function_name="fail_deterministically",
-            plugin_name="Failure",
-        )
-    except (RuntimeError, KernelInvokeException) as exc:
-        message = f"Caught expected failure: {exc}"
-        print_result("failure", message)
-        return message
-    raise AssertionError("FailurePlugin.fail_deterministically unexpectedly succeeded")
+    await kernel.invoke(
+        function_name="fail_deterministically",
+        plugin_name="Failure",
+    )
+    raise AssertionError(f"FailurePlugin unexpectedly succeeded for {scenario}")
 
 
 async def main() -> None:
     respan = create_respan(APP_NAME)
     try:
-        await run_function_failure()
+        with example_attributes(APP_NAME):
+            try:
+                await run_function_failure("deterministic")
+            except (RuntimeError, KernelInvokeException) as exc:
+                print_result(
+                    "failure", f"Caught expected failure: {type(exc).__name__}"
+                )
     finally:
-        respan.shutdown()
+        try:
+            await close_kernel_clients()
+        finally:
+            respan.shutdown()
 
 
 if __name__ == "__main__":
