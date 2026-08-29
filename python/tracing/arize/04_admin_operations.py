@@ -7,6 +7,7 @@ Run:
 from __future__ import annotations
 
 from arize._generated.api_client import models
+from arize.api_keys.types import OrgBinding, SpaceBinding
 
 from _shared import (
     create_arize_client,
@@ -25,7 +26,7 @@ EXAMPLE_NAME = "04_admin_operations"
 
 def _run_configuration() -> models.TemplateEvaluationRunConfig:
     return models.TemplateEvaluationRunConfig(
-        experiment_type="template_evaluation",
+        experiment_type="TEMPLATE_EVALUATION",
         ai_integration_id="ai-integration-offline",
         model_name="gpt-4o-mini",
         template="score {{output}}",
@@ -50,19 +51,11 @@ def run_admin_operations() -> str:
         example_name=EXAMPLE_NAME,
     ):
         print_result("ai_integrations.list", client.ai_integrations.list(space="space-offline"))
-        print_result("ai_integrations.create", client.ai_integrations.create(name="offline-integration", provider=models.AiIntegrationProvider.OPENAI))
+        print_result("ai_integrations.create", client.ai_integrations.create(name="offline-integration", provider=models.AiIntegrationProvider.OPEN_AI))
         print_result("ai_integrations.get", client.ai_integrations.get(integration="offline-integration", space="space-offline"))
         print_result("ai_integrations.update", client.ai_integrations.update(integration="offline-integration", space="space-offline", name="renamed-integration"))
         print_result("ai_integrations.delete", client.ai_integrations.delete(integration="offline-integration", space="space-offline"))
         print_result("annotation_configs.list", client.annotation_configs.list(space="space-offline"))
-        print_result(
-            "annotation_configs.create",
-            client.annotation_configs.create(
-                name="quality",
-                config_type=models.AnnotationConfigType.FREEFORM,
-                space="space-offline",
-            ),
-        )
         print_result("annotation_configs.get", client.annotation_configs.get(annotation_config="quality", space="space-offline"))
         print_result("annotation_configs.delete", client.annotation_configs.delete(annotation_config="quality", space="space-offline"))
         print_result("annotation_queues.list", client.annotation_queues.list(space="space-offline"))
@@ -176,8 +169,12 @@ def run_admin_operations() -> str:
             "api_keys.create_service_key",
             client.api_keys.create_service_key(
                 name="offline-service-key",
-                space="space-offline",
-                space_role=models.ApiKeySpaceRole.MEMBER,
+                orgs=[
+                    OrgBinding(
+                        org_id="org-offline",
+                        spaces=[SpaceBinding(space="space-offline")],
+                    )
+                ],
             ),
         )
         print_result("api_keys.refresh", client.api_keys.refresh(api_key_id="key-offline"))

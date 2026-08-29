@@ -4,11 +4,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 EXAMPLES = [
-    "01_spans_and_ml.py",
-    "02_datasets_projects_spaces.py",
-    "03_experiments_prompts_evaluators.py",
-    "04_admin_operations.py",
+    "01_invoke_model.py",
+    "02_converse.py",
+    "03_converse_stream.py",
+    "04_converse_tool.py",
+    "05_converse_error.py",
 ]
 
 
@@ -21,7 +23,7 @@ def run() -> None:
         if result.returncode:
             failures.append(f"{example} (exit {result.returncode})")
     if failures:
-        raise SystemExit(f"Arize example failures: {', '.join(failures)}")
+        raise SystemExit(f"AWS Bedrock example failures: {', '.join(failures)}")
 
 
 if __name__ == "__main__":

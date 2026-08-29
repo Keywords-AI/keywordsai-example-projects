@@ -43,6 +43,14 @@ def run_dataset_project_space_operations() -> str:
         print_result("datasets.list", client.datasets.list(space="space-offline"))
         print_result("datasets.create", client.datasets.create(name="offline-dataset", space="space-offline", examples=examples))
         print_result("datasets.get", client.datasets.get(dataset="offline-dataset", space="space-offline"))
+        try:
+            client.datasets.get(
+                dataset="missing-dataset",
+                space="space-offline",
+                _respan_force_error=True,
+            )
+        except RuntimeError as error:
+            print(f"datasets.get expected error: {error}")
         print_result("datasets.update", client.datasets.update(dataset="offline-dataset", name="renamed-dataset", space="space-offline"))
         print_result("datasets.list_examples", client.datasets.list_examples(dataset="offline-dataset", space="space-offline"))
         print_result("datasets.append_examples", client.datasets.append_examples(dataset="offline-dataset", space="space-offline", examples=examples))

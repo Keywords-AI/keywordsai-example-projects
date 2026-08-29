@@ -48,7 +48,7 @@ def _template_config() -> models.TemplateConfig:
 
 def _code_config() -> models.CustomCodeConfig:
     return models.CustomCodeConfig(
-        type="custom",
+        type="CUSTOM",
         name="offline-code",
         code="def evaluate(row): return 1",
         variables=[],

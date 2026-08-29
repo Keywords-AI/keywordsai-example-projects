@@ -31,7 +31,7 @@ MODEL_INFO = {
 
 
 @workflow(name=SCRIPT_NAME)
-async def run_round_robin_team() -> None:
+async def run_round_robin_team() -> str:
     model_client = OpenAIChatCompletionClient(
         model=RESPAN_MODEL,
         api_key=RESPAN_API_KEY,
@@ -59,29 +59,44 @@ async def run_round_robin_team() -> None:
     )
 
     try:
-        with propagate_attributes(
-            customer_identifier="autogen-example-user",
-            thread_identifier="autogen-team-thread",
-            metadata={"script": SCRIPT_NAME},
-        ):
-            result = await team.run(
-                task="Plan a small release checklist for a new Python tracing plugin."
-            )
+        result = await team.run(
+            task="Plan a small release checklist for a new Python tracing plugin."
+        )
+        lines: list[str] = []
         for message in result.messages:
             content = getattr(message, "content", None)
             if content:
-                print(f"{message.source}: {content}")
+                lines.append(f"{message.source}: {content}")
+        return "\n".join(lines)
     finally:
         await model_client.close()
 
 
 async def main() -> None:
+    run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID", f"autogen-{Path(__file__).stem}")
     respan = Respan(
         api_key=RESPAN_API_KEY,
         base_url=RESPAN_BASE_URL,
         instrumentations=[AutoGenInstrumentor()],
-        metadata={"example": "autogen-round-robin-team", "script": SCRIPT_NAME},
+        metadata={
+            "example": "autogen-round-robin-team",
+            "script": SCRIPT_NAME,
+            "run_id": run_id,
+        },
     )
-    await run_round_robin_team()
+    try:
+        with propagate_attributes(
+            customer_identifier="autogen-example-user",
+            thread_identifier="autogen-team-thread",
+            group_identifier=SCRIPT_NAME,
+            custom_identifier=run_id,
+            metadata={"script": SCRIPT_NAME, "run_id": run_id},
+        ):
+            print(await run_round_robin_team())
+    finally:
+        respan.shutdown()
+    print(f"RESPAN_EXAMPLE_RUN_ID={run_id}")
+
+
 if __name__ == "__main__":
     asyncio.run(main())

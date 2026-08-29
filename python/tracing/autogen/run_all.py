@@ -4,11 +4,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 EXAMPLES = [
-    "01_spans_and_ml.py",
-    "02_datasets_projects_spaces.py",
-    "03_experiments_prompts_evaluators.py",
-    "04_admin_operations.py",
+    "01_assistant_run.py",
+    "02_tool_use.py",
+    "03_round_robin_team.py",
 ]
 
 
@@ -21,7 +21,7 @@ def run() -> None:
         if result.returncode:
             failures.append(f"{example} (exit {result.returncode})")
     if failures:
-        raise SystemExit(f"Arize example failures: {', '.join(failures)}")
+        raise SystemExit(f"AutoGen example failures: {', '.join(failures)}")
 
 
 if __name__ == "__main__":
