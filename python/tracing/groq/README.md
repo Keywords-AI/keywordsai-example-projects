@@ -31,8 +31,10 @@ Run one script at a time:
 python 01_chat_completion.py
 python 02_streaming.py
 python 03_tool_calling.py
+python run_all.py
 ```
 
 Each script prints both a `custom_identifier` and `workflow_name`. The workflow
 name is also used as the Respan trace group identifier so the run is easy to
-find in traces and MCP lookups.
+find in traces and MCP lookups. Set `RESPAN_EXAMPLE_RUN_ID` to attach one exact
+batch marker to all three scenarios.

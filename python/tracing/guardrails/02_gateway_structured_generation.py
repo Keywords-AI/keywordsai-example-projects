@@ -2,12 +2,10 @@
 
 from typing import Literal
 
+from _shared import example_attributes, make_respan, result_summary, set_workflow_input
 from guardrails import Guard
 from pydantic import BaseModel, Field
-from respan import Respan, workflow
-from respan_instrumentation_guardrails import GuardrailsInstrumentor
-
-from _shared import load_guardrails_example_environment
+from respan import workflow
 
 WORKFLOW_NAME = "guardrails_gateway_structured_generation_workflow"
 
@@ -21,39 +19,39 @@ class ProductRecommendation(BaseModel):
 
 
 @workflow(name=WORKFLOW_NAME)
-def gateway_structured_generation_workflow(guard: Guard, model: str):
-    return guard(
-        model=model,
-        messages=[
-            {
-                "role": "user",
-                "content": (
-                    "Recommend one durable backpack for a weekend hiking trip. "
-                    "Return JSON with product, reason, and confidence."
-                ),
-            }
-        ],
-        num_reasks=1,
+def gateway_structured_generation_workflow(
+    guard: Guard, model: str, prompt: str
+) -> dict:
+    set_workflow_input({"model": model, "prompt": prompt})
+    return result_summary(
+        guard(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            num_reasks=1,
+        )
     )
 
 
 def run_gateway_structured_generation() -> None:
-    respan_api_key, respan_base_url, model = load_guardrails_example_environment()
-    respan = Respan(
-        api_key=respan_api_key,
-        base_url=respan_base_url,
-        app_name="guardrails-gateway-structured-generation",
-        instrumentations=[GuardrailsInstrumentor()],
-        is_auto_instrument=True,
-    )
-
+    respan, model = make_respan("guardrails-gateway-structured-generation")
     guard = Guard.for_pydantic(output_class=ProductRecommendation)
-    result = gateway_structured_generation_workflow(guard=guard, model=model)
-
-    print("Workflow name:", WORKFLOW_NAME)
-    print("Raw output:", result.raw_llm_output)
-    print("Validation passed:", result.validation_passed)
-    print("Validated output:", result.validated_output)
+    prompt = (
+        "Recommend one durable backpack for a weekend hiking trip. "
+        "Return JSON with product, reason, and confidence."
+    )
+    try:
+        with example_attributes("gateway-structured-generation", WORKFLOW_NAME):
+            result = gateway_structured_generation_workflow(
+                guard=guard,
+                model=model,
+                prompt=prompt,
+            )
+        print("Workflow name:", WORKFLOW_NAME)
+        print("Raw output:", result["raw_llm_output"])
+        print("Validation passed:", result["validation_passed"])
+        print("Validated output:", result["validated_output"])
+    finally:
+        respan.shutdown()
 
 
 if __name__ == "__main__":

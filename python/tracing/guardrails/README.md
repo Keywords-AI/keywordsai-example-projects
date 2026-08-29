@@ -27,10 +27,12 @@ Respan gateway with `RESPAN_API_KEY`.
 python python/tracing/guardrails/01_pydantic_parse.py
 python python/tracing/guardrails/02_gateway_structured_generation.py
 python python/tracing/guardrails/03_propagated_attributes.py
+python python/tracing/guardrails/run_all.py
 ```
 
 `01_pydantic_parse.py` and `03_propagated_attributes.py` validate known output.
 `02_gateway_structured_generation.py` calls the configured gateway model.
+Set `RESPAN_EXAMPLE_RUN_ID` to attach one exact marker to all three scenarios.
 
 The examples emit workflow spans with stable names:
 

@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import json
 
-from respan import tool, workflow
-
 from _shared import (
     example_attributes,
     make_client,
@@ -11,8 +9,10 @@ from _shared import (
     make_respan,
     model_name,
     print_result,
+    set_workflow_input,
     workflow_name,
 )
+from respan import tool, workflow
 
 EXAMPLE_NAME = "tool-calling"
 
@@ -54,10 +54,12 @@ def _tool_calls_content(tool_calls) -> str:
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
 def _tool_calling_workflow(client) -> str:
+    prompt = "What is the weather in Tokyo? Use the tool and answer briefly."
+    set_workflow_input(prompt)
     messages = [
         {
             "role": "user",
-            "content": "What is the weather in Tokyo? Use the tool and answer briefly.",
+            "content": prompt,
         }
     ]
     response = client.chat.completions.create(
@@ -74,7 +76,9 @@ def _tool_calling_workflow(client) -> str:
         return get_weather(city="Tokyo")
 
     assistant_message = message.model_dump(exclude_none=True)
-    assistant_message["content"] = assistant_message.get("content") or _tool_calls_content(tool_calls)
+    assistant_message["content"] = assistant_message.get(
+        "content"
+    ) or _tool_calls_content(tool_calls)
     messages.append(assistant_message)
     for tool_call in tool_calls:
         arguments = json.loads(tool_call.function.arguments or "{}")
@@ -82,6 +86,7 @@ def _tool_calling_workflow(client) -> str:
             {
                 "role": "tool",
                 "tool_call_id": tool_call.id,
+                "name": tool_call.function.name,
                 "content": get_weather(city=arguments.get("city", "Tokyo")),
             }
         )

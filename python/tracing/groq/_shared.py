@@ -1,13 +1,14 @@
 from __future__ import annotations
 
+import json
 import os
 from contextlib import contextmanager
 from pathlib import Path
 from uuid import uuid4
 
+import httpx
 from dotenv import load_dotenv
 from groq import Groq
-import httpx
 from respan import Respan, propagate_attributes
 from respan_instrumentation_groq import GroqInstrumentor
 
@@ -108,16 +109,25 @@ def make_custom_identifier(example_name: str) -> str:
 def example_attributes(example_name: str, custom_identifier: str | None = None):
     custom_identifier = custom_identifier or make_custom_identifier(example_name)
     current_workflow_name = workflow_name(example_name)
+    run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID") or custom_identifier
     with propagate_attributes(
         custom_identifier=custom_identifier,
         trace_group_identifier=current_workflow_name,
         metadata={
             "example": example_name,
-            "run_id": custom_identifier,
+            "run_id": run_id,
             "workflow_name": current_workflow_name,
         },
     ):
         yield custom_identifier
+
+
+def set_workflow_input(prompt: str) -> None:
+    from respan import get_client
+
+    get_client().update_current_span(
+        attributes={"traceloop.entity.input": json.dumps({"prompt": prompt})}
+    )
 
 
 def client_mode() -> str:
