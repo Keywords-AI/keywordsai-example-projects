@@ -36,16 +36,23 @@ pip install -e /path/to/respan/python-sdks/respan-sdk \
 | `05_react_agent.py` | `dspy.ReAct` with a Python tool |
 | `06_evaluate_program.py` | `dspy.Evaluate` on a small devset |
 
-Each script sets distinct `app_name`, `example_name`, `example_run_id`,
-`trace_group_identifier`, and `custom_identifier` values so exported results can
-be traced back to the script that produced them. The root workflow span also
-records a compact example input and output, while child spans contain the DSPy
-module, adapter, LM, evaluation, and tool details.
+Each script sets distinct `app_name`, `example_name`, and
+`trace_group_identifier` values while honoring one exact
+`RESPAN_EXAMPLE_RUN_ID` as its `custom_identifier` and metadata `run_id`. The
+root workflow span records compact input/output, child spans contain the DSPy
+module, adapter, LM, evaluation, and tool details, and shutdown runs explicitly
+on success or failure.
 
 Run any example:
 
 ```bash
 python 01_predict_signature.py
+```
+
+Run the complete set:
+
+```bash
+python run_all.py
 ```
 
 ## Environment Variables

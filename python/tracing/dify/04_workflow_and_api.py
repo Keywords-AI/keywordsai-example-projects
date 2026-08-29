@@ -44,18 +44,17 @@ def main() -> None:
         )
         rename.raise_for_status()
 
-        print_result(
-            "workflow_and_api",
-            {
-                "workflow": workflow_name,
-                "workflow_run_id": workflow_response.json().get("workflow_run_id"),
-                "parameters_keys": sorted(parameters.json().keys()),
-                "conversations": len(conversations.json().get("data", [])),
-                "messages": len(messages.json().get("data", [])),
-                "feedback": feedback.json().get("result"),
-                "rename": rename.json().get("result"),
-            },
-        )
+        summary = {
+            "workflow": workflow_name,
+            "workflow_run_id": workflow_response.json().get("workflow_run_id"),
+            "parameters_keys": sorted(parameters.json().keys()),
+            "conversations": len(conversations.json().get("data", [])),
+            "messages": len(messages.json().get("data", [])),
+            "feedback": feedback.json().get("result"),
+            "rename": rename.json().get("result"),
+        }
+        runtime.set_result(summary)
+        print_result("workflow_and_api", summary)
 
 
 if __name__ == "__main__":

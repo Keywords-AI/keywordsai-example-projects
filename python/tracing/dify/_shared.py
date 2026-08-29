@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
+from opentelemetry.semconv_ai import SpanAttributes
 
 EXAMPLE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = EXAMPLE_DIR.parents[2]
@@ -67,6 +68,7 @@ class _LocalDifyHandler(BaseHTTPRequestHandler):
     @staticmethod
     def _usage(prompt_tokens: int = 9, completion_tokens: int = 5) -> dict[str, Any]:
         return {
+            "model": "dify/local-test-model",
             "prompt_tokens": prompt_tokens,
             "completion_tokens": completion_tokens,
             "total_tokens": prompt_tokens + completion_tokens,
@@ -267,10 +269,16 @@ class LocalDifyServer(AbstractContextManager):
 class DifyExampleRuntime(AbstractContextManager):
     def __init__(self, workflow_name: str) -> None:
         self.workflow_name = workflow_name
+        self.run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID") or (
+            f"dify-{workflow_name}-{uuid.uuid4().hex[:8]}"
+        )
         self.respan = None
         self.base_url = ""
         self._server_context: LocalDifyServer | None = None
+        self._attributes_context = None
         self._workflow_context = None
+        self._workflow_span = None
+        self._result: Any = None
 
     def __enter__(self) -> "DifyExampleRuntime":
         load_repo_env()
@@ -284,25 +292,58 @@ class DifyExampleRuntime(AbstractContextManager):
             base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
             app_name=self.workflow_name,
             instrumentations=[DifyInstrumentor()],
+            metadata={
+                "integration": "dify",
+                "run_id": self.run_id,
+                "workflow_name": self.workflow_name,
+            },
             is_batching_enabled=False,
             log_level=os.getenv("RESPAN_LOG_LEVEL", "WARNING"),
         )
+        self._attributes_context = self.respan.propagate_attributes(
+            custom_identifier=self.run_id,
+            trace_group_identifier=self.workflow_name,
+            metadata={
+                "integration": "dify",
+                "run_id": self.run_id,
+                "workflow_name": self.workflow_name,
+            },
+        )
+        self._attributes_context.__enter__()
         self._workflow_context = get_client().start_span(
             self.workflow_name,
             kind="workflow",
         )
-        self._workflow_context.__enter__()
+        self._workflow_span = self._workflow_context.__enter__()
+        if self._workflow_span is not None:
+            self._workflow_span.set_attribute(
+                SpanAttributes.TRACELOOP_ENTITY_INPUT,
+                json.dumps({"scenario": self.workflow_name}, separators=(",", ":")),
+            )
+        print(f"example_run_id={self.run_id}")
         return self
 
     def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
-        if self._workflow_context is not None:
-            self._workflow_context.__exit__(exc_type, exc, tb)
-        if self.respan is not None:
-            shutdown = getattr(self.respan, "shutdown", None)
-            if callable(shutdown):
-                shutdown()
-        if self._server_context is not None:
-            self._server_context.__exit__(exc_type, exc, tb)
+        try:
+            if self._workflow_span is not None:
+                output = (
+                    {"error": str(exc)}
+                    if exc is not None
+                    else self._result or {"status": "completed"}
+                )
+                self._workflow_span.set_attribute(
+                    SpanAttributes.TRACELOOP_ENTITY_OUTPUT,
+                    json.dumps(output, default=str, separators=(",", ":")),
+                )
+            if self._workflow_context is not None:
+                self._workflow_context.__exit__(exc_type, exc, tb)
+        finally:
+            if self._attributes_context is not None:
+                self._attributes_context.__exit__(exc_type, exc, tb)
+            if self.respan is not None:
+                self.respan.shutdown()
+            if self._server_context is not None:
+                self._server_context.__exit__(exc_type, exc, tb)
 
     def _configure_dify_endpoint(self) -> None:
         base_url = os.getenv("DIFY_BASE_URL")
@@ -341,6 +382,9 @@ class DifyExampleRuntime(AbstractContextManager):
 
     def user(self, suffix: str) -> str:
         return f"respan-dify-{suffix}-{uuid.uuid4().hex[:8]}"
+
+    def set_result(self, value: Any) -> None:
+        self._result = value
 
 
 class sample_file(AbstractContextManager):

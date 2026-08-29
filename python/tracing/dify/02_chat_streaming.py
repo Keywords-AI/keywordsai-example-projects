@@ -16,7 +16,9 @@ def main() -> None:
         )
         response.raise_for_status()
         answer = collect_stream_answer(response)
-        print_result("chat_streaming", {"workflow": workflow_name, "answer": answer})
+        summary = {"workflow": workflow_name, "answer": answer}
+        runtime.set_result(summary)
+        print_result("chat_streaming", summary)
 
 
 if __name__ == "__main__":

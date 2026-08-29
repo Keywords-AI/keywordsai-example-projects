@@ -89,6 +89,7 @@ def create_respan(
         "example_set": "dspy",
         "example_name": example_name,
         "example_run_id": run_id,
+        "run_id": run_id,
     }
     respan = Respan(
         api_key=settings.api_key,
@@ -117,6 +118,27 @@ def create_respan(
 
 
 @contextmanager
+def managed_example(
+    *,
+    app_name: str,
+    example_name: str,
+    include_content: bool = True,
+    temperature: float = 0.2,
+):
+    """Create one example context and always shut down its exporter."""
+    context = create_respan(
+        app_name=app_name,
+        example_name=example_name,
+        include_content=include_content,
+        temperature=temperature,
+    )
+    try:
+        yield context
+    finally:
+        context.respan.shutdown()
+
+
+@contextmanager
 def traced_example(
     context: ExampleContext,
     *,
@@ -127,12 +149,13 @@ def traced_example(
     span_name = root_span_name or f"dspy_example_{context.example_name}"
     with context.respan.propagate_attributes(
         trace_group_identifier=f"{context.example_name}-{context.run_id}",
-        custom_identifier=f"{context.example_name}-{context.run_id}",
+        custom_identifier=context.run_id,
         thread_identifier=f"dspy_example_{context.example_name}",
         metadata={
             "example_set": "dspy",
             "example_name": context.example_name,
             "example_run_id": context.run_id,
+            "run_id": context.run_id,
         },
     ):
         client = context.respan.telemetry.get_client()

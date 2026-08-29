@@ -61,7 +61,9 @@ def state_path(run_id: str) -> Path:
 
 
 def make_custom_identifier(example_name: str) -> str:
-    return f"cursor-sdk-{example_name}-{uuid4().hex[:8]}"
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID") or (
+        f"cursor-sdk-{example_name}-{uuid4().hex[:8]}"
+    )
 
 
 def make_event(
@@ -81,7 +83,9 @@ def make_event(
     return event
 
 
-def make_respan(example_name: str, state_file: Path) -> tuple[Respan, CursorSDKInstrumentor]:
+def make_respan(
+    example_name: str, state_file: Path
+) -> tuple[Respan, CursorSDKInstrumentor]:
     api_key = require_respan_api_key()
     instrumentor = CursorSDKInstrumentor(state_path=state_file)
     respan = Respan(
@@ -126,15 +130,17 @@ def replay_events(
     respan, instrumentor = make_respan(example_name, state_file)
     print_start(example_name, run_id)
     results = []
-    with example_attributes(example_name, run_id):
-        for event in events:
-            result = instrumentor.process_event(event)
-            results.append(result)
-            print(
-                f"event={result.event_name} emitted={result.emitted} span={result.span_name}",
-                flush=True,
-            )
-    finish_respan(respan)
+    try:
+        with example_attributes(example_name, run_id):
+            for event in events:
+                result = instrumentor.process_event(event)
+                results.append(result)
+                print(
+                    f"event={result.event_name} emitted={result.emitted} span={result.span_name}",
+                    flush=True,
+                )
+    finally:
+        finish_respan(respan)
     return results
 
 
@@ -152,4 +158,4 @@ def print_json(label: str, value: Any) -> None:
 
 
 def finish_respan(respan: Respan) -> None:
-    pass
+    respan.shutdown()

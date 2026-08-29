@@ -22,31 +22,40 @@ def main() -> None:
 
     respan, instrumentor = make_respan(EXAMPLE_NAME, state_file)
     print_start(EXAMPLE_NAME, run_id)
-    with example_attributes(EXAMPLE_NAME, run_id):
-        for event in [
-            make_event(
-                EXAMPLE_NAME,
-                run_id,
-                "beforeSubmitPrompt",
-                prompt="Start a refactor, then cancel the agent turn.",
-            ),
-            make_event(
-                EXAMPLE_NAME,
-                run_id,
-                "afterAgentThought",
-                text="I found the affected files and am preparing a minimal change.",
-                duration_ms=300,
-            ),
-            make_event(EXAMPLE_NAME, run_id, "stop", status="cancelled", loop_count=1),
-        ]:
-            result = instrumentor.process_event(event)
-            print(
-                f"event={result.event_name} emitted={result.emitted} span={result.span_name}",
-                flush=True,
-            )
+    try:
+        with example_attributes(EXAMPLE_NAME, run_id):
+            for event in [
+                make_event(
+                    EXAMPLE_NAME,
+                    run_id,
+                    "beforeSubmitPrompt",
+                    prompt="Start a refactor, then cancel the agent turn.",
+                ),
+                make_event(
+                    EXAMPLE_NAME,
+                    run_id,
+                    "afterAgentThought",
+                    text="I found the affected files and am preparing a minimal change.",
+                    duration_ms=300,
+                ),
+                make_event(
+                    EXAMPLE_NAME,
+                    run_id,
+                    "stop",
+                    status="cancelled",
+                    loop_count=1,
+                ),
+            ]:
+                result = instrumentor.process_event(event)
+                print(
+                    f"event={result.event_name} emitted={result.emitted} span={result.span_name}",
+                    flush=True,
+                )
 
-    state = json.loads(state_file.read_text()) if state_file.exists() else {}
-    print(f"state_after_stop={state}", flush=True)
+        state = json.loads(state_file.read_text()) if state_file.exists() else {}
+        print(f"state_after_stop={state}", flush=True)
+    finally:
+        respan.shutdown()
 
 
 if __name__ == "__main__":
