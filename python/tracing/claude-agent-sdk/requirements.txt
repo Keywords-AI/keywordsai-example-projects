@@ -1,0 +1,4 @@
+claude-agent-sdk>=0.1.39
+python-dotenv>=1.0.0
+respan-ai>=2.5.0
+respan-instrumentation-claude-agent-sdk>=0.1.0

@@ -48,10 +48,13 @@ def main() -> None:
         workflow_name=WORKFLOW_NAME,
         metadata={"scenario": "support_triage"},
     )
-    output = run_with_attributes(context, lambda: run_attribute_crew(context))
-    print_result("Crew output", output)
-    print_result("Workflow name", WORKFLOW_NAME)
-    print_result("Example run id", context.run_id)
+    try:
+        output = run_with_attributes(context, lambda: run_attribute_crew(context))
+        print_result("Crew output", output)
+        print_result("Workflow name", WORKFLOW_NAME)
+        print_result("Example run id", context.run_id)
+    finally:
+        context.respan.shutdown()
 
 
 if __name__ == "__main__":

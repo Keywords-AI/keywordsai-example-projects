@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import json
 import os
 from pathlib import Path
 from typing import Any
@@ -132,6 +133,9 @@ def create_respan(
 
 
 def build_llm(settings: GatewaySettings):
+    if os.getenv("CREWAI_USE_LIVE_LLM", "").lower() not in {"1", "true", "yes"}:
+        return _build_deterministic_llm(settings)
+
     from crewai import LLM
 
     if settings.uses_gateway:
@@ -144,6 +148,95 @@ def build_llm(settings: GatewaySettings):
     return LLM(
         model=settings.model,
         api_key=settings.llm_api_key,
+    )
+
+
+def _build_deterministic_llm(settings: GatewaySettings):
+    """Use real CrewAI lifecycle events without requiring a provider credential."""
+    from crewai.events.types.llm_events import LLMCallType
+    from crewai.llms.base_llm import BaseLLM, llm_call_context
+
+    class DeterministicCrewAILLM(BaseLLM):
+        tool_round_complete: bool = False
+
+        def supports_function_calling(self) -> bool:
+            return True
+
+        def call(
+            self,
+            messages,
+            tools=None,
+            callbacks=None,
+            available_functions=None,
+            from_task=None,
+            from_agent=None,
+            response_model=None,
+        ):
+            _ = callbacks, response_model
+            with llm_call_context():
+                self._emit_call_started_event(
+                    messages=messages,
+                    tools=tools,
+                    available_functions=available_functions,
+                    from_task=from_task,
+                    from_agent=from_agent,
+                )
+                if tools and not self.tool_round_complete:
+                    tool_calls = []
+                    for index, tool in enumerate(tools):
+                        function = tool.get("function", {})
+                        name = function.get("name", f"tool_{index + 1}")
+                        arguments = {"city": "Paris"}
+                        call_id = f"crewai-example-call-{index + 1}"
+                        tool_calls.append(
+                            {
+                                "id": call_id,
+                                "type": "function",
+                                "function": {
+                                    "name": name,
+                                    "arguments": json.dumps(arguments),
+                                },
+                            }
+                        )
+
+                    self._emit_call_completed_event(
+                        response=tool_calls,
+                        call_type=LLMCallType.TOOL_CALL,
+                        from_task=from_task,
+                        from_agent=from_agent,
+                        messages=messages,
+                        usage={"prompt_tokens": 23, "completion_tokens": 7},
+                        finish_reason="tool_calls",
+                        response_id="crewai-example-tool-response",
+                    )
+                    self.tool_round_complete = True
+                    return tool_calls
+
+                if tools:
+                    response = (
+                        "Paris weather is sunny at 22C and its population is "
+                        "about 2.1 million people."
+                    )
+                else:
+                    response = (
+                        "CrewAI coordinates agents and tasks while Respan records "
+                        "their workflow, model, and output spans."
+                    )
+                self._emit_call_completed_event(
+                    response=response,
+                    call_type=LLMCallType.LLM_CALL,
+                    from_task=from_task,
+                    from_agent=from_agent,
+                    messages=messages,
+                    usage={"prompt_tokens": 19, "completion_tokens": 14},
+                    finish_reason="stop",
+                    response_id="crewai-example-text-response",
+                )
+                return response
+
+    return DeterministicCrewAILLM(
+        model=settings.model,
+        provider="openai",
     )
 
 

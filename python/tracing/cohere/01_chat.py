@@ -32,11 +32,16 @@ def cohere_chat() -> str:
 
 
 def main() -> None:
-    output = run_with_example_attributes(
-        respan,
-        workflow_name=WORKFLOW_NAME,
-        action=cohere_chat,
-    )
-    print(output)
+    try:
+        output = run_with_example_attributes(
+            respan,
+            workflow_name=WORKFLOW_NAME,
+            action=cohere_chat,
+        )
+        print(output)
+    finally:
+        respan.shutdown()
+
+
 if __name__ == "__main__":
     main()
