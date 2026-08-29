@@ -3,6 +3,7 @@ import {
   firstText,
   runPydanticAIChat,
   runPydanticAITool,
+  runPydanticAIWorkflow,
 } from "./_runtime.js";
 
 const runtime = await createRuntime({
@@ -17,43 +18,49 @@ async function lookupStatus(args: { service: string }): Promise<string> {
 }
 
 try {
-  const toolResult = await lookupStatus({ service: "Respan" });
-  const messages = [
-    { role: "system" as const, content: "You summarize tool results." },
-    { role: "user" as const, content: `Tool result: ${toolResult}` },
-  ];
-  const toolDefinitions = [
-    {
-      name: "lookup_status",
-      description: "Looks up service status",
-      parameters: {
-        type: "object",
-        properties: {
-          service: { type: "string" },
+  const { response, toolResult } = await runPydanticAIWorkflow(runtime, {
+    workflowName: "pydantic_ai.tool_workflow",
+    fn: async () => {
+      const toolResult = await lookupStatus({ service: "Respan" });
+      const messages = [
+        { role: "system" as const, content: "You summarize tool results." },
+        { role: "user" as const, content: `Tool result: ${toolResult}` },
+      ];
+      const toolDefinitions = [
+        {
+          name: "lookup_status",
+          description: "Looks up service status",
+          parameters: {
+            type: "object",
+            properties: {
+              service: { type: "string" },
+            },
+            required: ["service"],
+          },
         },
-        required: ["service"],
-      },
-    },
-  ];
+      ];
 
-  const response = await runPydanticAIChat(runtime, {
-    spanName: "pydantic_ai.tool_gateway",
-    provider: "openai",
-    messages,
-    toolDefinitions,
-    fn: async () =>
-      await runtime.client.chat.completions.create({
-        model: runtime.model,
+      const response = await runPydanticAIChat(runtime, {
+        spanName: "pydantic_ai.tool_gateway",
+        provider: "openai",
         messages,
-      }),
-    outputMessages: (result) => [
-      { role: "assistant", content: firstText(result) },
-    ],
-    usage: (result) => ({
-      inputTokens: result.usage?.prompt_tokens,
-      outputTokens: result.usage?.completion_tokens,
-      totalTokens: result.usage?.total_tokens,
-    }),
+        toolDefinitions,
+        fn: async () =>
+          await runtime.client.chat.completions.create({
+            model: runtime.model,
+            messages,
+          }),
+        outputMessages: (result) => [
+          { role: "assistant", content: firstText(result) },
+        ],
+        usage: (result) => ({
+          inputTokens: result.usage?.prompt_tokens,
+          outputTokens: result.usage?.completion_tokens,
+          totalTokens: result.usage?.total_tokens,
+        }),
+      });
+      return { response, toolResult };
+    },
   });
 
   console.log(JSON.stringify({
