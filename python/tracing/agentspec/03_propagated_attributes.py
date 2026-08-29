@@ -3,26 +3,21 @@
 from pyagentspec.adapters.langgraph import AgentSpecLoader
 from pyagentspec.agent import Agent
 from pyagentspec.llms import OpenAiConfig
-from respan import Respan, propagate_attributes
-from respan_instrumentation_agentspec import AgentSpecInstrumentor
-
-from _shared import configure_gateway, latest_message_content
+from _shared import build_respan, example_scope, latest_message_content
 
 
 def run_propagated_attributes() -> str:
-    respan_api_key, respan_base_url, model = configure_gateway()
-    respan = Respan(
-        api_key=respan_api_key,
-        base_url=respan_base_url,
-        app_name="agentspec-propagated-attributes",
-        instrumentations=[
-            AgentSpecInstrumentor(workflow_name="agentspec_propagated_attributes")
-        ],
-        metadata={"example": "agentspec"},
-        environment="examples",
+    respan, model = build_respan(
+        example_name="propagated-attributes",
+        workflow_name="agentspec_propagated_attributes",
+        use_static_identity=False,
     )
-
-    try:
+    with example_scope(
+        "propagated-attributes",
+        customer_identifier="agentspec-example-user",
+        thread_identifier="agentspec-example-thread",
+        metadata={"scenario": "propagated_attributes"},
+    ):
         agent = Agent(
             name="support_assistant",
             description="A concise support assistant.",
@@ -37,11 +32,7 @@ def run_propagated_attributes() -> str:
         )
         langgraph_agent = AgentSpecLoader().load_component(agent)
 
-        with propagate_attributes(
-            customer_identifier="agentspec-example-user",
-            thread_identifier="agentspec-example-thread",
-            metadata={"scenario": "propagated_attributes"},
-        ):
+        try:
             result = langgraph_agent.invoke(
                 input={
                     "messages": [
@@ -56,11 +47,11 @@ def run_propagated_attributes() -> str:
                 }
             )
 
-        output = latest_message_content(result)
-        print(output)
-        return output
-    finally:
-        respan.shutdown()
+            output = latest_message_content(result)
+            print(output)
+            return output
+        finally:
+            respan.shutdown()
 
 
 if __name__ == "__main__":
