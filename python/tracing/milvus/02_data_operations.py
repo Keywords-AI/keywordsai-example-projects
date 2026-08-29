@@ -1,13 +1,14 @@
-from respan import Respan, workflow
-
 from _shared import (
     collection_name,
+    create_local_collection,
     create_respan,
     finish_respan,
+    json_native,
     local_milvus_client,
     print_result,
     workflow_attributes,
 )
+from respan import Respan, workflow
 
 WORKFLOW_NAME = "milvus_data_operations_workflow"
 
@@ -16,7 +17,7 @@ WORKFLOW_NAME = "milvus_data_operations_workflow"
 def run_data_operations() -> dict:
     with local_milvus_client() as client:
         name = collection_name(WORKFLOW_NAME)
-        client.create_collection(collection_name=name, dimension=4)
+        create_local_collection(client, name)
         inserted = client.insert(
             collection_name=name,
             data=[
@@ -73,15 +74,17 @@ def run_data_operations() -> dict:
         )
         deleted = client.delete(collection_name=name, ids=[3])
 
-        return {
-            "inserted": inserted,
-            "search": searched,
-            "query": queried,
-            "get": fetched,
-            "upserted": upserted,
-            "deleted": deleted,
-            "stats": client.get_collection_stats(collection_name=name),
-        }
+        return json_native(
+            {
+                "inserted": inserted,
+                "search": searched,
+                "query": queried,
+                "get": fetched,
+                "upserted": upserted,
+                "deleted": deleted,
+                "stats": client.get_collection_stats(collection_name=name),
+            }
+        )
 
 
 def main() -> None:

@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+import json
 
+from _shared import create_respan, finish_respan, workflow_attributes
 from agent_framework import tool
+from respan import Respan, workflow
 
-from _shared import create_respan
+WORKFLOW_NAME = "microsoft-agent-framework-deterministic-failure"
 
 
 @tool
@@ -15,16 +18,24 @@ def always_fail(reason: str) -> str:
     raise RuntimeError(f"deterministic Agent Framework failure: {reason}")
 
 
-async def run_failure_example() -> None:
-    respan = create_respan("microsoft-agent-framework-deterministic-failure")
+@workflow(name=WORKFLOW_NAME)
+async def run_failure_example(reason: str) -> dict[str, str]:
     try:
-        try:
-            await always_fail.invoke(arguments={"reason": "example"})
-        except RuntimeError as exc:
-            print(f"expected failure: {exc}")
+        await always_fail.invoke(arguments={"reason": reason})
+    except RuntimeError as exc:
+        return {"reason": reason, "expected_error": str(exc)}
+    raise AssertionError("always_fail unexpectedly succeeded")
+
+
+async def main() -> None:
+    respan = create_respan(WORKFLOW_NAME)
+    try:
+        with Respan.propagate_attributes(**workflow_attributes(WORKFLOW_NAME)):
+            result = await run_failure_example("example")
+        print(json.dumps(result, indent=2, sort_keys=True))
     finally:
-        respan.shutdown()
+        finish_respan(respan)
 
 
 if __name__ == "__main__":
-    asyncio.run(run_failure_example())
+    asyncio.run(main())
