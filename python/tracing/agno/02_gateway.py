@@ -2,7 +2,7 @@
 
 from respan import workflow
 
-from _shared import build_agent, create_respan, print_result
+from _shared import build_agent, create_respan, example_attributes, print_result
 
 
 @workflow(name="agno_02_gateway")
@@ -17,7 +17,11 @@ def run_gateway() -> str:
 
 def gateway() -> None:
     respan, settings = create_respan(app_name="agno-02-gateway")
-    output = run_gateway()
+    try:
+        with example_attributes(respan, "agno_02_gateway"):
+            output = run_gateway()
+    finally:
+        respan.shutdown()
     print_result("Model", settings.model)
     print_result("Agent output", output)
 

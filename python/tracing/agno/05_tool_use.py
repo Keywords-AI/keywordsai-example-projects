@@ -2,7 +2,7 @@
 
 from respan import workflow
 
-from _shared import build_agent, create_respan, print_result
+from _shared import build_agent, create_respan, example_attributes, print_result
 
 
 def lookup_shipping_status(order_id: str) -> str:
@@ -23,7 +23,11 @@ def run_tool_use() -> str:
 
 def tool_use() -> None:
     respan, _ = create_respan(app_name="agno-05-tool-use")
-    output = run_tool_use()
+    try:
+        with example_attributes(respan, "agno_05_tool_use"):
+            output = run_tool_use()
+    finally:
+        respan.shutdown()
     print_result("Agent output", output)
 
 

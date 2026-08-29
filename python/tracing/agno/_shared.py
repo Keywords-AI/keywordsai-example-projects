@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import os
 from collections.abc import Iterable
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
+from uuid import uuid4
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
@@ -19,6 +21,9 @@ class GatewaySettings:
     api_key: str
     base_url: str
     model: str
+
+
+_DEFAULT_EXAMPLE_RUN_ID = f"agno-{uuid4().hex[:8]}"
 
 
 def load_gateway_settings() -> GatewaySettings:
@@ -36,14 +41,40 @@ def load_gateway_settings() -> GatewaySettings:
 
 def create_respan(*, app_name: str, **kwargs) -> tuple[Respan, GatewaySettings]:
     settings = load_gateway_settings()
+    run_id = example_run_id()
+    metadata = {
+        "integration": "agno",
+        "run_id": run_id,
+        **kwargs.pop("metadata", {}),
+    }
     respan = Respan(
         app_name=app_name,
         api_key=settings.api_key,
         base_url=settings.base_url,
         instrumentations=[AgnoInstrumentor()],
+        metadata=metadata,
         **kwargs,
     )
     return respan, settings
+
+
+def example_run_id() -> str:
+    return os.getenv("RESPAN_EXAMPLE_RUN_ID") or _DEFAULT_EXAMPLE_RUN_ID
+
+
+@contextmanager
+def example_attributes(respan: Respan, example_name: str):
+    run_id = example_run_id()
+    with respan.propagate_attributes(
+        custom_identifier=f"{example_name}-{run_id}",
+        trace_group_identifier=example_name,
+        metadata={
+            "integration": "agno",
+            "example": example_name,
+            "run_id": run_id,
+        },
+    ):
+        yield run_id
 
 
 def build_agent(
