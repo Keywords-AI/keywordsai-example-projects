@@ -15,6 +15,7 @@ from respan_instrumentation_livekit import LiveKitInstrumentor
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_RESPAN_BASE_URL = "https://api.respan.ai/api"
+_RUN_ID: str | None = None
 
 
 def load_root_env() -> None:
@@ -33,26 +34,47 @@ def respan_base_url() -> str:
     return os.getenv("RESPAN_BASE_URL", DEFAULT_RESPAN_BASE_URL).rstrip("/")
 
 
+def example_run_id() -> str:
+    global _RUN_ID
+
+    if _RUN_ID is None:
+        load_root_env()
+        _RUN_ID = os.getenv("RESPAN_EXAMPLE_RUN_ID", "").strip()
+        if not _RUN_ID:
+            _RUN_ID = f"livekit-{uuid4().hex[:8]}"
+    return _RUN_ID
+
+
 def workflow_name(example_name: str) -> str:
     return f"livekit_{example_name.replace('-', '_')}"
 
 
 def make_custom_identifier(example_name: str) -> str:
-    return f"livekit-{example_name}-{uuid4().hex[:8]}"
+    return f"{example_run_id()}:{example_name}"
 
 
-def make_respan(example_name: str) -> Respan:
+def make_respan(example_name: str, *, client_mode: str = "mock-livekit") -> Respan:
     return Respan(
         api_key=require_respan_api_key(),
         base_url=respan_base_url(),
         app_name="livekit-examples",
         instrumentations=[LiveKitInstrumentor()],
         environment=os.getenv("RESPAN_ENVIRONMENT", "example"),
-        metadata={"integration": "livekit", "example": example_name},
+        metadata={
+            "integration": "livekit",
+            "example": example_name,
+            "example_run_id": example_run_id(),
+            "client_mode": client_mode,
+        },
     )
 
 
-def example_attributes(example_name: str, custom_identifier: str | None = None):
+def example_attributes(
+    example_name: str,
+    custom_identifier: str | None = None,
+    *,
+    client_mode: str = "mock-livekit",
+):
     custom_identifier = custom_identifier or make_custom_identifier(example_name)
     current_workflow_name = workflow_name(example_name)
     return propagate_attributes(
@@ -60,18 +82,43 @@ def example_attributes(example_name: str, custom_identifier: str | None = None):
         trace_group_identifier=current_workflow_name,
         metadata={
             "example": example_name,
-            "run_id": custom_identifier,
+            "example_run_id": example_run_id(),
+            "run_id": example_run_id(),
             "workflow_name": current_workflow_name,
-            "client_mode": "mock-livekit",
+            "client_mode": client_mode,
         },
     )
 
 
-def print_start(example_name: str, custom_identifier: str) -> None:
+def print_start(
+    example_name: str,
+    custom_identifier: str,
+    *,
+    client_mode: str = "mock-livekit",
+) -> None:
     print(f"example={example_name}", flush=True)
+    print(f"example_run_id={example_run_id()}", flush=True)
     print(f"custom_identifier={custom_identifier}", flush=True)
     print(f"workflow_name={workflow_name(example_name)}", flush=True)
-    print("client_mode=mock-livekit", flush=True)
+    print(f"client_mode={client_mode}", flush=True)
+
+
+def live_openai_settings() -> tuple[str, str, str]:
+    load_root_env()
+    api_key = os.getenv("RESPAN_GATEWAY_API_KEY") or os.getenv("RESPAN_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "RESPAN_GATEWAY_API_KEY or RESPAN_API_KEY is required for the live example"
+        )
+    base_url = (
+        os.getenv("RESPAN_GATEWAY_BASE_URL")
+        or os.getenv("RESPAN_BASE_URL")
+        or DEFAULT_RESPAN_BASE_URL
+    ).rstrip("/")
+    model = os.getenv("RESPAN_LIVEKIT_MODEL") or os.getenv(
+        "RESPAN_MODEL", "gpt-4o-mini"
+    )
+    return api_key, base_url, model
 
 
 def print_result(label: str, value: Any) -> None:

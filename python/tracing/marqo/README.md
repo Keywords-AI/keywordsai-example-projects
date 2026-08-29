@@ -1,19 +1,24 @@
 # Marqo Tracing Example
 
-This quickstart creates a temporary Marqo index, adds documents, runs tensor
-search, and emits a Respan trace named `marqo_document_search_workflow`.
+These examples use the current Marqo client to emit deterministic success and
+service-error traces. The quickstart creates a temporary index, adds documents,
+runs tensor search, and deletes the index. The failure probe records a bounded
+Marqo 503 without making an external request.
 
 ## Run
 
-Start a compatible Marqo instance, add `RESPAN_API_KEY` to the repository-root
-`.env`, then run:
+Add `RESPAN_API_KEY` to the repository-root `.env`, then run:
 
 ```bash
 cd python/tracing/marqo
 pip install -r requirements.txt
-python 01_quickstart.py
+RESPAN_EXAMPLE_RUN_ID=marqo-local python 01_quickstart.py
+RESPAN_EXAMPLE_RUN_ID=marqo-local python 02_service_error.py
 ```
 
-`MARQO_URL` defaults to `http://localhost:8882`. For Marqo Cloud, set
-`MARQO_URL` and `MARQO_API_KEY` in the same `.env` file. The example deletes its
-uniquely named index before exiting.
+Without `MARQO_URL`, the examples start an ephemeral loopback protocol fixture;
+the SDK itself is never replaced or mocked. To validate a real local service,
+set `MARQO_URL`. For Marqo Cloud, set both `MARQO_URL` and `MARQO_API_KEY` in
+the same `.env` file. The error probe always stays on loopback so it is safe to
+run with production credentials. Both examples explicitly flush and shut down
+Respan before exiting.

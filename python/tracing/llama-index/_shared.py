@@ -2,19 +2,21 @@
 
 from __future__ import annotations
 
-from contextlib import contextmanager
+import json
 import os
+from collections.abc import Iterable
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Any
 from uuid import uuid4
 
 from dotenv import load_dotenv
 from llama_index.core import Document, Settings
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.openai import OpenAI
+from opentelemetry.semconv_ai import SpanAttributes
 from respan import Respan
-
 from respan_instrumentation_llama_index import LlamaIndexInstrumentor
 
 
@@ -32,6 +34,27 @@ class ExampleContext:
     settings: GatewaySettings
     example_name: str
     run_id: str
+
+
+@dataclass(frozen=True)
+class ExampleSpan:
+    span: Any | None
+
+    def set_input(self, value: object) -> None:
+        self._set_json_attribute(
+            attribute=SpanAttributes.TRACELOOP_ENTITY_INPUT,
+            value=value,
+        )
+
+    def set_output(self, value: object) -> None:
+        self._set_json_attribute(
+            attribute=SpanAttributes.TRACELOOP_ENTITY_OUTPUT,
+            value=value,
+        )
+
+    def _set_json_attribute(self, *, attribute: str, value: object) -> None:
+        if self.span is not None:
+            self.span.set_attribute(attribute, json.dumps(value, default=str))
 
 
 def load_gateway_settings() -> GatewaySettings:
@@ -83,23 +106,36 @@ def create_respan(
 
 
 @contextmanager
-def traced_example(context: ExampleContext, *, root_span_name: str | None = None):
-    with context.respan.propagate_attributes(
-        trace_group_identifier=f"{context.example_name}-{context.run_id}",
-        custom_identifier=f"{context.example_name}-{context.run_id}",
-        metadata={
-            "example_set": "llama-index",
-            "example_name": context.example_name,
-            "example_run_id": context.run_id,
-        },
-    ):
-        if root_span_name is None:
-            yield
-            return
+def traced_example(
+    context: ExampleContext,
+    *,
+    root_span_name: str | None = None,
+    input_data: object | None = None,
+):
+    """Propagate the exact run marker and flush after each example."""
 
-        client = context.respan.telemetry.get_client()
-        with client.start_span(root_span_name, kind="workflow"):
-            yield
+    try:
+        with context.respan.propagate_attributes(
+            trace_group_identifier=f"{context.example_name}-{context.run_id}",
+            custom_identifier=f"{context.example_name}-{context.run_id}",
+            metadata={
+                "example_set": "llama-index",
+                "example_name": context.example_name,
+                "example_run_id": context.run_id,
+            },
+        ):
+            if root_span_name is None:
+                yield ExampleSpan(span=None)
+                return
+
+            client = context.respan.telemetry.get_client()
+            with client.start_span(root_span_name, kind="workflow") as span:
+                example_span = ExampleSpan(span=span)
+                if input_data is not None:
+                    example_span.set_input(input_data)
+                yield example_span
+    finally:
+        context.respan.shutdown()
 
 
 def configure_llama_index(settings: GatewaySettings) -> None:
@@ -153,10 +189,13 @@ def print_result(label: str, value: object) -> None:
 
 
 def _load_env_files() -> None:
+    invocation_run_id = os.getenv("RESPAN_EXAMPLE_RUN_ID", "").strip()
     for env_path in _env_paths_from(start=Path(__file__).resolve().parent):
         load_dotenv(env_path, override=True)
     for env_path in _env_paths_from(start=Path.cwd()):
         load_dotenv(env_path, override=True)
+    if invocation_run_id:
+        os.environ["RESPAN_EXAMPLE_RUN_ID"] = invocation_run_id
 
 
 def _env_paths_from(*, start: Path) -> Iterable[Path]:
