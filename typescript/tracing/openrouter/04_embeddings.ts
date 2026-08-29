@@ -13,10 +13,13 @@ export async function runEmbeddings(respan: OpenRouterRespan = createRespan()): 
           model: EMBEDDING_MODEL,
           input: [
             "Respan captures traces for OpenRouter TypeScript applications.",
-            "Embedding spans should summarize vector output without exporting vectors.",
+            "Embedding spans preserve vector output for observability.",
           ],
         },
       });
+      if (typeof response === "string") {
+        throw new Error("Expected a structured OpenRouter embeddings response.");
+      }
       return response.data?.length;
     });
     logExampleResult(workflowName, { model: EMBEDDING_MODEL, vectorCount });
