@@ -8,10 +8,9 @@ The examples load Respan credentials from the repo-root `.env`. If `OLLAMA_HOST`
 
 ```bash
 cd python/tracing/ollama
-python 01_chat.py
-python 02_stream_generate.py
-python 03_tool_calling.py
-python 04_embeddings.py
+RESPAN_EXAMPLE_RUN_ID=otel2-fix-py-group-NN-YYYYMMDDTHHMMSSZ python run_all.py
 ```
 
-Each script prints `workflow_name` and `custom_identifier` so the exported trace can be found in Respan.
+`run_all.py` preserves the exact invocation `RESPAN_EXAMPLE_RUN_ID`, runs all five scripts in isolated processes, reports every exit code, and fails after the suite if any script fails. Each script records that marker as `example_run_id` and prints it together with a unique per-case `custom_identifier`, so the exported traces can be queried as one batch without losing scenario identity.
+
+The tool-calling example executes one `@tool`-decorated `get_weather` function between its two Ollama chat turns. The expected-error example always uses the local compatibility server and verifies an HTTP 503 span.

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
     example_attributes,
+    flush_and_shutdown,
     make_client,
     make_custom_identifier,
     make_respan,
@@ -12,24 +11,26 @@ from _shared import (
     response_message_content,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "chat"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _chat_workflow(client) -> str:
-    response = client.chat(
-        model=model_name(),
-        messages=[
-            {"role": "user", "content": "Reply with one concise tracing sentence."}
-        ],
-    )
-    return response_message_content(response)
+def _chat_workflow(prompt: str) -> str:
+    client = make_client()
+    try:
+        response = client.chat(
+            model=model_name(),
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response_message_content(response)
+    finally:
+        client.close()
 
 
 def run_chat() -> None:
     respan = make_respan(EXAMPLE_NAME)
-    client = make_client()
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     text = ""
 
@@ -37,9 +38,9 @@ def run_chat() -> None:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print(f"custom_identifier={custom_identifier}", flush=True)
             print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
-            text = _chat_workflow(client)
+            text = _chat_workflow("Reply with one concise tracing sentence.")
     finally:
-        respan.shutdown()
+        flush_and_shutdown(respan)
 
     print_result(EXAMPLE_NAME, custom_identifier, text)
 

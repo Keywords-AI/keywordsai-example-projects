@@ -2,36 +2,36 @@ from __future__ import annotations
 
 import asyncio
 
-from respan import workflow
-
 from _shared import (
     content_to_text,
     example_attributes,
+    finish_respan,
     make_client,
     make_custom_identifier,
     make_respan,
-    model_name,
     print_result,
+    print_start,
+    root_request,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "async-chat-completion"
+PROMPT = "Reply with one concise sentence about async tracing."
 
 
-@workflow(name=workflow_name(EXAMPLE_NAME))
-async def _async_chat_completion_workflow(client) -> str:
-    response = await client.chat.complete_async(
-        model=model_name(),
-        messages=[
-            {
-                "role": "user",
-                "content": "Reply with one concise sentence about async tracing.",
-            }
-        ],
-        temperature=0.1,
-        max_tokens=80,
-    )
-    return content_to_text(response.choices[0].message.content)
+def _build_async_chat_completion_workflow(client):
+    @workflow(name=workflow_name(EXAMPLE_NAME))
+    async def run(request: dict[str, str]) -> str:
+        response = await client.chat.complete_async(
+            model=request["model"],
+            messages=[{"role": "user", "content": request["prompt"]}],
+            temperature=0.1,
+            max_tokens=80,
+        )
+        return content_to_text(response.choices[0].message.content)
+
+    return run
 
 
 async def run_async_chat_completion() -> None:
@@ -42,11 +42,12 @@ async def run_async_chat_completion() -> None:
     try:
         async with make_client() as client:
             with example_attributes(EXAMPLE_NAME, custom_identifier):
-                print(f"custom_identifier={custom_identifier}", flush=True)
-                print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
-                text = await _async_chat_completion_workflow(client)
+                print_start(EXAMPLE_NAME, custom_identifier)
+                text = await _build_async_chat_completion_workflow(client)(
+                    root_request(EXAMPLE_NAME, PROMPT)
+                )
     finally:
-        respan.shutdown()
+        finish_respan(respan)
 
     print_result(EXAMPLE_NAME, custom_identifier, text)
 

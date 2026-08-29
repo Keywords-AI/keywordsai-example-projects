@@ -10,27 +10,31 @@ from _shared import (
     print_result,
     workflow_name,
 )
+from ollama import ResponseError
 from respan import workflow
 
-EXAMPLE_NAME = "embeddings"
+EXAMPLE_NAME = "expected-error"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _embeddings_workflow(text: str) -> str:
-    client = make_client()
+def _expected_error_workflow(prompt: str) -> str:
+    client = make_client(force_compat_server=True)
     try:
-        response = client.embed(
+        response = client.chat(
             model=model_name(),
-            input=text,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
         )
-        embeddings = response["embeddings"]
-        vector_count = len(embeddings or [])
-        return f"embedding_vectors={vector_count}"
+        return str(response)
     finally:
         client.close()
 
 
-def run_embeddings() -> None:
+def run_expected_error() -> None:
     respan = make_respan(EXAMPLE_NAME)
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
     text = ""
@@ -39,7 +43,14 @@ def run_embeddings() -> None:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print(f"custom_identifier={custom_identifier}", flush=True)
             print(f"workflow_name={workflow_name(EXAMPLE_NAME)}", flush=True)
-            text = _embeddings_workflow("Trace local model calls with Respan.")
+            try:
+                _expected_error_workflow("force expected provider error")
+            except ResponseError as exc:
+                if exc.status_code != 503:
+                    raise
+                text = f"expected_status={exc.status_code} error={exc.error}"
+            else:
+                raise AssertionError("The compatibility server should return HTTP 503")
     finally:
         flush_and_shutdown(respan)
 
@@ -47,4 +58,4 @@ def run_embeddings() -> None:
 
 
 if __name__ == "__main__":
-    run_embeddings()
+    run_expected_error()
