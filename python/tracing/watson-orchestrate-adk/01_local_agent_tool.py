@@ -2,11 +2,15 @@
 
 from pathlib import Path
 
+from _shared import (
+    create_respan,
+    example_attributes,
+    marker_for,
+    workflow_name,
+)
 from ibm_watsonx_orchestrate.agent_builder.agents import Agent
 from ibm_watsonx_orchestrate.agent_builder.tools import tool
 from respan import workflow
-
-from _shared import create_respan
 
 SCRIPT_NAME = Path(__file__).name
 APP_NAME = SCRIPT_NAME.removesuffix(".py")
@@ -24,8 +28,8 @@ def always_fails(reason: str) -> str:
     raise RuntimeError(f"deterministic failure: {reason}")
 
 
-@workflow(name=SCRIPT_NAME)
-def run_local_agent_tool() -> dict[str, object]:
+@workflow(name=workflow_name(APP_NAME))
+def run_local_agent_tool(ticket_id: str) -> dict[str, object]:
     agent = Agent(
         name="respan_watson_orchestrate_local_agent",
         description="Local agent spec for Respan instrumentation examples.",
@@ -34,7 +38,7 @@ def run_local_agent_tool() -> dict[str, object]:
         tools=[lookup_ticket],
     )
 
-    success = lookup_ticket(ticket_id="INC-1001")
+    success = lookup_ticket(ticket_id=ticket_id)
     failure = None
     try:
         always_fails(reason="example coverage")
@@ -52,11 +56,14 @@ def run_local_agent_tool() -> dict[str, object]:
 
 
 def main() -> None:
-    respan = create_respan(APP_NAME)
+    marker = marker_for(APP_NAME)
+    respan = create_respan(APP_NAME, marker)
     try:
-        run_local_agent_tool()
+        with example_attributes(APP_NAME, marker):
+            result = run_local_agent_tool("INC-1001")
     finally:
         respan.shutdown()
+    print({"example": APP_NAME, "marker": marker, "result": result}, flush=True)
 
 
 if __name__ == "__main__":

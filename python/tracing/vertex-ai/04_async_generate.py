@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import asyncio
+
 from _shared import (
-    deterministic_chat,
     deterministic_model,
     deterministic_vertex_runtime,
     example_attributes,
@@ -11,29 +12,27 @@ from _shared import (
 )
 from respan import workflow
 
-EXAMPLE_NAME = "chat-streaming"
+EXAMPLE_NAME = "async-generate"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def chat_streaming(prompt: str) -> str:
-    chat = deterministic_chat(
-        deterministic_model(system_instruction="Keep responses short.")
-    )
-    chunks = list(chat.send_message(prompt, stream=True))
-    return "".join(chunk.text for chunk in chunks)
+async def async_generate(prompt: str) -> str:
+    model = deterministic_model()
+    response = await model.generate_content_async(prompt)
+    return response.text
 
 
-def main() -> None:
+async def run() -> None:
     marker = marker_for(EXAMPLE_NAME)
     with deterministic_vertex_runtime():
         respan = make_respan(EXAMPLE_NAME, marker)
         try:
             with example_attributes(EXAMPLE_NAME, marker):
-                result = chat_streaming("Stream a short Vertex AI reply.")
+                result = await async_generate("Trace an async Vertex response.")
         finally:
             respan.shutdown()
     print({"example": EXAMPLE_NAME, "marker": marker, "result": result}, flush=True)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(run())

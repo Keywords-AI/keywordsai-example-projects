@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from respan import workflow
-
 from _shared import (
     example_attributes,
     first_message_text,
@@ -13,36 +11,34 @@ from _shared import (
     print_start,
     workflow_name,
 )
+from respan import workflow
 
 EXAMPLE_NAME = "chat-completion"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def _chat_completion_workflow(client) -> str:
-    response = client.chat.completions.create(
-        model=model_name(),
-        messages=[
-            {
-                "role": "user",
-                "content": "Reply with one concise sentence about tracing Together AI apps.",
-            }
-        ],
-        max_tokens=80,
-        temperature=0,
-    )
-    return first_message_text(response)
+def _chat_completion_workflow(prompt: str) -> str:
+    with make_client() as client:
+        response = client.chat.completions.create(
+            model=model_name(),
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=80,
+            temperature=0,
+        )
+        return first_message_text(response)
 
 
 def run_chat_completion() -> None:
-    respan = make_respan(EXAMPLE_NAME)
-    client = make_client()
     custom_identifier = make_custom_identifier(EXAMPLE_NAME)
+    respan = make_respan(EXAMPLE_NAME, custom_identifier)
     text = ""
 
     try:
         with example_attributes(EXAMPLE_NAME, custom_identifier):
             print_start(EXAMPLE_NAME, custom_identifier)
-            text = _chat_completion_workflow(client)
+            text = _chat_completion_workflow(
+                "Reply with one concise sentence about tracing Together AI apps."
+            )
     finally:
         respan.shutdown()
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from _shared import (
-    deterministic_chat,
+    DeterministicVertexError,
     deterministic_model,
     deterministic_vertex_runtime,
     example_attributes,
@@ -11,25 +11,30 @@ from _shared import (
 )
 from respan import workflow
 
-EXAMPLE_NAME = "chat-streaming"
+EXAMPLE_NAME = "expected-error"
 
 
 @workflow(name=workflow_name(EXAMPLE_NAME))
-def chat_streaming(prompt: str) -> str:
-    chat = deterministic_chat(
-        deterministic_model(system_instruction="Keep responses short.")
-    )
-    chunks = list(chat.send_message(prompt, stream=True))
-    return "".join(chunk.text for chunk in chunks)
+def expected_error(prompt: str) -> str:
+    return deterministic_model().generate_content(prompt).text
 
 
 def main() -> None:
     marker = marker_for(EXAMPLE_NAME)
+    result: dict[str, object] = {}
     with deterministic_vertex_runtime():
         respan = make_respan(EXAMPLE_NAME, marker)
         try:
             with example_attributes(EXAMPLE_NAME, marker):
-                result = chat_streaming("Stream a short Vertex AI reply.")
+                try:
+                    expected_error("Trigger deterministic provider failure.")
+                except DeterministicVertexError as exc:
+                    result = {
+                        "expected_error": type(exc).__name__,
+                        "status_code": exc.status_code,
+                    }
+                else:
+                    raise AssertionError("expected provider error was not raised")
         finally:
             respan.shutdown()
     print({"example": EXAMPLE_NAME, "marker": marker, "result": result}, flush=True)
