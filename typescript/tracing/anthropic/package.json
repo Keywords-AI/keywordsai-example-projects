@@ -1,0 +1,26 @@
+{
+  "name": "respan-anthropic-examples",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "basic": "tsx 01_basic.ts",
+    "streaming": "tsx 02_streaming.ts",
+    "tool": "tsx 03_tool_call.ts",
+    "failure": "tsx 04_expected_error.ts",
+    "all": "npm run basic && npm run streaming && npm run tool && npm run failure",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
+    "@respan/instrumentation-anthropic": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-anthropic",
+    "@respan/respan": "file:../../../../respan/javascript-sdks/respan",
+    "@respan/respan-sdk": "file:../../../../respan/javascript-sdks/respan-sdk",
+    "@respan/tracing": "file:../../../../respan/javascript-sdks/respan-tracing",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
