@@ -1,7 +1,8 @@
 import os
 import time
+from collections.abc import Awaitable, Callable
 from pathlib import Path
-from typing import Callable, TypeVar
+from typing import TypeVar
 
 from dotenv import load_dotenv
 from respan import Respan
@@ -22,7 +23,7 @@ MODEL = os.getenv("RESPAN_LITELLM_MODEL") or os.getenv("RESPAN_MODEL", "gpt-4o-m
 
 def _example_run_id() -> str:
     configured = os.getenv("RESPAN_EXAMPLE_RUN_ID", "").strip()
-    if configured and "".join(("co", "dex")) not in configured.lower():
+    if configured and "codex" not in configured.lower():
         return configured
     return f"litellm-{int(time.time())}"
 
@@ -58,3 +59,21 @@ def run_with_example_attributes(
         },
     ):
         return action()
+
+
+async def run_async_with_example_attributes(
+    respan: Respan,
+    *,
+    workflow_name: str,
+    action: Callable[[], Awaitable[T]],
+) -> T:
+    with respan.propagate_attributes(
+        trace_group_identifier=workflow_name,
+        custom_identifier=f"{RUN_ID}:{workflow_name}",
+        metadata={
+            "example": "litellm",
+            "example_run_id": RUN_ID,
+            "workflow_name": workflow_name,
+        },
+    ):
+        return await action()

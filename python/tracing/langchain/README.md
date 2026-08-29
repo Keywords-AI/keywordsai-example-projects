@@ -41,6 +41,8 @@ Run one example:
 python 00_quickstart.py
 ```
 
+Run the complete bounded set with `python run_all_examples.py`.
+
 ## Examples
 
 | Script | LangChain function or behavior |

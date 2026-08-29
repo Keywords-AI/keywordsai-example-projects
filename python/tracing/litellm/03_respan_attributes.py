@@ -1,7 +1,4 @@
 import litellm
-from respan import propagate_attributes
-from respan import workflow
-
 from _shared import (
     GATEWAY_API_KEY,
     GATEWAY_BASE_URL,
@@ -9,6 +6,7 @@ from _shared import (
     create_respan,
     run_with_example_attributes,
 )
+from respan import propagate_attributes, workflow
 
 WORKFLOW_NAME = "litellm_respan_attributes.workflow"
 
@@ -38,11 +36,16 @@ def litellm_respan_attributes() -> str:
 
 def main() -> None:
     respan = create_respan("litellm-respan-attributes")
-    output = run_with_example_attributes(
-        respan,
-        workflow_name=WORKFLOW_NAME,
-        action=litellm_respan_attributes,
-    )
-    print(output)
+    try:
+        output = run_with_example_attributes(
+            respan,
+            workflow_name=WORKFLOW_NAME,
+            action=litellm_respan_attributes,
+        )
+        print(output)
+    finally:
+        respan.shutdown()
+
+
 if __name__ == "__main__":
     main()
