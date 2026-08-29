@@ -1,13 +1,17 @@
 from dotenv import load_dotenv
-load_dotenv(override=True)
+
+load_dotenv(override=False)
 
 # ==========copy past below==========
 import asyncio
 import os
-from pydantic import BaseModel
+import sys
+
 import pytest
 from agents import Agent, Runner, trace
 from agents.tracing import set_trace_processors
+from pydantic import BaseModel
+
 from respan_exporter_openai_agents import RespanTraceProcessor
 
 set_trace_processors(
@@ -75,13 +79,15 @@ async def test_main():
         assert isinstance(outline_checker_result.final_output, OutlineCheckerOutput)
         if not outline_checker_result.final_output.good_quality:
             print("Outline is not good quality, so we stop here.")
-            exit(0)
+            sys.exit(0)
 
         if not outline_checker_result.final_output.is_scifi:
             print("Outline is not a scifi story, so we stop here.")
-            exit(0)
+            sys.exit(0)
 
-        print("Outline is good quality and a scifi story, so we continue to write the story.")
+        print(
+            "Outline is good quality and a scifi story, so we continue to write the story."
+        )
 
         # 4. Write the story
         story_result = await Runner.run(

@@ -1,23 +1,21 @@
-"""Responses API Tool Calls — Function calling with the Responses API, auto-traced."""
+"""Two-turn Responses function call with a canonical tool execution span."""
 
-import os
 import json
-from dotenv import load_dotenv
 
-load_dotenv(override=True)
+from respan import tool, workflow
 
-from openai import OpenAI
-from respan import Respan, workflow, task
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
-tools = [
+EXAMPLE = "responses-tool-calls"
+respan = make_respan(EXAMPLE)
+TOOLS = [
     {
         "type": "function",
         "name": "get_weather",
@@ -33,49 +31,38 @@ tools = [
 ]
 
 
-@task(name="get_weather")
-def get_weather(city: str) -> str:
-    return f"Sunny, 72°F in {city}"
+@tool(name="get_weather")
+def get_weather(city: str) -> dict[str, str]:
+    return {"city": city, "weather": "sunny", "temperature_c": "22"}
 
 
-@workflow(name="weather_assistant")
-def run(question: str):
-    response = client.responses.create(
-        model="gpt-4.1-nano",
-        instructions="You are a weather assistant.",
-        input=[{"role": "user", "content": question}],
-        tools=tools,
+@workflow(name="openai_responses_weather_assistant")
+def run(question: str) -> str:
+    first = client.responses.create(model=model_name(), input=question, tools=TOOLS)
+    call = next(item for item in first.output if item.type == "function_call")
+    result = get_weather(**json.loads(call.arguments))
+    final = client.responses.create(
+        model=model_name(),
+        input=[
+            {"role": "user", "content": question},
+            *first.output,
+            {
+                "type": "function_call_output",
+                "call_id": call.call_id,
+                "output": json.dumps(result),
+            },
+        ],
+        tools=TOOLS,
     )
-
-    # Check for function calls in output
-    tool_call = next(
-        (item for item in response.output if item.type == "function_call"),
-        None,
-    )
-
-    if tool_call:
-        args = json.loads(tool_call.arguments)
-        result = get_weather(**args)
-        print(f"Tool: {tool_call.name}({args}) -> {result}")
-
-        # Send tool result back
-        final = client.responses.create(
-            model="gpt-4.1-nano",
-            instructions="You are a weather assistant.",
-            input=[
-                {"role": "user", "content": question},
-                *response.output,
-                {
-                    "type": "function_call_output",
-                    "call_id": tool_call.call_id,
-                    "output": result,
-                },
-            ],
-            tools=tools,
-        )
-        print(f"Answer: {final.output_text}")
-    else:
-        print(f"Answer: {response.output_text}")
+    return final.output_text
 
 
-run("What's the weather in Paris?")
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run("Weather in Paris?"))
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

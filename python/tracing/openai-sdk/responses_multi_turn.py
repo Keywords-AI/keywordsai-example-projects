@@ -1,50 +1,46 @@
-"""Responses API Multi-Turn — Continue a conversation using previous_response_id."""
+"""Three Responses calls linked by previous_response_id."""
 
-import os
-from dotenv import load_dotenv
+from respan import workflow
 
-load_dotenv(override=True)
-
-from openai import OpenAI
-from respan import Respan, workflow
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
+EXAMPLE = "responses-multi-turn"
+respan = make_respan(EXAMPLE)
 
-@workflow(name="conversation")
-def chat():
-    # Turn 1
-    r1 = client.responses.create(
-        model="gpt-4.1-nano",
-        instructions="You are a helpful assistant. Be concise.",
-        input="What is the capital of France?",
+
+@workflow(name="openai_responses_conversation")
+def run() -> str:
+    first = client.responses.create(
+        model=model_name(), input="Capital of France?", store=True
+    )
+    second = client.responses.create(
+        model=model_name(),
+        input="Population?",
+        previous_response_id=first.id,
         store=True,
     )
-    print(f"Turn 1: {r1.output_text}\n")
-
-    # Turn 2 — uses previous_response_id to chain context
-    r2 = client.responses.create(
-        model="gpt-4.1-nano",
-        input="And what is its population?",
-        previous_response_id=r1.id,
+    third = client.responses.create(
+        model=model_name(),
+        input="Three landmarks?",
+        previous_response_id=second.id,
         store=True,
     )
-    print(f"Turn 2: {r2.output_text}\n")
-
-    # Turn 3
-    r3 = client.responses.create(
-        model="gpt-4.1-nano",
-        input="Name three famous landmarks there.",
-        previous_response_id=r2.id,
-        store=True,
-    )
-    print(f"Turn 3: {r3.output_text}")
+    return third.output_text
 
 
-chat()
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run())
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

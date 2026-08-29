@@ -1,15 +1,12 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
-import os
+load_dotenv(override=False)
 import asyncio
 import base64
-import logging
-from typing import Literal, Union
+import os
+from typing import Literal
 
-from playwright.async_api import Browser, Page, Playwright, async_playwright
-
+import pytest
 from agents import (
     Agent,
     AsyncComputer,
@@ -21,16 +18,20 @@ from agents import (
     trace,
 )
 from agents.tracing import set_trace_processors
+from playwright.async_api import Browser, Page, Playwright, async_playwright
+
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
 
 set_trace_processors(
-    [RespanTraceProcessor(os.getenv("RESPAN_API_KEY"), endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"))]
+    [
+        RespanTraceProcessor(
+            os.getenv("RESPAN_API_KEY"),
+            endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"),
+        )
+    ]
 )
-
-logging.getLogger("openai.agents").setLevel(logging.DEBUG)
-logging.getLogger("openai.agents").addHandler(logging.StreamHandler())
 
 
 @pytest.mark.asyncio
@@ -45,7 +46,9 @@ async def test_main():
                 model="computer-use-preview",
                 model_settings=ModelSettings(truncation="auto"),
             )
-            result = await Runner.run(agent, "Search who is the president of the United States now")
+            result = await Runner.run(
+                agent, "Search who is the president of the United States now"
+            )
             print(result.final_output)
 
 
@@ -82,9 +85,9 @@ class LocalPlaywrightComputer(AsyncComputer):
     """A computer, implemented using a local Playwright browser."""
 
     def __init__(self):
-        self._playwright: Union[Playwright, None] = None
-        self._browser: Union[Browser, None] = None
-        self._page: Union[Page, None] = None
+        self._playwright: Playwright | None = None
+        self._browser: Browser | None = None
+        self._page: Page | None = None
 
     async def _get_browser_and_page(self) -> tuple[Browser, Page]:
         width, height = self.dimensions

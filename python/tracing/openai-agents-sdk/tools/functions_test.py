@@ -1,15 +1,17 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
+load_dotenv(override=False)
 # ==========copy the below==========
 import asyncio
+import os
+
+import pytest
 from agents import Agent, Runner, function_tool
+from agents.tracing import set_trace_processors
+
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
-from agents.tracing import set_trace_processors
-import os
 
 set_trace_processors(
     [
@@ -38,6 +40,7 @@ async def test_main():
     result = await Runner.run(agent, input="What's the weather in Tokyo?")
     print(result.final_output)
     # The weather in Tokyo is sunny.
+
 
 if __name__ == "__main__":
     asyncio.run(test_main())

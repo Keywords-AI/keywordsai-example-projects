@@ -1,14 +1,16 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-from openai import AsyncOpenAI
-import pytest
+load_dotenv(override=False)
 # ==========copy paste below==========
 import asyncio
 import os
-from agents import Agent, Runner, set_default_openai_client
+
+import pytest
+from agents import Agent, Runner
 from agents.tracing import set_trace_processors, trace
+
 from respan_exporter_openai_agents import RespanTraceProcessor
+
 API_KEY = os.getenv("RESPAN_API_KEY")
 ENDPOINT = os.getenv("RESPAN_OAIA_TRACING_ENDPOINT")
 BASE_URL = os.getenv("RESPAN_BASE_URL")
@@ -27,10 +29,7 @@ set_trace_processors(
 
 @pytest.mark.asyncio
 async def test_main():
-    agent = Agent(
-        name="Assistant",
-        instructions="You only respond in haikus."
-    )
+    agent = Agent(name="Assistant", instructions="You only respond in haikus.")
 
     with trace("Hello world test"):
         result = await Runner.run(agent, "Tell me about recursion in programming.")

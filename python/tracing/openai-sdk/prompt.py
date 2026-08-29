@@ -1,35 +1,43 @@
-"""Prompt — Use a Respan-managed prompt template with variables."""
+"""A managed-prompt-shaped Chat request using a configurable prompt ID."""
 
 import os
-from dotenv import load_dotenv
 
-load_dotenv(override=True)
+from respan import workflow
 
-from openai import OpenAI
-from respan import Respan
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    print_result,
 )
 
-PROMPT_ID = "d767498c1cbb4951bb122eef423b5f76"
+EXAMPLE = "prompt"
+respan = make_respan(EXAMPLE)
 
-response = client.chat.completions.create(
-    model="placeholder",  # model is defined in the prompt config
-    messages=[],  # messages are defined in the prompt template
-    extra_body={
-        "prompt": {
-            "prompt_id": PROMPT_ID,
-            "schema_version": 2,
-            "variables": {
-                "feature_request": "Add a real-time notification system for order status updates",
-            },
-        }
-    },
-)
 
-print(response.choices[0].message.content)
+@workflow(name="openai_managed_prompt")
+def run() -> str:
+    response = client.chat.completions.create(
+        model="placeholder",
+        messages=[],
+        extra_body={
+            "prompt": {
+                "prompt_id": os.getenv("RESPAN_PROMPT_ID", "deterministic-prompt"),
+                "schema_version": 2,
+                "variables": {"feature_request": "Add order notifications"},
+            }
+        },
+    )
+    return response.choices[0].message.content or ""
+
+
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run())
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

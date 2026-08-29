@@ -1,13 +1,13 @@
 from __future__ import annotations
+
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
+load_dotenv(override=False)
 import asyncio
 import json
+import os
 
-from pydantic import BaseModel, Field
-
+import pytest
 from agents import (
     Agent,
     GuardrailFunctionOutput,
@@ -16,12 +16,12 @@ from agents import (
     Runner,
     output_guardrail,
 )
+from agents.tracing import set_trace_processors, trace
+from pydantic import BaseModel, Field
+
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
-from typing import Union
-from agents.tracing import set_trace_processors, trace
-import os
 
 set_trace_processors(
     [
@@ -50,7 +50,7 @@ class MessageOutput(BaseModel):
         description="Thoughts on how to respond to the user's message"
     )
     response: str = Field(description="The response to the user's message")
-    user_name: Union[str, None] = Field(
+    user_name: str | None = Field(
         description="The name of the user who sent the message, if known"
     )
 

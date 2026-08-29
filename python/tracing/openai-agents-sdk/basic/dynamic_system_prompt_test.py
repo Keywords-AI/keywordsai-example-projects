@@ -1,20 +1,26 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
-import os
+load_dotenv(override=False)
 import asyncio
+import os
 import random
 from typing import Literal
 
+import pytest
 from agents import Agent, RunContextWrapper, Runner
+from agents.tracing import set_trace_processors
+
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
-from agents.tracing import set_trace_processors
 
 set_trace_processors(
-    [RespanTraceProcessor(os.getenv("RESPAN_API_KEY"), endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"))]
+    [
+        RespanTraceProcessor(
+            os.getenv("RESPAN_API_KEY"),
+            endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"),
+        )
+    ]
 )
 
 

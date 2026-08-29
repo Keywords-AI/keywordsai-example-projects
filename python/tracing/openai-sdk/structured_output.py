@@ -1,21 +1,19 @@
-"""Structured Output — JSON mode with Pydantic, auto-traced."""
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv(override=True)
+"""Chat Completions.parse structured output on OpenAI 3.x."""
 
 from pydantic import BaseModel
-from openai import OpenAI
-from respan import Respan, workflow
-from respan_instrumentation_openai import OpenAIInstrumentor
+from respan import workflow
 
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
+
+EXAMPLE = "structured-output"
+respan = make_respan(EXAMPLE)
 
 
 class MovieReview(BaseModel):
@@ -26,25 +24,23 @@ class MovieReview(BaseModel):
     cons: list[str]
 
 
-@workflow(name="movie_review")
-def review(movie: str) -> MovieReview:
+@workflow(name="openai_chat_movie_review")
+def run(movie: str) -> MovieReview:
     response = client.beta.chat.completions.parse(
-        model="gpt-4.1-nano",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a film critic. Rate movies 1-10.",
-            },
-            {"role": "user", "content": f"Review: {movie}"},
-        ],
+        model=model_name(),
+        messages=[{"role": "user", "content": f"Review: {movie}"}],
         response_format=MovieReview,
-
     )
     return response.choices[0].message.parsed
 
 
-result = review("The Matrix")
-print(f"{result.title} — {result.rating}/10")
-print(f"Summary: {result.summary}")
-print(f"Pros: {', '.join(result.pros)}")
-print(f"Cons: {', '.join(result.cons)}")
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            result = run("The Matrix")
+            print_result(EXAMPLE, f"{result.title} rating={result.rating}")
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

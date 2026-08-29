@@ -1,18 +1,24 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
-import os
+load_dotenv(override=False)
 import asyncio
+import os
 
+import pytest
 from agents import Agent, FileSearchTool, Runner, trace
 from agents.tracing import set_trace_processors
+
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
 
 set_trace_processors(
-    [RespanTraceProcessor(os.getenv("RESPAN_API_KEY"), endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"))]
+    [
+        RespanTraceProcessor(
+            os.getenv("RESPAN_API_KEY"),
+            endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"),
+        )
+    ]
 )
 
 
@@ -24,7 +30,7 @@ async def test_main():
         tools=[
             FileSearchTool(
                 max_num_results=3,
-                vector_store_ids=["vs_67d3bdd0c8888191adfa890a9e829480"],
+                vector_store_ids=[os.environ["OPENAI_VECTOR_STORE_ID"]],
                 include_search_results=True,
             )
         ],
@@ -44,6 +50,7 @@ async def test_main():
         """
         {"id":"...", "queries":["Arrakis"], "results":[...]}
         """
+
 
 if __name__ == "__main__":
     asyncio.run(test_main())

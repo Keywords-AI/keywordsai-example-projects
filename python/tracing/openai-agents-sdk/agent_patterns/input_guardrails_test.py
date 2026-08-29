@@ -1,13 +1,13 @@
 from __future__ import annotations
+
 from dotenv import load_dotenv
-load_dotenv(override=True)
+
+load_dotenv(override=False)
 
 import asyncio
 import os
-import pytest
-from typing import Union
-from pydantic import BaseModel
 
+import pytest
 from agents import (
     Agent,
     GuardrailFunctionOutput,
@@ -17,8 +17,11 @@ from agents import (
     TResponseInputItem,
     input_guardrail,
 )
-from respan_exporter_openai_agents import RespanTraceProcessor
 from agents.tracing import set_trace_processors, trace
+from pydantic import BaseModel
+
+from respan_exporter_openai_agents import RespanTraceProcessor
+
 set_trace_processors(
     [
         RespanTraceProcessor(
@@ -57,7 +60,9 @@ guardrail_agent = Agent(
 
 @input_guardrail
 async def math_guardrail(
-    context: RunContextWrapper[None], agent: Agent, input: Union[str, list[TResponseInputItem]]
+    context: RunContextWrapper[None],
+    agent: Agent,
+    input: str | list[TResponseInputItem],
 ) -> GuardrailFunctionOutput:
     """This is an input guardrail function, which happens to call an agent to check if the input
     is a math homework question.

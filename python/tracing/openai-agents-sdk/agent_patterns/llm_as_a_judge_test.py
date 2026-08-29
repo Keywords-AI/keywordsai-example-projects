@@ -1,18 +1,19 @@
 from __future__ import annotations
+
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 import asyncio
 import os
-from typing import Literal, Union
+from typing import Literal
+
 import pytest
+from agents import Agent, ItemHelpers, Runner, TResponseInputItem, trace
+from agents.tracing import set_trace_processors
 from pydantic import BaseModel
 
-from agents import Agent, ItemHelpers, Runner, TResponseInputItem, trace
 from respan_exporter_openai_agents import RespanTraceProcessor
-from agents.tracing import set_trace_processors
-
 
 set_trace_processors(
     [
@@ -64,11 +65,11 @@ async def test_main() -> StoryEvaluationResult:
     msg = "Sci fi"
     input_items: list[TResponseInputItem] = [{"content": msg, "role": "user"}]
 
-    latest_outline: Union[str, None] = None
+    latest_outline: str | None = None
     iterations = 0
     max_iterations = 2
     final_score = ""
-    
+
     # We'll run the entire workflow in a single trace
     with trace("LLM as a judge"):
         while True:
@@ -82,7 +83,9 @@ async def test_main() -> StoryEvaluationResult:
             )
 
             input_items = story_outline_result.to_input_list()
-            latest_outline = ItemHelpers.text_message_outputs(story_outline_result.new_items)
+            latest_outline = ItemHelpers.text_message_outputs(
+                story_outline_result.new_items
+            )
 
             evaluator_result = await Runner.run(evaluator, input_items)
             result: EvaluationFeedback = evaluator_result.final_output
@@ -91,15 +94,20 @@ async def test_main() -> StoryEvaluationResult:
             if result.score == "pass":
                 break
 
-            input_items.append({"content": f"Feedback: {result.feedback}", "role": "user"})
+            input_items.append(
+                {"content": f"Feedback: {result.feedback}", "role": "user"}
+            )
 
     return StoryEvaluationResult(
         final_outline=latest_outline or "",
         iterations=iterations,
-        final_score=final_score
+        final_score=final_score,
     )
+
 
 if __name__ == "__main__":
     result = asyncio.run(test_main())
-    print(f"Final story outline after {result.iterations} iterations (score: {result.final_score}):")
+    print(
+        f"Final story outline after {result.iterations} iterations (score: {result.final_score}):"
+    )
     print(result.final_outline)

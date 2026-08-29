@@ -7,14 +7,26 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
-openai-agents = ">=0.17.7"
-respan-ai = ">=2.6.0"
+openai-agents = ">=0.20.0,<0.21.0"
+respan-ai = ">=4.1.0,<5.0.0"
 respan-instrumentation-openai-agents = ">=1.1.1"
-python-dotenv = "^1.0.0"
+python-dotenv = ">=1.0.0,<2.0.0"
+rich = ">=13.0.0,<16.0.0"
+playwright = ">=1.50.0,<2.0.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.4.2"
-pytest-asyncio = "^0.24.0"
+pytest = ">=8.4.0,<10.0.0"
+pytest-asyncio = ">=0.24.0,<2.0.0"
+
+[tool.pytest.ini_options]
+asyncio_default_test_loop_scope = "session"
+markers = [
+    "hosted: requires a direct OpenAI Responses API credential or hosted resource",
+    "live: performs a configured provider or gateway request",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["N999"]
 
 [build-system]
 requires = ["poetry-core"]

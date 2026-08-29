@@ -3,15 +3,14 @@ from __future__ import annotations
 import asyncio
 import time
 
-from rich.console import Console
-
 from agents import Runner, custom_span, gen_trace_id, trace
+from rich.console import Console
 
 from .agents.planner_agent import WebSearchItem, WebSearchPlan, planner_agent
 from .agents.search_agent import search_agent
 from .agents.writer_agent import ReportData, writer_agent
 from .printer import Printer
-from typing import Union
+
 
 class ResearchManager:
     def __init__(self):
@@ -65,21 +64,21 @@ class ResearchManager:
     async def _perform_searches(self, search_plan: WebSearchPlan) -> list[str]:
         with custom_span("Search the web"):
             self.printer.update_item("searching", "Searching...")
-            num_completed = 0
-            tasks = [asyncio.create_task(self._search(item)) for item in search_plan.searches]
+            tasks = [
+                asyncio.create_task(self._search(item)) for item in search_plan.searches
+            ]
             results = []
-            for task in asyncio.as_completed(tasks):
+            for num_completed, task in enumerate(asyncio.as_completed(tasks), start=1):
                 result = await task
                 if result is not None:
                     results.append(result)
-                num_completed += 1
                 self.printer.update_item(
                     "searching", f"Searching... {num_completed}/{len(tasks)} completed"
                 )
             self.printer.mark_item_done("searching")
             return results
 
-    async def _search(self, item: WebSearchItem) -> Union[str, None]:
+    async def _search(self, item: WebSearchItem) -> str | None:
         input = f"Search term: {item.query}\nReason for searching: {item.reason}"
         try:
             result = await Runner.run(
@@ -87,7 +86,7 @@ class ResearchManager:
                 input,
             )
             return str(result.final_output)
-        except Exception:
+        except Exception:  # noqa: BLE001 - one failed search must not abort the report.
             return None
 
     async def _write_report(self, query: str, search_results: list[str]) -> ReportData:

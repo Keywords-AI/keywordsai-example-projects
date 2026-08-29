@@ -1,17 +1,17 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
-import pytest
-import os
-
+load_dotenv(override=False)
 import asyncio
+import os
 import random
 
+import pytest
 from agents import Agent, ItemHelpers, Runner, function_tool
+from agents.tracing import set_trace_processors, trace
+
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
-from agents.tracing import set_trace_processors, trace
 
 set_trace_processors(
     [

@@ -1,56 +1,47 @@
-"""Decorators — Use @workflow and @task to structure traces."""
+"""A two-step content workflow around traced OpenAI Chat calls."""
 
-import os
-from dotenv import load_dotenv
+from respan import task, workflow
 
-load_dotenv(override=True)
-
-from openai import OpenAI
-from respan import Respan, workflow, task
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
+
+EXAMPLE = "decorators"
+respan = make_respan(EXAMPLE)
 
 
 @task(name="generate_outline")
 def generate_outline(topic: str) -> str:
     response = client.chat.completions.create(
-        model="gpt-4.1-nano",
-        messages=[
-            {"role": "system", "content": "Generate a 3-point outline. Be concise."},
-            {"role": "user", "content": topic},
-        ],
-
+        model=model_name(), messages=[{"role": "user", "content": topic}]
     )
-    return response.choices[0].message.content
+    return response.choices[0].message.content or ""
 
 
 @task(name="write_draft")
 def write_draft(outline: str) -> str:
     response = client.chat.completions.create(
-        model="gpt-4.1-nano",
-        messages=[
-            {"role": "system", "content": "Write a short paragraph from this outline."},
-            {"role": "user", "content": outline},
-        ],
-
+        model=model_name(), messages=[{"role": "user", "content": outline}]
     )
-    return response.choices[0].message.content
+    return response.choices[0].message.content or ""
 
 
-@workflow(name="content_pipeline")
+@workflow(name="openai_content_pipeline")
 def run(topic: str) -> str:
-    outline = generate_outline(topic)
-    print(f"Outline:\n{outline}\n")
-
-    draft = write_draft(outline)
-    print(f"Draft:\n{draft}")
-    return draft
+    return write_draft(generate_outline(topic))
 
 
-run("Benefits of open-source software")
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run("Benefits of open-source software"))
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

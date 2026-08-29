@@ -1,21 +1,19 @@
-"""Responses API Structured Output — Pydantic model parsing, auto-traced."""
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv(override=True)
+"""Responses.parse structured output on the real OpenAI 3.x parse path."""
 
 from pydantic import BaseModel
-from openai import OpenAI
-from respan import Respan, workflow
-from respan_instrumentation_openai import OpenAIInstrumentor
+from respan import workflow
 
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
+
+EXAMPLE = "responses-structured-output"
+respan = make_respan(EXAMPLE)
 
 
 class MovieReview(BaseModel):
@@ -26,19 +24,21 @@ class MovieReview(BaseModel):
     cons: list[str]
 
 
-@workflow(name="movie_review")
-def review(movie: str) -> MovieReview:
+@workflow(name="openai_responses_movie_review")
+def run(movie: str) -> MovieReview:
     response = client.responses.parse(
-        model="gpt-4.1-nano",
-        instructions="You are a film critic. Rate movies 1-10.",
-        input=f"Review: {movie}",
-        text_format=MovieReview,
+        model=model_name(), input=f"Review: {movie}", text_format=MovieReview
     )
     return response.output_parsed
 
 
-result = review("The Matrix")
-print(f"{result.title} — {result.rating}/10")
-print(f"Summary: {result.summary}")
-print(f"Pros: {', '.join(result.pros)}")
-print(f"Cons: {', '.join(result.cons)}")
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            result = run("The Matrix")
+            print_result(EXAMPLE, f"{result.title} rating={result.rating}")
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

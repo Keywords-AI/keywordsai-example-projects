@@ -1,13 +1,17 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
+import asyncio
+import os
+
 import pytest
+
 # ==========copy the below==========
 from agents import Agent, Runner
-import asyncio
-from respan_exporter_openai_agents import RespanTraceProcessor
 from agents.tracing import set_trace_processors, trace
-import os
+
+from respan_exporter_openai_agents import RespanTraceProcessor
+
 set_trace_processors(
     [
         RespanTraceProcessor(
@@ -40,6 +44,7 @@ async def test_main():
         result = await Runner.run(triage_agent, input="Hola, ¿cómo estás?")
         print(result.final_output)
     # ¡Hola! Estoy bien, gracias por preguntar. ¿Y tú, cómo estás?
+
 
 if __name__ == "__main__":
     asyncio.run(test_main())

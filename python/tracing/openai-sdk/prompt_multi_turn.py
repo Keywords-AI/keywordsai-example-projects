@@ -1,56 +1,52 @@
-"""Prompt Multi-Turn — Continue a conversation using a managed prompt."""
+"""Managed-prompt-shaped first turn followed by a normal Chat turn."""
 
 import os
-from dotenv import load_dotenv
 
-load_dotenv(override=True)
+from respan import workflow
 
-from openai import OpenAI
-from respan import Respan, workflow
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
-PROMPT_ID = "d767498c1cbb4951bb122eef423b5f76"
+EXAMPLE = "prompt-multi-turn"
+respan = make_respan(EXAMPLE)
 
 
-@workflow(name="prompt_conversation")
-def chat():
-    # Turn 1: Initial request using the prompt template
-    response = client.chat.completions.create(
+@workflow(name="openai_prompt_conversation")
+def run() -> str:
+    first = client.chat.completions.create(
         model="placeholder",
         messages=[],
         extra_body={
             "prompt": {
-                "prompt_id": PROMPT_ID,
+                "prompt_id": os.getenv("RESPAN_PROMPT_ID", "deterministic-prompt"),
                 "schema_version": 2,
-                "variables": {
-                    "feature_request": "Add dark mode support to the dashboard",
-                },
+                "variables": {"feature_request": "Add dark mode"},
             }
         },
     )
-    plan = response.choices[0].message.content
-    print(f"=== Initial Plan ===\n{plan}\n")
-
-    # Turn 2: Follow-up without the prompt template (regular chat)
-    follow_up = client.chat.completions.create(
-        model="gpt-4.1-nano",
+    plan = first.choices[0].message.content or ""
+    second = client.chat.completions.create(
+        model=model_name(),
         messages=[
-            {"role": "system", "content": "You are a Lead Product Engineer."},
             {"role": "assistant", "content": plan},
-            {
-                "role": "user",
-                "content": "Can you estimate the effort for each milestone in story points?",
-            },
+            {"role": "user", "content": "Estimate effort."},
         ],
     )
-    print(f"=== Follow-up ===\n{follow_up.choices[0].message.content}")
+    return second.choices[0].message.content or ""
 
 
-chat()
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run())
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

@@ -1,26 +1,26 @@
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 endpoint = "http://localhost:8000/api/openai/v1/traces/ingest"
-import pytest
-import time
-import os
 import asyncio
+import os
 
-
-from openai.types.responses import ResponseTextDeltaEvent
-
+import pytest
 from agents import Agent, Runner
+from agents.tracing import set_trace_processors, trace
+from openai.types.responses import ResponseTextDeltaEvent
 
 from respan_exporter_openai_agents import (
     RespanTraceProcessor,
 )
-from agents.tracing import set_trace_processors, trace
 
 set_trace_processors(
     [
-        RespanTraceProcessor(os.getenv("RESPAN_API_KEY"), endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT")),
+        RespanTraceProcessor(
+            os.getenv("RESPAN_API_KEY"),
+            endpoint=os.getenv("RESPAN_OAIA_TRACING_ENDPOINT"),
+        ),
     ]
 )
 

@@ -1,24 +1,36 @@
-"""Responses API — Simplest possible: one call, auto-traced."""
+"""One successful Responses API call inside a workflow."""
 
-import os
-from dotenv import load_dotenv
+from respan import workflow
 
-load_dotenv(override=True)
-
-from openai import OpenAI
-from respan import Respan
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
-response = client.responses.create(
-    model="gpt-4.1-nano",
-    instructions="You are a helpful assistant.",
-    input="Say hello in three languages.",
-)
-print(response.output_text)
+EXAMPLE = "responses-hello-world"
+respan = make_respan(EXAMPLE)
+
+
+@workflow(name="openai_responses_hello_world")
+def run() -> str:
+    response = client.responses.create(
+        model=model_name(),
+        instructions="You are a helpful assistant.",
+        input="Say hello in three languages.",
+    )
+    return response.output_text
+
+
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run())
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)

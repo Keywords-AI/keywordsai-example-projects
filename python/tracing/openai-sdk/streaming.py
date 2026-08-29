@@ -1,30 +1,42 @@
-"""Streaming — Stream a chat completion, auto-traced."""
+"""Chat Completions streaming with explicit close and exact usage."""
 
-import os
-from dotenv import load_dotenv
+from respan import workflow
 
-load_dotenv(override=True)
-
-from openai import OpenAI
-from respan import Respan
-from respan_instrumentation_openai import OpenAIInstrumentor
-
-respan = Respan(instrumentations=[OpenAIInstrumentor()])
-
-client = OpenAI(
-    api_key=os.getenv("RESPAN_API_KEY"),
-    base_url=os.getenv("RESPAN_BASE_URL", "https://api.respan.ai/api"),
+from _shared import (
+    example_attributes,
+    finish_respan,
+    make_respan,
+    make_sync_client,
+    model_name,
+    print_result,
 )
 
-stream = client.chat.completions.create(
-    model="gpt-4.1-nano",
-    messages=[{"role": "user", "content": "Write a haiku about Python."}],
-    stream=True,
+EXAMPLE = "streaming"
+respan = make_respan(EXAMPLE)
 
-)
 
-for chunk in stream:
-    content = chunk.choices[0].delta.content
-    if content:
-        print(content, end="", flush=True)
-print()
+@workflow(name="openai_chat_streaming")
+def run() -> str:
+    parts: list[str] = []
+    stream = client.chat.completions.create(
+        model=model_name(),
+        messages=[{"role": "user", "content": "Write a Python haiku."}],
+        stream=True,
+        stream_options={"include_usage": True},
+    )
+    with stream:
+        for chunk in stream:
+            if chunk.choices and chunk.choices[0].delta.content:
+                parts.append(chunk.choices[0].delta.content)
+    return "".join(parts)
+
+
+try:
+    client = make_sync_client()
+    try:
+        with example_attributes(EXAMPLE):
+            print_result(EXAMPLE, run())
+    finally:
+        client.close()
+finally:
+    finish_respan(respan)
