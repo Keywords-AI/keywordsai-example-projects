@@ -7,10 +7,10 @@
     "example:basic": "tsx 01_agent_generate.ts",
     "example:tool": "tsx 02_agent_tool_call.ts",
     "example:stream": "tsx 03_agent_stream.ts",
-    "examples": "npm run example:basic && npm run example:tool && npm run example:stream"
+    "example:failure": "tsx 04_agent_failure.ts",
+    "examples": "npm run example:basic && npm run example:tool && npm run example:stream && npm run example:failure"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.64",
     "@mastra/core": "1.36.0",
     "@mastra/observability": "1.13.0",
     "@respan/instrumentation-mastra": "file:../../../../respan/javascript-sdks/instrumentations/respan-instrumentation-mastra",

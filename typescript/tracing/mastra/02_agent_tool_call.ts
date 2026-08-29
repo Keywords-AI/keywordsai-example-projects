@@ -1,7 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
-import { createGatewayModel, createRuntime, EXAMPLE_RUN_ID, getTraceWorkflowName, runWithRespanWorkflow } from "./_shared.js";
+import { createRuntime, createToolCallModel, EXAMPLE_RUN_ID, getTraceWorkflowName, runWithRespanWorkflow } from "./_shared.js";
 
 const workflowName = "Mastra Tool Example";
 
@@ -22,13 +22,13 @@ const weatherAgent = new Agent({
   id: "mastra-weather-agent",
   name: "Mastra Weather Agent",
   instructions: "Use the get_weather tool before answering weather questions.",
-  model: createGatewayModel(),
+  model: createToolCallModel(),
   tools: { getWeather },
 });
 
 const { mastra, respan } = createRuntime({ weatherAgent });
 
-const text = await runWithRespanWorkflow(respan, workflowName, async () => {
+const text = await runWithRespanWorkflow(mastra, respan, workflowName, async () => {
   const agent = mastra.getAgent("weatherAgent");
   const result = await agent.generate("Use the weather tool and tell me the weather in Tokyo.");
   return result.text;

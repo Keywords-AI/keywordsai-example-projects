@@ -69,12 +69,15 @@ export async function runNamedWorkflow<T>(
   });
 
   await respan.initialize();
+  const runId = process.env.RESPAN_EXAMPLE_RUN_ID ?? `llama-index-ts-${Date.now()}`;
   try {
     return await respan.propagateAttributes(
       {
+        custom_identifier: runId,
         trace_group_identifier: workflowName,
         metadata: {
           example_set: "typescript/tracing/llama-index",
+          run_id: runId,
           workflow_name: workflowName,
         },
       },
