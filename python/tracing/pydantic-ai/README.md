@@ -29,7 +29,7 @@ PYDANTIC_AI_GATEWAY_MODEL=gemini/gemini-2.5-flash
 PYDANTIC_AI_ANTHROPIC_GATEWAY_MODEL=claude-sonnet-4-5-20250929
 ```
 
-The examples build an explicit `OpenAIChatModel` with the Respan gateway client, so Pydantic AI v2 does not fall back to the default Responses API. Model selection is `PYDANTIC_AI_GATEWAY_MODEL`, then `RESPAN_VERTEX_GATEWAY_MODEL`, then `RESPAN_MODEL`. The Anthropic example uses the same Respan gateway path with `PYDANTIC_AI_ANTHROPIC_GATEWAY_MODEL`, so no `ANTHROPIC_API_KEY` is required in the application runtime.
+The examples use Pydantic AI's real deterministic `TestModel` runtime by default so the complete native agent/chat/tool tree is repeatable. Set `RESPAN_PYDANTIC_LIVE=1` to use an explicit `OpenAIChatModel` through the configured Respan gateway. Model selection is `PYDANTIC_AI_GATEWAY_MODEL`, then `RESPAN_VERTEX_GATEWAY_MODEL`, then `RESPAN_MODEL`. The Anthropic example uses `PYDANTIC_AI_ANTHROPIC_GATEWAY_MODEL` on that opt-in live path.
 
 ## Examples
 
@@ -46,6 +46,12 @@ Run any example:
 
 ```bash
 python 01_hello_world.py
+```
+
+Run the full exact-marker set:
+
+```bash
+RESPAN_EXAMPLE_RUN_ID=otel2-pydantic-ai-check python run_all.py
 ```
 
 ## How it works

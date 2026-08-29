@@ -4,11 +4,14 @@ This example is written so the agent is required to use a tool (add) to answer,
 ensuring the exported trace contains tool-call spans.
 """
 
+from _gateway import (
+    build_openai_chat_model,
+    finish_respan,
+    load_gateway_config,
+    make_respan,
+)
 from pydantic_ai import Agent
-from respan import Respan, workflow
-from respan_instrumentation_pydantic_ai import PydanticAIInstrumentor
-
-from _gateway import build_openai_chat_model, load_gateway_config
+from respan import workflow
 
 config = load_gateway_config()
 
@@ -38,16 +41,16 @@ def run_calculator_agent(prompt: str) -> str:
 
 
 def main() -> None:
-    respan = Respan(
-        app_name="pydantic-ai-tool-use",
-        api_key=config.respan_api_key,
-        base_url=config.respan_base_url,
-        instrumentations=[PydanticAIInstrumentor()],
-    )
+    respan = None
+    try:
+        respan = make_respan("tool-use")
+        output = run_calculator_agent(
+            "Use your add tool to compute 15 + 27, then reply with the result."
+        )
+        print("Agent Output:", output)
+    finally:
+        finish_respan(respan)
 
-    output = run_calculator_agent(
-        "Use your add tool to compute 15 + 27, then reply with the result."
-    )
-    print("Agent Output:", output)
+
 if __name__ == "__main__":
     main()

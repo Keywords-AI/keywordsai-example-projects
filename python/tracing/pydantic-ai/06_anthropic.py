@@ -2,11 +2,13 @@
 
 import os
 
+from _gateway import (
+    build_openai_chat_model,
+    finish_respan,
+    load_gateway_config,
+    make_respan,
+)
 from pydantic_ai import Agent
-from respan import Respan
-from respan_instrumentation_pydantic_ai import PydanticAIInstrumentor
-
-from _gateway import build_openai_chat_model, load_gateway_config
 
 config = load_gateway_config()
 anthropic_model = os.getenv(
@@ -16,19 +18,17 @@ anthropic_model = os.getenv(
 
 
 def main() -> None:
-    respan = Respan(
-        app_name="pydantic-ai-anthropic",
-        api_key=config.respan_api_key,
-        base_url=config.respan_base_url,
-        instrumentations=[PydanticAIInstrumentor()],
-    )
-
-    agent = Agent(
-        model=build_openai_chat_model(config, model_name=anthropic_model),
-        system_prompt="You are a helpful assistant. Keep answers brief.",
-    )
-    result = agent.run_sync("What is the largest ocean on Earth?")
-    print("Agent Output:", result.output)
+    respan = None
+    try:
+        respan = make_respan("anthropic")
+        agent = Agent(
+            model=build_openai_chat_model(config, model_name=anthropic_model),
+            system_prompt="You are a helpful assistant. Keep answers brief.",
+        )
+        result = agent.run_sync("What is the largest ocean on Earth?")
+        print("Agent Output:", result.output)
+    finally:
+        finish_respan(respan)
 
 
 if __name__ == "__main__":
